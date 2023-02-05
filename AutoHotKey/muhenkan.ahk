@@ -25,7 +25,7 @@ Browser := StrReplace(IniRead(A_ScriptDir "\conf.ini", "App", "Browser"), "A_Use
 ; 無変換キーに同時押しを許可する
 SC07B::Send "{Blind}{SC07B}"
 ; 変換キーに同時押しを許可する
-; SC079::Send "{Blind}{SC079}" ; このスクリプトでは使っていません。
+; SC079::Send "{Blind}{SC079}" ; このスクリプトでは使っていません
 
 ;======================================
 ; カーソル操作
@@ -226,7 +226,6 @@ PastePlaneText(ThisHotkey)
 ;======================================
 
 ; F1 でキーボード画像を出す（ヘルプ）
-; SC07B & F1::Run("powershell -Command `"Invoke-Item " A_ScriptDir "\AutoHotKey\keyboard.png`"") 
 SC07B & F1::Run("powershell -Command `"Invoke-Item " A_ScriptDir "\Img\keyboard.png`"") 
 
 ; F2 でこのスクリプトの自動起動のオンオフを切り替え
