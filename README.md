@@ -84,6 +84,7 @@ Windows のキーボード操作を効率化するプログラムです。
 
 
 ### 導入方法
+0. とりあえず何も設定もせずにお試ししたい方は、`AutoHotKey\muhenkan.exe` を実行することができます。
 1. https://www.autohotkey.com/
 ここのDownload からv2.0 を選択してインストール
 2. `AutoHotKey\muhenkan.ahk` をダブルクリック

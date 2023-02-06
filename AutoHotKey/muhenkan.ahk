@@ -5,6 +5,8 @@
 
 ; conf ファイルの指定
 ConfFileName := A_ScriptDir "\conf.ini"
+; 起動するのはどちらか
+ScriptOrExe := A_ScriptFullPath
 
 try
 {
@@ -256,14 +258,14 @@ SC07B & F1::Run("powershell -Command `"Invoke-Item " A_ScriptDir "\Img\keyboard.
 ; F2 でこのスクリプトの自動起動のオンオフを切り替え
 SC07B & F2::
 {
-  If not FileExist(A_Startup "\" A_ScriptName ".lnk")
+  If not FileExist(A_Startup "\muhenkan_ahk_or_exe.lnk")
   {
-    FileCreateShortcut(A_ScriptFullPath, A_Startup "\" A_ScriptName ".lnk")
+    FileCreateShortcut(A_ScriptFullPath, A_Startup "\muhenkan_ahk_or_exe.lnk")
     MsgBox "自動起動に設定しました。"
   }
   Else
   {
-    FileDelete(A_Startup "\" A_ScriptName ".lnk")
+    FileDelete(A_Startup "\muhenkan_ahk_or_exe.lnk")
     MsgBox "自動起動を解除しました。"
   }
 }
