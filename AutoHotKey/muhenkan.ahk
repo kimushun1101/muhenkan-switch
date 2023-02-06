@@ -8,7 +8,7 @@ ConfFileName := A_ScriptDir "\conf.ini"
 
 ; タイムスタンプの設定
 DateFormat := IniRead(ConfFileName, "Timestamp", "DateFormat")
-TimestampPosition := IniRead(ConfFileName, "Timestamp", "TimestampPosition")
+TimestampPosition := IniRead(ConfFileName, "Timestamp", "Position")
 
 ; Web サイトの設定
 ArticlesSearch := IniRead(ConfFileName, "WebSite", "ArticlesSearch")
@@ -111,9 +111,12 @@ SC07B & v::
 {
   old_clip := ClipboardAll()
   A_Clipboard := ""
-  Send "{^+c}"
+  Send "^+c"
   if (ClipWait(1) = 0) ; ファイル選択がされてない場合
+  {
+    Send "exit{SC07B}{Enter}{Enter}"
     return
+  }
   TergetFile := StrReplace(A_Clipboard, "`"")
   SplitPath(TergetFile, &name, &dir, &ext, &name_no_ext)
   if (dir = "") ; 選択されているのがフォルダやファイルではない場合
@@ -132,9 +135,12 @@ SC07B & c::
 {
   old_clip := ClipboardAll()
   A_Clipboard := ""
-  Send "{^+c}"
+  Send "^+c"
   if (ClipWait(1) = 0) ; ファイル選択がされてない場合
+  {
+    Send "exit{SC07B}{Enter}{Enter}"
     return
+  }
   TergetFile := StrReplace(A_Clipboard, "`"")
   SplitPath(TergetFile, &name, &dir, &ext, &name_no_ext)
   if (dir = "")       ; 選択されているのがフォルダやファイルではない場合
@@ -171,39 +177,23 @@ SC07B & x::
 }
 
 ;---------------------------------------
-; zip ファイルの解凍と圧縮
+; タイムスタンプの位置を変更
 ;---------------------------------------
-; 無変換キー+ z で選択したZipファイルをその場に解凍
+; 無変換キー+ z
 SC07B & z::
 {
-  old_clip := ClipboardAll()
-  A_Clipboard := ""
-  Send "{^+c}"
-  if (ClipWait(1) = 0) ; 文字選択がない場合
-    return
-  SplitPath(A_Clipboard, , &dir, &ext)
-  if (ext != "zip`"") ; 選択されているのがzipでない場合
-  {
-    MsgBox ext
-    return
-  }
-    ; return
-  RunWait("powershell -Command `"Expand-Archive -Path " A_Clipboard " -Destination "  dir "`"")
-  A_Clipboard := old_clip
+  IniWrite "before file name", ConfFileName, "Timestamp", "Position"
+  Timestamp := FormatTime(, DateFormat)
+  MsgBox "タイムスタンプの位置を前にします。`n例：" Timestamp "_ファイル名"
+  Reload
 }
-; 変換キー+ b で選択したZipファイルをその場に解凍
+; 変換キー+ b
 SC07B & b::
 {
-  old_clip := ClipboardAll()
-  A_Clipboard := ""
-  Send "{^+c}"
-  if (ClipWait(1) = 0) ; 文字選択がない場合
-    return
-  SplitPath(A_Clipboard, , &dir, &ext)
-  if (dir = "" and ext != "") ; 選択されているのがフォルダでない場合
-    return
-  RunWait("powershell -Command `"Compress-Archive -Path " A_Clipboard " -Destination "  A_Clipboard ".zip`"")
-  A_Clipboard := old_clip
+  IniWrite "after file name", ConfFileName, "Timestamp", "Position"
+  Timestamp := FormatTime(, DateFormat)
+  MsgBox "タイムスタンプの位置を後ろにします。`n例：ファイル名_" Timestamp
+  Reload
 }
 
 ;======================================
