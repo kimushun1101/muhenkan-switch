@@ -3,23 +3,26 @@
 ;======================================
 #SingleInstance Force ; このスクリプトの再実行を許可する
 
+; conf ファイルの指定
+ConfFileName := A_ScriptDir "\conf.ini"
+
 ; タイムスタンプの設定
-DateFormat := IniRead(A_ScriptDir "\conf.ini", "Timestamp", "DateFormat")
-TimestampPosition := IniRead(A_ScriptDir "\conf.ini", "Timestamp", "TimestampPosition")
+DateFormat := IniRead(ConfFileName, "Timestamp", "DateFormat")
+TimestampPosition := IniRead(ConfFileName, "Timestamp", "TimestampPosition")
 
 ; Web サイトの設定
-ArticlesSearch := IniRead(A_ScriptDir "\conf.ini", "WebSite", "ArticlesSearch")
-WordDictionary := IniRead(A_ScriptDir "\conf.ini", "WebSite", "WordDictionary")
-Thesaurus := IniRead(A_ScriptDir "\conf.ini", "WebSite", "Thesaurus")
-ECommerce := IniRead(A_ScriptDir "\conf.ini", "WebSite", "ECommerce")
-Translator := IniRead(A_ScriptDir "\conf.ini", "WebSite", "Translator")
-SearchEngine := IniRead(A_ScriptDir "\conf.ini", "WebSite", "SearchEngine")
+ArticlesSearch := IniRead(ConfFileName, "WebSite", "ArticlesSearch")
+WordDictionary := IniRead(ConfFileName, "WebSite", "WordDictionary")
+Thesaurus := IniRead(ConfFileName, "WebSite", "Thesaurus")
+ECommerce := IniRead(ConfFileName, "WebSite", "ECommerce")
+Translator := IniRead(ConfFileName, "WebSite", "Translator")
+SearchEngine := IniRead(ConfFileName, "WebSite", "SearchEngine")
 
 ; ソフトウェアの設定
-Editor := StrReplace(IniRead(A_ScriptDir "\conf.ini", "App", "Editor"), "A_UserName", A_UserName)
-Slide := StrReplace(IniRead(A_ScriptDir "\conf.ini", "App", "Slide"), "A_UserName", A_UserName)
-DocumentViewer := StrReplace(IniRead(A_ScriptDir "\conf.ini", "App", "DocumentViewer"), "A_UserName", A_UserName)
-Browser := StrReplace(IniRead(A_ScriptDir "\conf.ini", "App", "Browser"), "A_UserName", A_UserName)
+Editor := StrReplace(IniRead(ConfFileName, "App", "Editor"), "A_UserName", A_UserName)
+Slide := StrReplace(IniRead(ConfFileName, "App", "Slide"), "A_UserName", A_UserName)
+DocumentViewer := StrReplace(IniRead(ConfFileName, "App", "DocumentViewer"), "A_UserName", A_UserName)
+Browser := StrReplace(IniRead(ConfFileName, "App", "Browser"), "A_UserName", A_UserName)
 
 ; https://www.autohotkey.com/docs/v2/KeyList.htm#SpecialKeys
 ; 無変換キーに同時押しを許可する
