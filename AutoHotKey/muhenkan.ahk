@@ -6,23 +6,38 @@
 ; conf ファイルの指定
 ConfFileName := A_ScriptDir "\conf.ini"
 
-; タイムスタンプの設定
-DateFormat := IniRead(ConfFileName, "Timestamp", "DateFormat")
-TimestampPosition := IniRead(ConfFileName, "Timestamp", "Position")
+try
+{
+  ; タイムスタンプの設定
+  DateFormat := IniRead(ConfFileName, "Timestamp", "DateFormat")
+  TimestampPosition := IniRead(ConfFileName, "Timestamp", "Position")
 
-; Web サイトの設定
-ArticlesSearch := IniRead(ConfFileName, "WebSite", "ArticlesSearch")
-WordDictionary := IniRead(ConfFileName, "WebSite", "WordDictionary")
-Thesaurus := IniRead(ConfFileName, "WebSite", "Thesaurus")
-ECommerce := IniRead(ConfFileName, "WebSite", "ECommerce")
-Translator := IniRead(ConfFileName, "WebSite", "Translator")
-SearchEngine := IniRead(ConfFileName, "WebSite", "SearchEngine")
+  ; フォルダの設定
+  Folder1 := IniRead(ConfFileName, "Folder", "Folder1")
+  Folder2 := IniRead(ConfFileName, "Folder", "Folder2")
+  Folder3 := IniRead(ConfFileName, "Folder", "Folder3")
+  Folder4 := IniRead(ConfFileName, "Folder", "Folder4")
 
-; ソフトウェアの設定
-Editor := StrReplace(IniRead(ConfFileName, "App", "Editor"), "A_UserName", A_UserName)
-Slide := StrReplace(IniRead(ConfFileName, "App", "Slide"), "A_UserName", A_UserName)
-DocumentViewer := StrReplace(IniRead(ConfFileName, "App", "DocumentViewer"), "A_UserName", A_UserName)
-Browser := StrReplace(IniRead(ConfFileName, "App", "Browser"), "A_UserName", A_UserName)
+  ; Web サイトの設定
+  ArticlesSearch := IniRead(ConfFileName, "WebSite", "ArticlesSearch")
+  WordDictionary := IniRead(ConfFileName, "WebSite", "WordDictionary")
+  Thesaurus := IniRead(ConfFileName, "WebSite", "Thesaurus")
+  ECommerce := IniRead(ConfFileName, "WebSite", "ECommerce")
+  Translator := IniRead(ConfFileName, "WebSite", "Translator")
+  SearchEngine := IniRead(ConfFileName, "WebSite", "SearchEngine")
+
+  ; ソフトウェアの設定
+  Editor := StrReplace(IniRead(ConfFileName, "App", "Editor"), "A_UserName", A_UserName)
+  Slide := StrReplace(IniRead(ConfFileName, "App", "Slide"), "A_UserName", A_UserName)
+  DocumentViewer := StrReplace(IniRead(ConfFileName, "App", "DocumentViewer"), "A_UserName", A_UserName)
+  Browser := StrReplace(IniRead(ConfFileName, "App", "Browser"), "A_UserName", A_UserName)  
+}
+catch
+{
+  MsgBox ConfFileName "`nの設定が間違っています。見直してください。"
+  Run "notepad.exe " ConfFileName
+  ExitApp
+}
 
 ; https://www.autohotkey.com/docs/v2/KeyList.htm#SpecialKeys
 ; 無変換キーに同時押しを許可する
