@@ -85,7 +85,16 @@ SC07B & 5::Run "explorer shell:RecycleBinFolder"
 ; 選択文字列を検索
 ; 左手上段 Q W E R T (G) に割り当てる
 ;======================================
-#Include <SearchClipbard>
+; 指定したurl の後ろに選択した文字列を追加してWebページを開く
+SearchClipbard(url)
+{
+  old_clip := ClipboardAll()
+  A_Clipboard := "" ; https://www.autohotkey.com/docs/v2/lib/A_Clipboard.htm
+  Send "^c"
+  ClipWait
+  Run url . A_Clipboard
+  A_Clipboard := old_clip
+}
 ; 文字列選択状態で、無変換キー+
 ; q : 論文検索
 SC07B & q::SearchClipbard ArticlesSearch
@@ -104,7 +113,15 @@ SC07B & g::SearchClipbard SearchEngine
 ; ソフトウェアのアクティブ化
 ; 左手中段 A S D F に割り当てる
 ;======================================
-#Include <ActiveAPP>
+; 指定のソフトを最前面にする。
+; もし指定したソフトが起動していなければ起動する。
+ActiveAPP(app)
+{
+  if WinExist("ahk_exe " app) ; https://www.autohotkey.com/docs/v2/misc/WinTitle.htm#ahk_exe
+    WinActivate
+  else
+    Run app
+}
 ; a : エディタ(Atom のA で覚えた)
 SC07B & a::ActiveAPP(Editor)
 ; s : スライド作成
