@@ -15,10 +15,11 @@ try
   TimestampPosition := IniRead(ConfFileName, "Timestamp", "Position")
 
   ; フォルダの設定
-  Folder1 := IniRead(ConfFileName, "Folder", "Folder1")
-  Folder2 := IniRead(ConfFileName, "Folder", "Folder2")
-  Folder3 := IniRead(ConfFileName, "Folder", "Folder3")
-  Folder4 := IniRead(ConfFileName, "Folder", "Folder4")
+  Folder1 := StrReplace(IniRead(ConfFileName, "Folder", "Folder1"), "A_UserName", A_UserName)
+  Folder2 := StrReplace(IniRead(ConfFileName, "Folder", "Folder2"), "A_UserName", A_UserName)
+  Folder3 := StrReplace(IniRead(ConfFileName, "Folder", "Folder3"), "A_UserName", A_UserName)
+  Folder4 := StrReplace(IniRead(ConfFileName, "Folder", "Folder4"), "A_UserName", A_UserName)
+  Folder5 := StrReplace(IniRead(ConfFileName, "Folder", "Folder5"), "A_UserName", A_UserName)
 
   ; Web サイトの設定
   ArticlesSearch := IniRead(ConfFileName, "WebSite", "ArticlesSearch")
@@ -77,11 +78,26 @@ SC07B & .::Send "{Esc}"
 ; エクスプローラーの表示
 ; 左手上段の数字キーに割り当てる
 ;======================================
-SC07B & 1::Run A_MyDocuments
-SC07B & 2::Run "C:\Users\" A_UserName "\Downloads"
-SC07B & 3::Run A_Desktop
-SC07B & 4::Run "C:\Users\" A_UserName "\OneDrive"
-SC07B & 5::Run "explorer shell:RecycleBinFolder"
+;======================================
+; エクスプローラーの表示
+; 左手上段の数字キーに割り当てる
+;======================================
+; 指定のフォルダを最前面にする。(Documents→ドキュメントとかに変わってしまうフォルダには効かない)
+; もし指定したソフトが起動していなければ起動する。
+ActiveFolder(folder)
+{
+  SplitPath(folder, &name)
+  if WinExist(name)
+    WinActivate
+  else
+    Run "explorer `"" folder "`"" 
+}
+
+SC07B & 1::ActiveFolder Folder1
+SC07B & 2::ActiveFolder Folder2
+SC07B & 3::ActiveFolder Folder3
+SC07B & 4::ActiveFolder Folder4
+SC07B & 5::ActiveFolder Folder5
 
 ;======================================
 ; 選択文字列を検索
