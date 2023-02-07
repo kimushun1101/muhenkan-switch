@@ -269,8 +269,12 @@ PastePlaneText(ThisHotkey)
 ;======================================
 
 ; F1 でキーボード画像を出す（ヘルプ）
-SC07B & F1::Run("powershell -Command `"Invoke-Item " A_ScriptDir "\Img\keyboard.png`"") 
-
+SC07B & F1::
+{
+  Run Editor " " ConfFileName
+  Run("powershell -Command `"Invoke-Item " A_ScriptDir "\Img\keyboard.png`"") 
+  MsgBox A_ScriptFullPath "`nを起動中です。"
+}
 ; F2 でこのスクリプトの自動起動のオンオフを切り替え
 SC07B & F2::
 {
