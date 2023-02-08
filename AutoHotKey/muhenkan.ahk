@@ -9,8 +9,8 @@ ConfFileName := A_ScriptDir "\conf.ini"
 try
 {
   ; タイムスタンプの設定
-  DateFormat := IniRead(ConfFileName, "Timestamp", "DateFormat")
-  TimestampPosition := IniRead(ConfFileName, "Timestamp", "Position")
+  DateFormat := StrReplace(IniRead(ConfFileName, "Timestamp", "DateFormat"), "A_UserName", A_UserName)
+  TimestampPosition := StrReplace(IniRead(ConfFileName, "Timestamp", "Position"), "A_UserName", A_UserName)
 
   ; フォルダの設定
   Folder1 := StrReplace(IniRead(ConfFileName, "Folder", "Folder1"), "A_UserName", A_UserName)
@@ -20,12 +20,12 @@ try
   Folder5 := StrReplace(IniRead(ConfFileName, "Folder", "Folder5"), "A_UserName", A_UserName)
 
   ; Web サイトの設定
-  ArticlesSearch := IniRead(ConfFileName, "WebSite", "ArticlesSearch")
-  WordDictionary := IniRead(ConfFileName, "WebSite", "WordDictionary")
-  Thesaurus := IniRead(ConfFileName, "WebSite", "Thesaurus")
-  ECommerce := IniRead(ConfFileName, "WebSite", "ECommerce")
-  Translator := IniRead(ConfFileName, "WebSite", "Translator")
-  SearchEngine := IniRead(ConfFileName, "WebSite", "SearchEngine")
+  ArticlesSearch := StrReplace(IniRead(ConfFileName, "WebSite", "ArticlesSearch"), "A_UserName", A_UserName)
+  WordDictionary := StrReplace(IniRead(ConfFileName, "WebSite", "WordDictionary"), "A_UserName", A_UserName)
+  Thesaurus := StrReplace(IniRead(ConfFileName, "WebSite", "Thesaurus"), "A_UserName", A_UserName)
+  ECommerce := StrReplace(IniRead(ConfFileName, "WebSite", "ECommerce"), "A_UserName", A_UserName)
+  Translator := StrReplace(IniRead(ConfFileName, "WebSite", "Translator"), "A_UserName", A_UserName)
+  SearchEngine := StrReplace(IniRead(ConfFileName, "WebSite", "SearchEngine"), "A_UserName", A_UserName)
 
   ; ソフトウェアの設定
   Editor := StrReplace(IniRead(ConfFileName, "App", "Editor"), "A_UserName", A_UserName)
@@ -38,8 +38,8 @@ catch as Err
   StackLines := StrSplit(Err.Stack, "`n")
   ObjectLine := StrSplit(StackLines[2], "=")
   ConfParam := StrSplit(ObjectLine[2], ")")
-  MsgBox ConfFileName "`nの設定が間違っています。以下の設定を見直してください。`n --- `n" SubStr(ConfParam[1], 24)
-  ; Run "powershell -Command `"Invoke-Item '" ConfFileName "'`""
+  Run "powershell -Command `"Invoke-Item '" ConfFileName "'`""
+  MsgBox ConfFileName "`nの設定が間違っています。以下の設定を見直してください。`n --- `n" SubStr(ConfParam[1], 34)
   ExitApp
 }
 
