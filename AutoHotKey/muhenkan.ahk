@@ -83,11 +83,26 @@ SC07B & .::Send "{Esc}"
 ; エクスプローラーの表示
 ; 左手上段の数字キーに割り当てる
 ;======================================
-; 指定のフォルダを最前面にする。(Documents→ドキュメントとかに変わってしまうフォルダには効かない)
+; 指定のフォルダを最前面にする。
 ; もし指定したソフトが起動していなければ起動する。
 ActiveFolder(folder)
 {
   SplitPath(folder, &name)
+  if (name = "Documents")
+    name := "ドキュメント"
+  else if (name = "Downloads")
+    name := "ダウンロード"
+  else if (name = "Desktop")
+    name := "デスクトップ"
+  else if (name = "RecycleBinFolder")
+    name := "ごみ箱"
+  else if (name = "Music")
+    name := "ミュージック"
+  else if (name = "Videos")
+    name := "ビデオ"
+  else if (name = "3D Objects")
+    name := "3D オブジェクト"
+
   if WinExist(name)
     WinActivate
   else
