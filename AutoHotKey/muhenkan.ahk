@@ -162,13 +162,9 @@ SC07B & v::
 {
   old_clip := ClipboardAll()
   A_Clipboard := ""
-  Send "^+c"
-  if (ClipWait(1) = 0) ; ファイル選択がされてない場合
-  {
-    Send "exit{SC07B}{Enter}{Enter}"
-    return
-  }
-  TergetFile := StrReplace(A_Clipboard, "`"")
+  Send "^c"
+  ClipWait(1)
+  TergetFile := A_Clipboard
   SplitPath(TergetFile, &name, &dir, &ext, &name_no_ext)
   if (dir = "") ; 選択されているのがフォルダやファイルではない場合
     return
@@ -186,13 +182,9 @@ SC07B & c::
 {
   old_clip := ClipboardAll()
   A_Clipboard := ""
-  Send "^+c"
-  if (ClipWait(1) = 0) ; ファイル選択がされてない場合
-  {
-    Send "exit{SC07B}{Enter}{Enter}"
-    return
-  }
-  TergetFile := StrReplace(A_Clipboard, "`"")
+  Send "^c"
+  ClipWait(1)
+  TergetFile := A_Clipboard
   SplitPath(TergetFile, &name, &dir, &ext, &name_no_ext)
   if (dir = "")       ; 選択されているのがフォルダやファイルではない場合
     return  
@@ -206,7 +198,7 @@ SC07B & c::
   
   if FileExist(NewFile)
   {
-    MsgBox "すでにファイルが存在します。"
+    MsgBox NewFile "`nはすでに存在します。"
     return
   }
   if (ext = "") ; 拡張子がない=フォルダ
