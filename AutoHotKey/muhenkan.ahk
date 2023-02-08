@@ -35,8 +35,11 @@ try
 }
 catch as Err
 {
-  MsgBox ConfFileName "`nの設定が間違っています。見直してください。`n" Err.Message
-  Run "powershell -Command `"Invoke-Item '" ConfFileName "'`""
+  StackLines := StrSplit(Err.Stack, "`n")
+  ObjectLine := StrSplit(StackLines[2], "=")
+  ConfParam := StrSplit(ObjectLine[2], ")")
+  MsgBox ConfFileName "`nの設定が間違っています。以下の設定を見直してください。`n --- `n" SubStr(ConfParam[1], 24)
+  ; Run "powershell -Command `"Invoke-Item '" ConfFileName "'`""
   ExitApp
 }
 
@@ -230,7 +233,7 @@ SC07B & x::
 ; 無変換キー+ z
 SC07B & z::
 {
-  IniWrite "before file name", ConfFileName, "Timestamp", "Position"
+  IniWrite " before file name", ConfFileName, "Timestamp", "Position"
   Timestamp := FormatTime(, DateFormat)
   MsgBox "タイムスタンプの位置を前にします。`n例：" Timestamp "_ファイル名"
   Reload
@@ -238,7 +241,7 @@ SC07B & z::
 ; 変換キー+ b
 SC07B & b::
 {
-  IniWrite "after file name", ConfFileName, "Timestamp", "Position"
+  IniWrite " after file name", ConfFileName, "Timestamp", "Position"
   Timestamp := FormatTime(, DateFormat)
   MsgBox "タイムスタンプの位置を後ろにします。`n例：ファイル名_" Timestamp
   Reload
