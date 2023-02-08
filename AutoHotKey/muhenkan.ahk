@@ -5,8 +5,6 @@
 
 ; conf ファイルの指定
 ConfFileName := A_ScriptDir "\conf.ini"
-; 起動するのはどちらか
-ScriptOrExe := A_ScriptFullPath
 
 try
 {
@@ -35,10 +33,10 @@ try
   DocumentViewer := StrReplace(IniRead(ConfFileName, "App", "DocumentViewer"), "A_UserName", A_UserName)
   Browser := StrReplace(IniRead(ConfFileName, "App", "Browser"), "A_UserName", A_UserName)  
 }
-catch
+catch as Err
 {
-  MsgBox ConfFileName "`nの設定が間違っています。見直してください。"
-  Run "notepad.exe " ConfFileName
+  MsgBox ConfFileName "`nの設定が間違っています。見直してください。`n" Err.Message
+  Run "powershell -Command `"Invoke-Item '" ConfFileName "'`""
   ExitApp
 }
 
@@ -271,9 +269,9 @@ PastePlaneText(ThisHotkey)
 ; F1 でキーボード画像を出す（ヘルプ）
 SC07B & F1::
 {
-  Run Editor " " ConfFileName
-  Run("powershell -Command `"Invoke-Item " A_ScriptDir "\Img\keyboard.png`"") 
-  MsgBox A_ScriptFullPath "`nを起動中です。"
+  MsgBox A_ScriptFullPath "`nを起動中です。`n設定ファイルとキーボード画像を開きます。"
+  Run "powershell -Command `"Invoke-Item '" ConfFileName "'`""
+  Run "powershell -Command `"Invoke-Item '" A_ScriptDir "\Img\keyboard.png'`""
 }
 ; F2 でこのスクリプトの自動起動のオンオフを切り替え
 SC07B & F2::
