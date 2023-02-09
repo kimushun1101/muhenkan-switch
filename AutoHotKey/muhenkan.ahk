@@ -30,7 +30,7 @@ try
   ; ソフトウェアの設定
   Editor := StrReplace(IniRead(ConfFileName, "App", "Editor"), "A_UserName", A_UserName)
   Slide := StrReplace(IniRead(ConfFileName, "App", "Slide"), "A_UserName", A_UserName)
-  DocumentViewer := StrReplace(IniRead(ConfFileName, "App", "DocumentViewer"), "A_UserName", A_UserName)
+  PDF := StrReplace(IniRead(ConfFileName, "App", "PDF"), "A_UserName", A_UserName)
   Browser := StrReplace(IniRead(ConfFileName, "App", "Browser"), "A_UserName", A_UserName)  
 }
 catch as Err
@@ -161,7 +161,7 @@ SC07B & a::ActiveAPP(Editor)
 ; s : スライド作成
 SC07B & s::ActiveAPP(Slide)
 ; d : PDF Viewer
-SC07B & d::ActiveAPP(DocumentViewer)
+SC07B & d::ActiveAPP(PDF)
 ; f : ブラウザ（FireFox のF で覚えた）
 SC07B & f::ActiveAPP(Browser)
 
@@ -202,7 +202,7 @@ SC07B & c::
   TergetFile := A_Clipboard
   SplitPath(TergetFile, &name, &dir, &ext, &name_no_ext)
   if (dir = "")       ; 選択されているのがフォルダやファイルではない場合
-    return  
+    return
   Timestamp := FormatTime(FileGetTime(TergetFile, "M"), DateFormat)
   if (TimestampPosition = "before file name")
     NewFile := dir "\" Timestamp "_" name
@@ -297,6 +297,43 @@ SC07B & F2::
     MsgBox "自動起動を解除しました。"
   }
 }
+; F3 で設定変更
+F3::Send "{Blind}{F3}"
+
+SetFolder(Key)
+{
+  old_clip := ClipboardAll()
+  A_Clipboard := ""
+  Send "^c"
+  ClipWait(1)
+  FolderPath := StrReplace(A_Clipboard, A_UserName, "A_UserName")
+  A_Clipboard := old_clip
+  SplitPath(FolderPath, , &dir, &ext)
+  if (dir = "" and ext != "")       ; 選択されているのがフォルダではない場合
+    return
+  IniWrite " " FolderPath, ConfFileName, "Folder", Key
+  MsgBox Key "を以下のフォルダに変更しました。`n" FolderPath
+  Reload
+}
+SetApp(Key)
+{
+  ExePath := StrReplace(WinGetProcessPath(WinExist("A")), A_UserName, "A_UserName")
+  SplitPath(ExePath, , , &ext)
+  if (ext != "exe")       ; 選択されているのがフォルダやファイルではない場合
+    return
+  IniWrite " " ExePath, ConfFileName, "App", Key
+  MsgBox Key "を以下のソフトに変更しました。`n" ExePath
+  Reload
+}
+F3 & 1::SetFolder("Folder1")
+F3 & 2::SetFolder("Folder2")
+F3 & 3::SetFolder("Folder3")
+F3 & 4::SetFolder("Folder4")
+F3 & 5::SetFolder("Folder5")
+F3 & a::SetApp("Editor")
+F3 & s::SetApp("Slide")
+F3 & d::SetApp("PDF")
+F3 & f::SetApp("Browser")
 ; F4 でスクリプトを終了 Alt + F4 的なノリで
 SC07B & F4::
 {
