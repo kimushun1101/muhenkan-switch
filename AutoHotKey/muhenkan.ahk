@@ -280,11 +280,16 @@ PastePlaneText(ThisHotkey)
 SC07B & F1::
 {
   Run "powershell -Command `"Invoke-Item '" A_ScriptDir "\Img\keyboard.png'`""
+  WinWait "keyboard.png"
+  WinActivate "keyboard.png"
+  WinMove 0, 0, , , "keyboard.png"
+  SettingInstruction := "タイムスタンプ位置の変更は、``無変換``+``z`` または``b`` を押す`n---`n"
   TimestampList := "TimeStamp`nDateFormat : " DateFormat "`nTimestamp Position : " TimestampPosition "`n---`n"
   FolderList := "Folder`n1 : " Folder1 "`n2 : " Folder2 "`n3 : " Folder3 "`n4 : " Folder4 "`n---`n"
   WebSiteList := "WebSite`nQ 論文検索 : " ArticlesSearch "`nW 英単語検索 : " WordDictionary "`nR 類語検索 : " Thesaurus "`nE Eコマース : " ECommerce "`nT 翻訳 : " Translator "`nG 検索エンジン : " SearchEngine "`n---`n"
   AppList := "App`nA エディタ : " Editor "`nS スライド : " Slide "`nD PDFビュワー : " PDF "`nF ブラウザ : " Browser
-  MsgBox "Settings`n---`n" A_ScriptFullPath "`nを起動中`n---`n" TimestampList FolderList WebSiteList AppList, "設定"
+  MsgBox SettingInstruction A_ScriptFullPath "`nを起動中`n---`n" TimestampList FolderList WebSiteList AppList, "Settings"
+  try WinClose "keyboard.png"
 }
 ; F2 でこのスクリプトの自動起動のオンオフを切り替え
 SC07B & F2::
