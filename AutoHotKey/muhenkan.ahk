@@ -180,6 +180,7 @@ SC07B & v::
   Send "^c"
   ClipWait(1)
   TergetFile := A_Clipboard
+  A_Clipboard := old_clip
   SplitPath(TergetFile, &name, &dir, &ext, &name_no_ext)
   if (dir = "") ; 選択されているのがフォルダやファイルではない場合
     return
@@ -190,7 +191,6 @@ SC07B & v::
     Send "{F2}{Right}{SC07B}_" Timestamp "{Enter}"
   else
     MsgBox "TimestampPosition が間違っています。"
-  A_Clipboard := old_clip
 }
 ; ファイルやフォルダをコピーしてファイル最終編集日のタイムスタンプをつける
 SC07B & c::
@@ -200,6 +200,7 @@ SC07B & c::
   Send "^c"
   ClipWait(1)
   TergetFile := A_Clipboard
+  A_Clipboard := old_clip
   SplitPath(TergetFile, &name, &dir, &ext, &name_no_ext)
   if (dir = "")       ; 選択されているのがフォルダやファイルではない場合
     return
@@ -220,7 +221,6 @@ SC07B & c::
     DirCopy TergetFile, NewFile
   else          ; 拡張子がある=ファイル
     FileCopy TergetFile, NewFile
-  A_Clipboard := old_clip
 }
 ; タイムスタンプ切り取り
 SC07B & x::
@@ -279,9 +279,12 @@ PastePlaneText(ThisHotkey)
 ; F1 でキーボード画像を出す（ヘルプ）
 SC07B & F1::
 {
-  MsgBox A_ScriptFullPath "`nを起動中です。`n設定ファイルとキーボード画像を開きます。"
-  Run "powershell -Command `"Invoke-Item '" ConfFileName "'`""
   Run "powershell -Command `"Invoke-Item '" A_ScriptDir "\Img\keyboard.png'`""
+  TimestampList := "TimeStamp`nDateFormat : " DateFormat "`nTimestamp Position : " TimestampPosition "`n---`n"
+  FolderList := "Folder`n1 : " Folder1 "`n2 : " Folder2 "`n3 : " Folder3 "`n4 : " Folder4 "`n---`n"
+  WebSiteList := "WebSite`nQ 論文検索 : " ArticlesSearch "`nW 英単語検索 : " WordDictionary "`nR 類語検索 : " Thesaurus "`nE Eコマース : " ECommerce "`nT 翻訳 : " Translator "`nG 検索エンジン : " SearchEngine "`n---`n"
+  AppList := "App`nA エディタ : " Editor "`nS スライド : " Slide "`nD PDFビュワー : " PDF "`nF ブラウザ : " Browser
+  MsgBox "Settings`n---`n" A_ScriptFullPath "`nを起動中`n---`n" TimestampList FolderList WebSiteList AppList, "設定"
 }
 ; F2 でこのスクリプトの自動起動のオンオフを切り替え
 SC07B & F2::
@@ -298,42 +301,68 @@ SC07B & F2::
   }
 }
 ; F3 で設定変更
-F3::Send "{Blind}{F3}"
-
-SetFolder(Key)
+SC07B & F3::
 {
-  old_clip := ClipboardAll()
-  A_Clipboard := ""
-  Send "^c"
-  ClipWait(1)
-  FolderPath := StrReplace(A_Clipboard, A_UserName, "A_UserName")
-  A_Clipboard := old_clip
-  SplitPath(FolderPath, , &dir, &ext)
-  if (dir = "" and ext != "")       ; 選択されているのがフォルダではない場合
-    return
-  IniWrite " " FolderPath, ConfFileName, "Folder", Key
-  MsgBox Key "を以下のフォルダに変更しました。`n" FolderPath
-  Reload
+  Path := StrReplace(WinGetProcessPath(WinExist("A")), A_UserName, "A_UserName")
+  if (Path = A_WinDir "\explorer.exe")
+  {
+    old_clip := ClipboardAll()
+    A_Clipboard := ""
+    Send "{Down}{Left}{Right}{Up}^c"  ; フォルダ内のファイルを何か選択してコピー
+    if not ClipWait(1)
+    {
+      MsgBox "中身のあるフォルダを選択してください。または、このフォルダは設定ができません。"
+      return
+    }
+    SelectedPath := StrReplace(A_Clipboard, A_UserName, "A_UserName")
+    A_Clipboard := old_clip
+    SplitPath(SelectedPath, , &dir)
+    Path := dir
+  }
+  SplitPath(Path, &name, &dir, &ext)
+  if (ext = "exe")       ; exe ファイルの場合
+  {
+    CurrentKeys := "a (Editor) : `t" Editor "`ns (Slide) : `t" Slide "`nd (PDF) : `t`t" PDF "`nf (Browser) : `t" Browser
+    EnableKeys := "a, s, d, f"
+  }
+  else
+  {
+    CurrentKeys := "1 : " Folder1 "`n2 : " Folder2 "`n3 : " Folder3 "`n4 : " Folder4
+    EnableKeys := "1, 2, 3, 4"
+  }
+  IB := InputBox(Path "`nに上書きキーを入力してください`n`n設定可能なキー: 現在の設定`n" CurrentKeys, "キーの入力", "w600 h300")
+  if (IB.Result = "OK")
+  {
+    if (EnableKeys = "1, 2, 3, 4" and IB.Value = "1")
+      ConfirmSetIni("Folder", "Folder1", Path)
+    else if (EnableKeys = "1, 2, 3, 4" and IB.Value = "2")
+      ConfirmSetIni("Folder", "Folder2", Path)
+    else if (EnableKeys = "1, 2, 3, 4" and IB.Value = "3")
+      ConfirmSetIni("Folder", "Folder3", Path)
+    else if (EnableKeys = "1, 2, 3, 4" and IB.Value = "4")
+      ConfirmSetIni("Folder", "Folder4", Path)
+    else if (EnableKeys = "a, s, d, f" and IB.Value = "a")
+      ConfirmSetIni("App", "Editor", Path)
+    else if (EnableKeys = "a, s, d, f" and IB.Value = "s")
+      ConfirmSetIni("App", "Slide", Path)
+    else if (EnableKeys = "a, s, d, f" and IB.Value = "d")
+      ConfirmSetIni("App", "PDF", Path)
+    else if (EnableKeys = "a, s, d, f" and IB.Value = "f")
+      ConfirmSetIni("App", "Browser", Path)
+    else
+    {
+      MsgBox IB.Value " には設定できません。"
+    }
+  }
 }
-SetApp(Key)
+ConfirmSetIni(Sec, Key, Path)
 {
-  ExePath := StrReplace(WinGetProcessPath(WinExist("A")), A_UserName, "A_UserName")
-  SplitPath(ExePath, , , &ext)
-  if (ext != "exe")       ; 選択されているのがフォルダやファイルではない場合
-    return
-  IniWrite " " ExePath, ConfFileName, "App", Key
-  MsgBox Key "を以下のソフトに変更しました。`n" ExePath
-  Reload
+  if (MsgBox(Key "を以下に設定します。`n" Path, , 1) = "OK")
+  {
+    IniWrite " " Path, ConfFileName, Sec, Key
+    Reload
+  }
 }
-F3 & 1::SetFolder("Folder1")
-F3 & 2::SetFolder("Folder2")
-F3 & 3::SetFolder("Folder3")
-F3 & 4::SetFolder("Folder4")
-F3 & 5::SetFolder("Folder5")
-F3 & a::SetApp("Editor")
-F3 & s::SetApp("Slide")
-F3 & d::SetApp("PDF")
-F3 & f::SetApp("Browser")
 ; F4 でスクリプトを終了 Alt + F4 的なノリで
 SC07B & F4::
 {
