@@ -20,15 +20,15 @@ try
   Folder5 := StrReplace(IniRead(ConfFileName, "Folder", "Folder5"), "A_UserName", A_UserName)
 
   ; Web サイトの設定
-  ArticlesSearch := StrReplace(IniRead(ConfFileName, "WebSite", "ArticlesSearch"), "A_UserName", A_UserName)
-  WordDictionary := StrReplace(IniRead(ConfFileName, "WebSite", "WordDictionary"), "A_UserName", A_UserName)
+  EngDictionary := StrReplace(IniRead(ConfFileName, "WebSite", "EngDictionary"), "A_UserName", A_UserName)
   Thesaurus := StrReplace(IniRead(ConfFileName, "WebSite", "Thesaurus"), "A_UserName", A_UserName)
-  ECommerce := StrReplace(IniRead(ConfFileName, "WebSite", "ECommerce"), "A_UserName", A_UserName)
   Translator := StrReplace(IniRead(ConfFileName, "WebSite", "Translator"), "A_UserName", A_UserName)
   SearchEngine := StrReplace(IniRead(ConfFileName, "WebSite", "SearchEngine"), "A_UserName", A_UserName)
 
   ; ソフトウェアの設定
   Editor := StrReplace(IniRead(ConfFileName, "App", "Editor"), "A_UserName", A_UserName)
+  Word := StrReplace(IniRead(ConfFileName, "App", "Word"), "A_UserName", A_UserName)
+  EMail := StrReplace(IniRead(ConfFileName, "App", "EMail"), "A_UserName", A_UserName)
   Slide := StrReplace(IniRead(ConfFileName, "App", "Slide"), "A_UserName", A_UserName)
   PDF := StrReplace(IniRead(ConfFileName, "App", "PDF"), "A_UserName", A_UserName)
   Browser := StrReplace(IniRead(ConfFileName, "App", "Browser"), "A_UserName", A_UserName)  
@@ -130,14 +130,10 @@ SearchClipbard(url)
   A_Clipboard := old_clip
 }
 ; 文字列選択状態で、無変換キー+
-; q : 論文検索
-SC07B & q::SearchClipbard ArticlesSearch
-; w : word 検索
-SC07B & w::SearchClipbard WordDictionary
+; q : 英単語検索
+SC07B & q::SearchClipbard EngDictionary
 ; r : 類語辞典
 SC07B & r::SearchClipbard Thesaurus
-; e : Eコマース
-SC07B & e::SearchClipbard ECommerce
 ; t : Translator
 SC07B & t::SearchClipbard Translator
 ; g : Google 検索
@@ -158,6 +154,10 @@ ActiveAPP(app)
 }
 ; a : エディタ(Atom のA で覚えた)
 SC07B & a::ActiveAPP(Editor)
+; w : ワード
+SC07B & w::ActiveAPP(Word)
+; e : E-mail
+SC07B & e::ActiveAPP(EMail)
 ; s : スライド作成
 SC07B & s::ActiveAPP(Slide)
 ; d : PDF Viewer
@@ -283,12 +283,13 @@ SC07B & F1::
   WinWait "keyboard.png"
   WinActivate "keyboard.png"
   WinMove 0, 0, , , "keyboard.png"
-  SettingInstruction := "タイムスタンプ位置の変更は、``無変換``+``z`` または``b`` を押す`n---`n"
-  TimestampList := "TimeStamp`nDateFormat : " DateFormat "`nTimestamp Position : " TimestampPosition "`n---`n"
-  FolderList := "Folder`n1 : " Folder1 "`n2 : " Folder2 "`n3 : " Folder3 "`n4 : " Folder4 "`n---`n"
-  WebSiteList := "WebSite`nQ 論文検索 : " ArticlesSearch "`nW 英単語検索 : " WordDictionary "`nR 類語検索 : " Thesaurus "`nE Eコマース : " ECommerce "`nT 翻訳 : " Translator "`nG 検索エンジン : " SearchEngine "`n---`n"
-  AppList := "App`nA エディタ : " Editor "`nS スライド : " Slide "`nD PDFビュワー : " PDF "`nF ブラウザ : " Browser
-  MsgBox SettingInstruction A_ScriptFullPath "`nを起動中`n---`n" TimestampList FolderList WebSiteList AppList, "Settings"
+  SettingInstruction := "タイムスタンプフォーマットの設定変更は、``無変換``+``F3```nタイムスタンプ位置の設定変更は、``無変換``+``z`` または``b```nフォルダやアプリの割当変更は、`n割り当てたいフォルダやアプリを最前面に出した状態で``無変換``+``F6```n---`n"
+  ScriptFile :=  "起動中のスクリプト`n" A_ScriptFullPath "`n---`n"
+  TimestampList := "タイムスタンプの設定`nDateFormat : " DateFormat "`nTimestamp Position : " TimestampPosition "`n---`n"
+  FolderList := "フォルダの割当`n1 : " Folder1 "`n2 : " Folder2 "`n3 : " Folder3 "`n4 : " Folder4 "`n---`n"
+  AppList := "アプリの割当`nA エディタ : " Editor "`nW ワード : " Word "`nE メール : " EMail "`nS スライド : " Slide "`nD PDFビュワー : " PDF "`nF ブラウザ : " Browser "`n---`n"
+  WebSiteList := "Webサイトのリンク`nQ 英単語検索 : " EngDictionary "`nR 類語検索 : " Thesaurus "`nT 翻訳 : " Translator "`nG 検索エンジン : " SearchEngine "`n---`n"
+  MsgBox SettingInstruction ScriptFile TimestampList FolderList AppList WebSiteList, "Settings"
   try WinClose "keyboard.png"
 }
 ; F2 でこのスクリプトの自動起動のオンオフを切り替え
@@ -305,8 +306,41 @@ SC07B & F2::
     MsgBox "自動起動を解除しました。"
   }
 }
-; F3 で設定変更
+; F3 で設定の変更
 SC07B & F3::
+{
+  IB := InputBox("ファイル名につけるタイムスタンプフォーマットを入力`n現在の設定：" DateFormat "`n---`n例: yyyyMMdd, yyMMdd, MMdd, yyyyMMdd_HHmmss`n詳細は「AutoHotKey FormatTime」で検索してください。", "タイムスタンプフォーマット", "w400 h200")
+  if (IB.Result = "OK" and IB.Value)
+  {
+    Timestamp := FormatTime(, IB.Value)
+    IniWrite " " IB.Value, ConfFileName, "Timestamp", "DateFormat"
+    if (TimestampPosition = "before file name")
+      MsgBox "以下のように設定されました`n例：" Timestamp "_ファイル名.txt"
+    else if (TimestampPosition = "after file name")
+      MsgBox "以下のように設定されました`n例：" "ファイル名_" Timestamp ".txt"
+    else
+      MsgBox "TimestampPosition が間違っています。"
+  }
+}
+; F4 でスクリプトを終了 Alt + F4 的なノリで
+SC07B & F4::
+{
+  if (MsgBox("スクリプトを終了しますか？`n", , 1) = "OK")
+  {
+    Run A_ScriptDir ; 再起動したい場合のためにこのスクリプトの場所を開いておく
+    MsgBox A_ScriptFullPath "`nを終了しました。"
+    ExitApp
+  }
+}
+; F5 でAutoHotKey のスクリプトをセーブ&リロード（デバッグ用）
+SC07B & F5::
+{
+  Send "^s"
+  MsgBox A_ScriptFullPath "`nをセーブ&リロード"
+  Reload
+}
+; F6 でキー割当の変更
+SC07B & F6::
 {
   Path := StrReplace(WinGetProcessPath(WinExist("A")), A_UserName, "A_UserName")
   if (Path = A_WinDir "\explorer.exe")
@@ -327,15 +361,15 @@ SC07B & F3::
   SplitPath(Path, &name, &dir, &ext)
   if (ext = "exe")       ; exe ファイルの場合
   {
-    CurrentKeys := "a (Editor) : `t" Editor "`ns (Slide) : `t" Slide "`nd (PDF) : `t`t" PDF "`nf (Browser) : `t" Browser
-    EnableKeys := "a, s, d, f"
+    CurrentKeys := "a (Editor) :`t" Editor "`nw (Word) :`t" Word "`ne (Email) :`t" EMail  "`ns (Slide) :`t`t" Slide "`nd (PDF) :`t`t" PDF "`nf (Browser) :`t" Browser
+    EnableKeys := "a, w, e, s, d, f"
   }
   else
   {
     CurrentKeys := "1 : " Folder1 "`n2 : " Folder2 "`n3 : " Folder3 "`n4 : " Folder4
     EnableKeys := "1, 2, 3, 4"
   }
-  IB := InputBox(Path "`nに上書きキーを入力してください`n`n設定可能なキー: 現在の設定`n" CurrentKeys, "キーの入力", "w600 h300")
+  IB := InputBox(Path "`nに上書きしたいキーを入力してください`n`n設定可能なキー: 現在の設定`n" CurrentKeys, "キーの入力", "w600 h300")
   if (IB.Result = "OK")
   {
     if (EnableKeys = "1, 2, 3, 4" and IB.Value = "1")
@@ -346,13 +380,17 @@ SC07B & F3::
       ConfirmSetIni("Folder", "Folder3", Path)
     else if (EnableKeys = "1, 2, 3, 4" and IB.Value = "4")
       ConfirmSetIni("Folder", "Folder4", Path)
-    else if (EnableKeys = "a, s, d, f" and IB.Value = "a")
+    else if (EnableKeys = "a, w, e, s, d, f" and IB.Value = "a")
       ConfirmSetIni("App", "Editor", Path)
-    else if (EnableKeys = "a, s, d, f" and IB.Value = "s")
+    else if (EnableKeys = "a, w, e, s, d, f" and IB.Value = "w")
+      ConfirmSetIni("App", "Word", Path)
+    else if (EnableKeys = "a, w, e, s, d, f" and IB.Value = "e")
+      ConfirmSetIni("App", "EMail", Path)
+    else if (EnableKeys = "a, w, e, s, d, f" and IB.Value = "s")
       ConfirmSetIni("App", "Slide", Path)
-    else if (EnableKeys = "a, s, d, f" and IB.Value = "d")
+    else if (EnableKeys = "a, w, e, s, d, f" and IB.Value = "d")
       ConfirmSetIni("App", "PDF", Path)
-    else if (EnableKeys = "a, s, d, f" and IB.Value = "f")
+    else if (EnableKeys = "a, w, e, s, d, f" and IB.Value = "f")
       ConfirmSetIni("App", "Browser", Path)
     else
     {
@@ -367,20 +405,6 @@ ConfirmSetIni(Sec, Key, Path)
     IniWrite " " Path, ConfFileName, Sec, Key
     Reload
   }
-}
-; F4 でスクリプトを終了 Alt + F4 的なノリで
-SC07B & F4::
-{
-  Run A_ScriptDir ; 再起動したい場合のためにこのスクリプトの場所を開いておく
-  MsgBox A_ScriptFullPath "`nを終了しました。"
-  ExitApp
-}
-; F5 でAutoHotKey のスクリプトをセーブ&リロード（デバッグ用）
-SC07B & F5::
-{
-  Send "^s"
-  MsgBox A_ScriptFullPath "`nをセーブ&リロード"
-  Reload
 }
 
 ;---------------------------------------

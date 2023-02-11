@@ -28,22 +28,22 @@
                 <mxCell id="9" value="V&lt;br&gt;日付の&lt;br&gt;貼り付け" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
                     <mxGeometry x="469" y="468" width="50" height="50" as="geometry"/>
                 </mxCell>
-                <mxCell id="10" value="G&lt;br&gt;Google&lt;br&gt;検索" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
+                <mxCell id="10" value="G&lt;br&gt;Google&lt;br&gt;検索" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
                     <mxGeometry x="499" y="408" width="50" height="50" as="geometry"/>
                 </mxCell>
-                <mxCell id="11" value="T&lt;br&gt;DeepL&lt;br&gt;Translator" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
+                <mxCell id="11" value="T&lt;br&gt;Translator&lt;br&gt;DeepL" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
                     <mxGeometry x="469" y="348" width="50" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="12" value="R&lt;br&gt;類語辞典" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
                     <mxGeometry x="409" y="348" width="50" height="50" as="geometry"/>
                 </mxCell>
-                <mxCell id="13" value="E&lt;br&gt;EC&lt;br&gt;Amazon" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
+                <mxCell id="13" value="E&lt;br&gt;E-mail" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
                     <mxGeometry x="349" y="348" width="50" height="50" as="geometry"/>
                 </mxCell>
-                <mxCell id="14" value="W&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;Weblio&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;英単語" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
+                <mxCell id="14" value="W&lt;br&gt;ワード" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
                     <mxGeometry x="289" y="348" width="50" height="50" as="geometry"/>
                 </mxCell>
-                <mxCell id="15" value="Q&lt;br&gt;論文検索" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
+                <mxCell id="15" value="Q&lt;br&gt;英単語&lt;br&gt;検索" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
                     <mxGeometry x="229" y="348" width="50" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="16" value="5&lt;br&gt;ごみ箱" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
@@ -148,7 +148,7 @@
                 <mxCell id="49" value="F7" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="599" y="248" width="50" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="50" value="F6" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                <mxCell id="50" value="F6&lt;br&gt;割当変更" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
                     <mxGeometry x="540" y="248" width="50" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="51" value="" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
