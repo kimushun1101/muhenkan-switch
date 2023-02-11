@@ -289,7 +289,7 @@ SC07B & F1::
   FolderList := "フォルダの割当`n1 : " Folder1 "`n2 : " Folder2 "`n3 : " Folder3 "`n4 : " Folder4 "`n---`n"
   AppList := "アプリの割当`nA エディタ : " Editor "`nW ワード : " Word "`nE メール : " EMail "`nS スライド : " Slide "`nD PDFビュワー : " PDF "`nF ブラウザ : " Browser "`n---`n"
   WebSiteList := "Webサイトのリンク`nQ 英単語検索 : " EngDictionary "`nR 類語検索 : " Thesaurus "`nT 翻訳 : " Translator "`nG 検索エンジン : " SearchEngine "`n---`n"
-  MsgBox SettingInstruction ScriptFile TimestampList FolderList AppList WebSiteList, "Settings"
+  MsgBox SettingInstruction ScriptFile TimestampList FolderList AppList WebSiteList, "Help"
   try WinClose "keyboard.png"
 }
 ; F2 でこのスクリプトの自動起動のオンオフを切り替え

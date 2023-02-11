@@ -10,7 +10,7 @@ Windows のキーボード操作を効率化するプログラムです。
   クローンしてください。  
   `$ git clone git@github.com:kimushun1101/win-key-conf.git`
 - Git 環境がない人：
-  1. GitHub ページの`Code<>▼` からDownload ZIP
+  1. GitHub ページの`Code<>▼` から`Download ZIP`
   2. `win-key-conf-main.zip` をお好みのフォルダに展開してください。
 
 各ソフトウェアの導入方法については以下を御覧ください。
@@ -24,27 +24,28 @@ Windows のキーボード操作を効率化するプログラムです。
 ### できること
 ![キーボードショートカット](AutoHotKey/Img/keyboard.png) 
 
+フォルダやソフトなどは個人設定で変更可能→[設定変更の方法](#設定変更の方法)
 - (青)`無変換キー`+`右手`（両手がホームポジションにあることを想定）
   - `h`, `j`, `k`, `l`: 1文字カーソル移動
   - `u`, `i`: 単語で左右カーソル移動
   - `y`, `o`: Home、End カーソル移動
   - `n`, `m`, `.` BackSpace, Delete, Esc
 - `無変換キー`+`左手`（右手はマウスを操作していることを想定）
-  - (黄色)数字キー→エクスプローラーでフォルダを開く
+  - (黄色)数字キー→エクスプローラーでフォルダを開く ***【設定変更可能】***
     - `1`: ドキュメント
     - `2`: ダウンロード
     - `3`: デスクトップ
     - `4`: OneDrive
     - `5`: ごみ箱
-  - (オレンジ)左手上段→選択文字列を検索
+  - (オレンジ)左手上段→選択文字列を検索 ***【設定変更可能】***
     - `g`: Google 検索
-    - `t`: DeepL Translator 検索
+    - `t`: 翻訳、DeepL Translator
     - `r`: 類語辞典
     - `q`: 英単語検索
-  - (赤)左手中段→ソフトを最前面に出す
+  - (赤)左手中段→ソフトを最前面に出す ***【設定変更可能】***
     - `a`: エディタ、VS Code
-    - `w`: ワード
-    - `e`: Eメール
+    - `w`: ワード、Microsoft Word
+    - `e`: Eメール、Microsoft Outlook
     - `s`: スライド作成、PowerPoint
     - `d`: ドキュメント閲覧、Adbee Acrobot Reader
     - `f`: ブラウザ、Google Chrome
@@ -84,11 +85,20 @@ Windows のキーボード操作を効率化するプログラムです。
 ![ソフトの切り替え](AutoHotKey/Img/activeapp.gif)
 
 ### 導入方法
-1. `AutoHotKey\muhenkan.exe` 。
-1. https://www.autohotkey.com/
-ここのDownload からv2.0 を選択してインストール
-2. `AutoHotKey\muhenkan.ahk` をダブルクリック
-3. Windows 立ち上げ時に自動起動したい場合、muhenkan_base.ahk が起動した状態で`無変換キー`+`F2 キー` を押下(もう一度押すと解除も可能)
+`AutoHotKey\muhenkan.exe` を実行するだけ。
+現在の設定などは起動後に`無変換キー`+`F1` で確認できる。
+
+### 設定変更の方法
+1. タイムスタンプのフォーマットは`無変換キー`+`F3` で変更、タイムスタンプをつける位置は`無変換キー`+`z` または`b` で変更
+2. 使用しているアプリやフォルダが異なる場合には、登録したいアプリやフォルダを最前面にした状態で`無変換キー`+`F6`を押下
+3. 選択文字列を検索するサイトを変更したい場合には、`AutoHotKey\conf.ini` を編集（エンコーディングはShift JIS）、その後`無変換キー`+`F5` でリロード
+3. Windows 立ち上げ時に自動起動したい場合、`無変換キー`+`F2 キー` を押下(もう一度押すと解除も可能)
+
+### ソースコードを編集したい場合
+1. https://www.autohotkey.com/ ここのDownload からv2.0 を選択してインストール
+2. `AutoHotKey\muhenkan.ahk` を編集して実行
+3. デバッグには`無変換キー`+`F5` が便利
+4. AutoHotkey アプリでAutoHotKeyDash を立ち上げ、Compile からexe ファイルを作成可能
 
 ## Google 日本語入力
 日本語入力をサポートするソフトウェアです。
@@ -118,7 +128,7 @@ Windows のキーボード操作を効率化するプログラムです。
 6. `GoogleIME\henkan_muhenkan.txt` を選択
 
 ## Ctrl2Cap
-Caps Lock キーをCtrl キーに置き換えることができるソフトウェアです。
+`Caps Lock キー`を`Ctrl キー`に置き換えることができるソフトウェアです。
 本当はAutoHotKey スクリプトで実現したかったのですが、日本語キーボードでは難しかったのでこちらで設定しました。
 解決できる方がおりましたらPull Request、もしくはSNS などで教えてください。
 ### できること
