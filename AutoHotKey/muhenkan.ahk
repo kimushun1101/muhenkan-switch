@@ -673,18 +673,18 @@ SC07B & F2::
     else if (SearchEngineDDL.Value = "3")
       IniWrite "https://search.yahoo.co.jp/search?p=", ConfFileDDL.Text, "WebSite", "SearchEngine"
 
-    IniWrite StrReplace(Folder1, A_UserName, "A_UserName"), ConfFileDDL.Text, "Folder", "Folder1"
-    IniWrite StrReplace(Folder2, A_UserName, "A_UserName"), ConfFileDDL.Text, "Folder", "Folder2"
-    IniWrite StrReplace(Folder3, A_UserName, "A_UserName"), ConfFileDDL.Text, "Folder", "Folder3"
-    IniWrite StrReplace(Folder4, A_UserName, "A_UserName"), ConfFileDDL.Text, "Folder", "Folder4"
-    IniWrite StrReplace(Folder5, A_UserName, "A_UserName"), ConfFileDDL.Text, "Folder", "Folder5"
+    IniWrite StrReplace(Folder1Text.Text, A_UserName, "A_UserName"), ConfFileDDL.Text, "Folder", "Folder1"
+    IniWrite StrReplace(Folder2Text.Text, A_UserName, "A_UserName"), ConfFileDDL.Text, "Folder", "Folder2"
+    IniWrite StrReplace(Folder3Text.Text, A_UserName, "A_UserName"), ConfFileDDL.Text, "Folder", "Folder3"
+    IniWrite StrReplace(Folder4Text.Text, A_UserName, "A_UserName"), ConfFileDDL.Text, "Folder", "Folder4"
+    IniWrite StrReplace(Folder5Text.Text, A_UserName, "A_UserName"), ConfFileDDL.Text, "Folder", "Folder5"
     
-    IniWrite StrReplace(Editor,  A_UserName, "A_UserName"), ConfFileDDL.Text, "Software", "Editor"
-    IniWrite StrReplace(Word,    A_UserName, "A_UserName"), ConfFileDDL.Text, "Software", "Word"
-    IniWrite StrReplace(EMail,   A_UserName, "A_UserName"), ConfFileDDL.Text, "Software", "EMail"
-    IniWrite StrReplace(Slide,   A_UserName, "A_UserName"), ConfFileDDL.Text, "Software", "Slide"
-    IniWrite StrReplace(PDF,     A_UserName, "A_UserName"), ConfFileDDL.Text, "Software", "PDF"
-    IniWrite StrReplace(Browser, A_UserName, "A_UserName"), ConfFileDDL.Text, "Software", "Browser"
+    IniWrite StrReplace(EditorText.Text,  A_UserName, "A_UserName"), ConfFileDDL.Text, "Software", "Editor"
+    IniWrite StrReplace(WordText.Text,    A_UserName, "A_UserName"), ConfFileDDL.Text, "Software", "Word"
+    IniWrite StrReplace(EMailText.Text,   A_UserName, "A_UserName"), ConfFileDDL.Text, "Software", "EMail"
+    IniWrite StrReplace(SlideText.Text,   A_UserName, "A_UserName"), ConfFileDDL.Text, "Software", "Slide"
+    IniWrite StrReplace(PDFText.Text,     A_UserName, "A_UserName"), ConfFileDDL.Text, "Software", "PDF"
+    IniWrite StrReplace(BrowserText.Text, A_UserName, "A_UserName"), ConfFileDDL.Text, "Software", "Browser"
 
     if ConfFileDDL.Text = ConfFileName
     {
