@@ -127,10 +127,10 @@
                 <mxCell id="42" value="F4&lt;br&gt;終了" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
                     <mxGeometry x="399" y="248" width="50" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="43" value="F3&lt;br&gt;設定変更" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+                <mxCell id="43" value="F3&lt;br&gt;割当変更" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
                     <mxGeometry x="339" y="248" width="50" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="44" value="F2&lt;br&gt;自動起動" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+                <mxCell id="44" value="F2&lt;br&gt;設定変更" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
                     <mxGeometry x="279" y="248" width="50" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="45" value="F1&lt;br&gt;ヘルプ" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
@@ -148,7 +148,7 @@
                 <mxCell id="49" value="F7" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="599" y="248" width="50" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="50" value="F6&lt;br&gt;割当変更" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+                <mxCell id="50" value="F6" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="540" y="248" width="50" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="51" value="" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">

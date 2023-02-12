@@ -26,12 +26,12 @@ try
   SearchEngine := StrReplace(IniRead(ConfFileName, "WebSite", "SearchEngine"), "A_UserName", A_UserName)
 
   ; ソフトウェアの設定
-  Editor := StrReplace(IniRead(ConfFileName, "App", "Editor"), "A_UserName", A_UserName)
-  Word := StrReplace(IniRead(ConfFileName, "App", "Word"), "A_UserName", A_UserName)
-  EMail := StrReplace(IniRead(ConfFileName, "App", "EMail"), "A_UserName", A_UserName)
-  Slide := StrReplace(IniRead(ConfFileName, "App", "Slide"), "A_UserName", A_UserName)
-  PDF := StrReplace(IniRead(ConfFileName, "App", "PDF"), "A_UserName", A_UserName)
-  Browser := StrReplace(IniRead(ConfFileName, "App", "Browser"), "A_UserName", A_UserName)  
+  Editor := StrReplace(IniRead(ConfFileName, "Software", "Editor"), "A_UserName", A_UserName)
+  Word := StrReplace(IniRead(ConfFileName, "Software", "Word"), "A_UserName", A_UserName)
+  EMail := StrReplace(IniRead(ConfFileName, "Software", "EMail"), "A_UserName", A_UserName)
+  Slide := StrReplace(IniRead(ConfFileName, "Software", "Slide"), "A_UserName", A_UserName)
+  PDF := StrReplace(IniRead(ConfFileName, "Software", "PDF"), "A_UserName", A_UserName)
+  Browser := StrReplace(IniRead(ConfFileName, "Software", "Browser"), "A_UserName", A_UserName)
 }
 catch as Err
 {
@@ -41,6 +41,16 @@ catch as Err
   Run "powershell -Command `"Invoke-Item '" ConfFileName "'`""
   MsgBox ConfFileName "`nの設定が間違っています。以下の設定を見直してください。`n --- `n" SubStr(ConfParam[1], 34)
   ExitApp
+}
+
+OnExit ExitFunc
+ExitFunc(ExitReason, ExitCode)
+{
+  if ExitReason != "Reload" and ExitReason != "Logoff" and ExitReason != "Shutdown"
+  {
+    MsgBox A_ScriptFullPath "`nを終了します。`n" A_ScriptDir "`nを開きます。", "終了"
+    Run A_ScriptDir ; 再起動したい場合のためにこのスクリプトの場所を開いておく
+  }
 }
 
 ; https://www.autohotkey.com/docs/v2/KeyList.htm#SpecialKeys
@@ -145,25 +155,25 @@ SC07B & g::SearchClipbard SearchEngine
 ;======================================
 ; 指定のソフトを最前面にする。
 ; もし指定したソフトが起動していなければ起動する。
-ActiveAPP(app)
+ActiveSoftware(Software)
 {
-  if WinExist("ahk_exe " app) ; https://www.autohotkey.com/docs/v2/misc/WinTitle.htm#ahk_exe
+  if WinExist("ahk_exe " Software) ; https://www.autohotkey.com/docs/v2/misc/WinTitle.htm#ahk_exe
     WinActivate
   else
-    Run app
+    Run Software
 }
 ; a : エディタ(Atom のA で覚えた)
-SC07B & a::ActiveAPP(Editor)
+SC07B & a::ActiveSoftware(Editor)
 ; w : ワード
-SC07B & w::ActiveAPP(Word)
+SC07B & w::ActiveSoftware(Word)
 ; e : E-mail
-SC07B & e::ActiveAPP(EMail)
+SC07B & e::ActiveSoftware(EMail)
 ; s : スライド作成
-SC07B & s::ActiveAPP(Slide)
+SC07B & s::ActiveSoftware(Slide)
 ; d : PDF Viewer
-SC07B & d::ActiveAPP(PDF)
+SC07B & d::ActiveSoftware(PDF)
 ; f : ブラウザ（FireFox のF で覚えた）
-SC07B & f::ActiveAPP(Browser)
+SC07B & f::ActiveSoftware(Browser)
 
 ;======================================
 ; 選択しているファイル名やフォルダ名の操作
@@ -240,7 +250,7 @@ SC07B & x::
 ; 無変換キー+ z
 SC07B & z::
 {
-  IniWrite " before file name", ConfFileName, "Timestamp", "Position"
+  IniWrite "before file name", ConfFileName, "Timestamp", "Position"
   Timestamp := FormatTime(, DateFormat)
   MsgBox "タイムスタンプの位置を前にします。`n例：" Timestamp "_ファイル名"
   Reload
@@ -248,7 +258,7 @@ SC07B & z::
 ; 変換キー+ b
 SC07B & b::
 {
-  IniWrite " after file name", ConfFileName, "Timestamp", "Position"
+  IniWrite "after file name", ConfFileName, "Timestamp", "Position"
   Timestamp := FormatTime(, DateFormat)
   MsgBox "タイムスタンプの位置を後ろにします。`n例：ファイル名_" Timestamp
   Reload
@@ -283,64 +293,414 @@ SC07B & F1::
   WinWait "keyboard.png"
   WinActivate "keyboard.png"
   WinMove 0, 0, , , "keyboard.png"
-  SettingInstruction := "タイムスタンプフォーマットの設定変更は、``無変換``+``F3```nタイムスタンプ位置の設定変更は、``無変換``+``z`` または``b```nフォルダやアプリの割当変更は、`n割り当てたいフォルダやアプリを最前面に出した状態で``無変換``+``F6```n---`n"
-  ScriptFile :=  "起動中のスクリプト`n" A_ScriptFullPath "`n---`n"
-  TimestampList := "タイムスタンプの設定`nDateFormat : " DateFormat "`nTimestamp Position : " TimestampPosition "`n---`n"
-  FolderList := "フォルダの割当`n1 : " Folder1 "`n2 : " Folder2 "`n3 : " Folder3 "`n4 : " Folder4 "`n---`n"
-  AppList := "アプリの割当`nA エディタ : " Editor "`nW ワード : " Word "`nE メール : " EMail "`nS スライド : " Slide "`nD PDFビュワー : " PDF "`nF ブラウザ : " Browser "`n---`n"
-  WebSiteList := "Webサイトのリンク`nQ 英単語検索 : " EngDictionary "`nR 類語検索 : " Thesaurus "`nT 翻訳 : " Translator "`nG 検索エンジン : " SearchEngine "`n---`n"
-  MsgBox SettingInstruction ScriptFile TimestampList FolderList AppList WebSiteList, "Help"
+  MsgBox "設定変更は``無変換``+``F2```nフォルダやソフトの割当変更は`n割り当てたいフォルダやソフトを最前面に出した状態で``無変換``+``F3``", "Help"
   try WinClose "keyboard.png"
 }
-; F2 でこのスクリプトの自動起動のオンオフを切り替え
+; F2 で設定の変更
 SC07B & F2::
 {
-  If not FileExist(A_Startup "\muhenkan_ahk_or_exe.lnk")
+  MyGui := Gui("AlwaysOnTop", "設定")
+  MyGui.Add("Text", "ym+10 w200 section", "現在起動しているファイル : ")
+  MyGui.Add("Text", "xs+130 ys w550 BackgroundWhite", A_ScriptFullPath)
+  if FileExist(A_Startup "\muhenkan_ahk_or_exe.lnk")
+    TextStartup := MyGui.Add("Text",  "xs+700 ys h15 Background69B076", "自動起動ON　")
+  else
+    TextStartup := MyGui.Add("Text",  "xs+700 ys h15 BackgroundFADBDA", "自動起動OFF")
+  BtnStartUP := MyGui.Add("Button", "xs+770 ys-5", "切替").OnEvent("Click", ToggleStartUp)
+
+  ; タイムスタンプ
+  MyGui.Add("GroupBox", "xs ys+20 w290 h120 section", "タイムスタンプ")
+  DateFormatList := ["yyyyMMdd", "yyMMdd", "yyyyMMdd_HHmmss"]
+  if DateFormat = "yyyyMMdd"
+    ChooseDateFormat := "Choose1"
+  else if DateFormat = "yyMMdd"
+    ChooseDateFormat := "Choose2"
+  else if DateFormat = "yyyyMMdd_HHmmss"
+    ChooseDateFormat := "Choose3"
+  else
   {
-    FileCreateShortcut(A_ScriptFullPath, A_Startup "\muhenkan_ahk_or_exe.lnk")
-    MsgBox "自動起動に設定しました。"
+    DateFormatList := ["yyyyMMdd", "yyMMdd", "yyyyMMdd_HHmmss" , DateFormat]
+    ChooseDateFormat := "Choose4"
   }
-  Else
+
+  DateFormatComboBox := MyGui.Add("ComboBox", "xs+10 ys+20 w150 " ChooseDateFormat, DateFormatList)
+  DateFormatComboBox.OnEvent("Change", ChangeTimestampExample)
+  MyGui.Add("Link", "xs+170  ys+25", 'フォーマットは <a href="https://www.autohotkey.com/docs/v2/lib/FormatTime.htm">こちら</a>')
+  Timestamp := FormatTime(, DateFormat)
+  if (TimestampPosition = "before file name")
   {
-    FileDelete(A_Startup "\muhenkan_ahk_or_exe.lnk")
-    MsgBox "自動起動を解除しました。"
+    BeforeRadio := MyGui.Add("Radio", "xs+10  ys+55 checked", "ファイル名の前")
+    AfterRadio  := MyGui.Add("Radio", "xs+10  ys+75", "ファイル名の後")
+    TextTimestamp := MyGui.Add("Text",  "xs+10  ys+100 w280", "例:  " Timestamp "_ファイル名.txt")
   }
-}
-; F3 で設定の変更
-SC07B & F3::
-{
-  IB := InputBox("ファイル名につけるタイムスタンプフォーマットを入力`n現在の設定：" DateFormat "`n---`n例: yyyyMMdd, yyMMdd, MMdd, yyyyMMdd_HHmmss`n詳細は「AutoHotKey FormatTime」で検索してください。", "タイムスタンプフォーマット", "w400 h200")
-  if (IB.Result = "OK" and IB.Value)
+  else if (TimestampPosition = "after file name")
   {
-    Timestamp := FormatTime(, IB.Value)
-    IniWrite " " IB.Value, ConfFileName, "Timestamp", "DateFormat"
-    if (TimestampPosition = "before file name")
-      MsgBox "以下のように設定されました`n例：" Timestamp "_ファイル名.txt"
-    else if (TimestampPosition = "after file name")
-      MsgBox "以下のように設定されました`n例：" "ファイル名_" Timestamp ".txt"
+    BeforeRadio := MyGui.Add("Radio", "xs+10  ys+55", "ファイル名の前")
+    AfterRadio  := MyGui.Add("Radio", "xs+10  ys+75 checked", "ファイル名の後")
+    TextTimestamp := MyGui.Add("Text",  "xs+20  ys+100 w280", "例:  ファイル名_" Timestamp ".txt")
+  }
+  BeforeRadio.OnEvent("Click", ChangeTimestampExample)
+  AfterRadio.OnEvent("Click", ChangeTimestampExample)
+
+  ; ウェブサイト
+  MyGui.Add("GroupBox", "xs ys+125 w290 h140 section", "ウェブサイト")
+  MyGui.Add("Text", "xs+10  ys+25",  "Q 英語辞典")
+  MyGui.Add("Text", "xs+10  ys+50",  "R 類語辞典")
+  MyGui.Add("Text", "xs+10  ys+75",  "T 翻訳")
+  MyGui.Add("Text", "xs+10  ys+100", "G 検索エンジン")
+  if (EngDictionary = "https://ejje.weblio.jp/content/")
+    ChooseEngDictionary := "Choose1"
+  else if (EngDictionary = "https://eow.alc.co.jp/search?q=")
+    ChooseEngDictionary := "Choose2"
+  else if (EngDictionary = "https://www.ldoceonline.com/dictionary/")
+    ChooseEngDictionary := "Choose3"
+  else if (EngDictionary = "https://www.oxfordlearnersdictionaries.com/definition/english/")
+    ChooseEngDictionary := "Choose4"
+  if (Thesaurus = "https://thesaurus.weblio.jp/content/")
+    ChooseThesaurus := "Choose1"
+  else if (Thesaurus = "https://renso-ruigo.com/word/")
+    ChooseThesaurus := "Choose2"
+  if (Translator = "https://www.deepl.com/translator#en/ja/")
+    ChooseTranslator := "Choose1"
+  else if (Translator = "https://translate.google.co.jp/?hl=ja&sl=auto&tl=ja&text=")
+    ChooseTranslator := "Choose2"
+  if (SearchEngine = "https://www.google.co.jp/search?q=")
+    ChooseSearchEngine := "Choose1"
+  else if (SearchEngine = "https://duckduckgo.com/?q=")
+    ChooseSearchEngine := "Choose2"
+  else if (SearchEngine = "https://search.yahoo.co.jp/search?p=")
+    ChooseSearchEngine := "Choose3"
+  EngDictionaryDDL := MyGui.Add("DDL", "xs+130  ys+25 w100 " ChooseEngDictionary, ["Weblio","ALC","Longman","Oxford"])
+  ThesaurusDDL := MyGui.Add("DDL", "xs+130  ys+50 w100 " ChooseThesaurus, ["Weblio","連想類語辞典"])
+  TranslatorDDL := MyGui.Add("DDL", "xs+130  ys+75 w100 " ChooseTranslator, ["DeepL","Google 翻訳"])
+  SearchEngineDDL := MyGui.Add("DDL", "xs+130  ys+100 w100 " ChooseSearchEngine, ["Google","DuckDuckGo","Yahoo"])
+
+  ; フォルダ
+  MyGui.Add("GroupBox", "xs+300 ys-125 w500 h120 section", "フォルダ")
+  MyGui.Add("Text", "xs+10 ys+20",  "1")
+  MyGui.Add("Text", "xs+10 ys+40",  "2")
+  MyGui.Add("Text", "xs+10 ys+60",  "3")
+  MyGui.Add("Text", "xs+10 ys+80",  "4")
+  MyGui.Add("Text", "xs+10 ys+100", "5")
+  Folder1Text := MyGui.Add("Text", "xs+20 ys+20  w470 BackgroundWhite", Folder1)
+  Folder2Text := MyGui.Add("Text", "xs+20 ys+40  w470 BackgroundWhite", Folder2)
+  Folder3Text := MyGui.Add("Text", "xs+20 ys+60  w470 BackgroundWhite", Folder3)
+  Folder4Text := MyGui.Add("Text", "xs+20 ys+80  w470 BackgroundWhite", Folder4)
+  Folder5Text := MyGui.Add("Text", "xs+20 ys+100 w470 BackgroundWhite", Folder5)
+  Folder1Text.OnEvent("Click", SelectFolder1)
+  Folder2Text.OnEvent("Click", SelectFolder2)
+  Folder3Text.OnEvent("Click", SelectFolder3)
+  Folder4Text.OnEvent("Click", SelectFolder4)
+  Folder5Text.OnEvent("Click", SelectFolder5)
+
+  ; ソフトウェア
+  MyGui.Add("GroupBox", "xs ys+125 w500 h140 section", "ソフトウェア")
+  MyGui.Add("Text", "xs+10 ys+20",  "A エディタ")
+  MyGui.Add("Text", "xs+10 ys+40",  "W ワード")
+  MyGui.Add("Text", "xs+10 ys+60",  "E Eメール")
+  MyGui.Add("Text", "xs+10 ys+80",  "S スライド")
+  MyGui.Add("Text", "xs+10 ys+100", "D PDF")
+  MyGui.Add("Text", "xs+10 ys+120", "F ブラウザ")
+  EditorText  := MyGui.Add("Text", "xs+60 ys+20 w430 BackgroundWhite", Editor)
+  WordText    := MyGui.Add("Text", "xs+60 ys+40 w430 BackgroundWhite", Word)
+  EMailText   := MyGui.Add("Text", "xs+60 ys+60 w430 BackgroundWhite", EMail)
+  SlideText   := MyGui.Add("Text", "xs+60 ys+80 w430 BackgroundWhite", Slide)
+  PDFText     := MyGui.Add("Text", "xs+60 ys+100 w430 BackgroundWhite", PDF)
+  BrowserText := MyGui.Add("Text", "xs+60 ys+120 w430 BackgroundWhite", Browser)
+  EditorText.OnEvent("Click", NavigateF3)
+  WordText.OnEvent("Click", NavigateF3)
+  EMailText.OnEvent("Click", NavigateF3)
+  SlideText.OnEvent("Click", NavigateF3)
+  PDFText.OnEvent("Click", NavigateF3)
+  BrowserText.OnEvent("Click", NavigateF3)
+
+  ; 設定ファイル
+  MyGui.Add("GroupBox", "xs-300 ys+150 w800 h50 section", "設定ファイル")
+  BackupFileName := A_ScriptDir "\backup.ini"
+  DefaultFileName := A_ScriptDir "\default.ini"
+  ConfFileDDL := MyGui.Add("DDL", "xs+10 ys+20 w650 Choose1", [ConfFileName, BackupFileName, DefaultFileName, "Another File"])
+  ConfFileDDL.OnEvent("Change", ChangeSaveFileButton)
+  MyGui.Add("Button", "xs+670 ys+18 w50", "読込").OnEvent("Click", LoadFile)
+  SaveButton := MyGui.Add("Button", "xs+725 ys+18 w50 w70", "設定を適用")
+  SaveButton.OnEvent("Click", SaveFile)
+
+  MyGui.Show()
+
+  ToggleStartUp(*)
+  {
+    if not FileExist(A_Startup "\muhenkan_ahk_or_exe.lnk")
+    {
+      FileCreateShortcut(A_ScriptFullPath, A_Startup "\muhenkan_ahk_or_exe.lnk")
+      TextStartup.Value := "自動起動ON　"
+      TextStartup.Opt("Background69B076")
+      TextStartup.Redraw()
+    }
     else
-      MsgBox "TimestampPosition が間違っています。"
+    {
+      FileDelete(A_Startup "\muhenkan_ahk_or_exe.lnk")
+      TextStartup.Value := "自動起動OFF"
+      TextStartup.Opt("BackgroundFADBDA")
+      TextStartup.Redraw()
+    }
   }
-}
-; F4 でスクリプトを終了 Alt + F4 的なノリで
-SC07B & F4::
-{
-  if (MsgBox("スクリプトを終了しますか？`n", , 1) = "OK")
+  ChangeTimestampExample(*)
   {
-    Run A_ScriptDir ; 再起動したい場合のためにこのスクリプトの場所を開いておく
-    MsgBox A_ScriptFullPath "`nを終了しました。"
-    ExitApp
+    Timestamp := FormatTime(, DateFormatComboBox.Text)
+    if (BeforeRadio.Value = 1)
+      TextTimestamp.Value := "例:  " Timestamp "_ファイル名.txt"
+    else
+      TextTimestamp.Value := "例:  ファイル名_" Timestamp ".txt"
+  }
+  ChangeSaveFileButton(*)
+  {
+    if ConfFileDDL.Text = ConfFileName
+    {
+      SaveButton.Text := "設定を適用"
+      SaveButton.Enabled := true
+    }
+    else if ConfFileDDL.Text = "Another File"
+    {
+      MyGui.Opt("-AlwaysOnTop")
+      SelectedFile := FileSelect(, ConfFileName, "Open a file", "設定ファイル (*.ini)")
+      try ConfFileDDL.Delete(5)
+      if SelectedFile
+      {
+        SplitPath(SelectedFile, , &dir, &ext, &name_no_ext)
+        if ext != "ini"
+          SelectedFile := dir "\" name_no_ext ".ini"
+        ConfFileDDL.Add([SelectedFile])
+        ConfFileDDL.Value := 5
+      }
+      else
+        ConfFileDDL.Value := 1
+      ChangeSaveFileButton()
+      MyGui.Opt("AlwaysOnTop")
+    }
+    else if ConfFileDDL.Text = DefaultFileName
+    {
+      SaveButton.Text := "書換不可"
+      SaveButton.Enabled := false
+    }
+    else
+    {
+      SaveButton.Text := "バックアップ"
+      SaveButton.Enabled := true
+    }
+  }
+  SelectFolder1(*)
+  {
+      MyGui.Opt("-AlwaysOnTop")
+      SelectedFolder := FileSelect("D", Folder1Text.Text, "Select a folder")
+      if SelectedFolder
+        Folder1Text.Text := SelectedFolder
+      MyGui.Opt("AlwaysOnTop")    
+  }
+  SelectFolder2(*)
+  {
+      MyGui.Opt("-AlwaysOnTop")
+      SelectedFolder := FileSelect("D", Folder2Text.Text, "Select a folder")
+      if SelectedFolder
+        Folder2Text.Text := SelectedFolder
+      MyGui.Opt("AlwaysOnTop")    
+  }
+  SelectFolder3(*)
+  {
+      MyGui.Opt("-AlwaysOnTop")
+      SelectedFolder := FileSelect("D", Folder3Text.Text, "Select a folder")
+      if SelectedFolder
+        Folder3Text.Text := SelectedFolder
+      MyGui.Opt("AlwaysOnTop")    
+  }
+  SelectFolder4(*)
+  {
+      MyGui.Opt("-AlwaysOnTop")
+      SelectedFolder := FileSelect("D", Folder4Text.Text, "Select a folder")
+      if SelectedFolder
+        Folder4Text.Text := SelectedFolder
+      MyGui.Opt("AlwaysOnTop")    
+  }
+  SelectFolder5(*)
+  {
+      MyGui.Opt("-AlwaysOnTop")
+      SelectedFolder := FileSelect("D", Folder5Text.Text, "Select a folder")
+      if SelectedFolder
+        Folder5Text.Text := SelectedFolder
+      MyGui.Opt("AlwaysOnTop")    
+  }
+  NavigateF3(*)
+  {
+      MyGui.Opt("-AlwaysOnTop")
+      if MsgBox("設定画面を閉じて、割り当てたいソフトを最前面に出して無変換＋F3キーを押してください。`n設定画面を閉じますか？",, 4) ="YES"
+        MyGui.Destroy()
+      else
+        MyGui.Opt("AlwaysOnTop")    
+  }
+  LoadFile(*)
+  {
+    if not FileExist(ConfFileDDL.Text)
+    {
+      MyGui.Opt("-AlwaysOnTop")
+      MsgBox ConfFileDDL.Text "`nは存在しません。"
+      MyGui.Opt("AlwaysOnTop")
+      return
+    }
+
+    MyGui.Opt("-AlwaysOnTop")
+    Result := MsgBox(ConfFileDDL.Text "`nを読み込みますか？",, 4) ="No"
+    MyGui.Opt("AlwaysOnTop")
+    if Result
+      return
+
+    ; タイムスタンプの設定
+    DateFormatComboBox.Text := StrReplace(IniRead(ConfFileDDL.Text, "Timestamp", "DateFormat"), "A_UserName", A_UserName)
+    TimestampPosition := StrReplace(IniRead(ConfFileDDL.Text, "Timestamp", "Position"), "A_UserName", A_UserName)
+    if (TimestampPosition = "before file name")
+    {
+      BeforeRadio.Value := 1
+      Timestamp := FormatTime(, DateFormatComboBox.Text)
+      TextTimestamp.Text := "例:  " Timestamp "_ファイル名.txt"
+    }
+    else if (TimestampPosition = "after file name")
+    {
+      AfterRadio.Value := 1
+      Timestamp := FormatTime(, DateFormatComboBox.Text)
+      TextTimestamp.Text := "例:  ファイル名_" Timestamp ".txt"
+    }
+
+    ; Web サイトの設定
+    EngDictionary := StrReplace(IniRead(ConfFileDDL.Text, "WebSite", "EngDictionary"), "A_UserName", A_UserName)
+    Thesaurus := StrReplace(IniRead(ConfFileDDL.Text, "WebSite", "Thesaurus"), "A_UserName", A_UserName)
+    Translator := StrReplace(IniRead(ConfFileDDL.Text, "WebSite", "Translator"), "A_UserName", A_UserName)
+    SearchEngine := StrReplace(IniRead(ConfFileDDL.Text, "WebSite", "SearchEngine"), "A_UserName", A_UserName)
+    if (EngDictionary = "https://ejje.weblio.jp/content/")
+      ChooseEngDictionary := 1
+    else if (EngDictionary = "https://eow.alc.co.jp/search?q=")
+      ChooseEngDictionary := 2
+    else if (EngDictionary = "https://www.ldoceonline.com/dictionary/")
+      ChooseEngDictionary := 3
+    else if (EngDictionary = "https://www.oxfordlearnersdictionaries.com/definition/english/")
+      ChooseEngDictionary := "Choose4"
+    if (Thesaurus = "https://thesaurus.weblio.jp/content/")
+      ChooseThesaurus := 1
+    else if (Thesaurus = "https://renso-ruigo.com/word/")
+      ChooseThesaurus := 2
+    if (Translator = "https://www.deepl.com/translator#en/ja/")
+      ChooseTranslator := 1
+    else if (Translator = "https://translate.google.co.jp/?hl=ja&sl=auto&tl=ja&text=")
+      ChooseTranslator := 2
+    if (SearchEngine = "https://www.google.co.jp/search?q=")
+      ChooseSearchEngine := 1
+    else if (SearchEngine = "https://duckduckgo.com/?q=")
+      ChooseSearchEngine := 2
+    else if (SearchEngine = "https://search.yahoo.co.jp/search?p=")
+      ChooseSearchEngine := 3
+
+    EngDictionaryDDL.Value := ChooseEngDictionary
+    ThesaurusDDL.Value := ChooseThesaurus
+    TranslatorDDL.Value := ChooseTranslator
+    SearchEngineDDL.Value := ChooseSearchEngine
+
+    ; フォルダの設定
+    Folder1Text.Text := StrReplace(IniRead(ConfFileDDL.Text, "Folder", "Folder1"), "A_UserName", A_UserName)
+    Folder2Text.Text := StrReplace(IniRead(ConfFileDDL.Text, "Folder", "Folder2"), "A_UserName", A_UserName)
+    Folder3Text.Text := StrReplace(IniRead(ConfFileDDL.Text, "Folder", "Folder3"), "A_UserName", A_UserName)
+    Folder4Text.Text := StrReplace(IniRead(ConfFileDDL.Text, "Folder", "Folder4"), "A_UserName", A_UserName)
+    Folder5Text.Text := StrReplace(IniRead(ConfFileDDL.Text, "Folder", "Folder5"), "A_UserName", A_UserName)
+
+    ; ソフトウェアの設定
+    EditorText.Text := StrReplace(IniRead(ConfFileDDL.Text, "Software", "Editor"), "A_UserName", A_UserName)
+    WordText.Text := StrReplace(IniRead(ConfFileDDL.Text, "Software", "Word"), "A_UserName", A_UserName)
+    EMailText.Text := StrReplace(IniRead(ConfFileDDL.Text, "Software", "EMail"), "A_UserName", A_UserName)
+    SlideText.Text := StrReplace(IniRead(ConfFileDDL.Text, "Software", "Slide"), "A_UserName", A_UserName)
+    PDFText.Text := StrReplace(IniRead(ConfFileDDL.Text, "Software", "PDF"), "A_UserName", A_UserName)
+    BrowserText.Text := StrReplace(IniRead(ConfFileDDL.Text, "Software", "Browser"), "A_UserName", A_UserName)
+
+
+    MyGui.Opt("-AlwaysOnTop")
+    if ConfFileDDL.Text = ConfFileName
+      MsgBox "現在の設定に戻しました。"
+    else
+    {
+      ConfFileDDL.Value := 1
+      SaveButton.Text := "設定を適用"
+      SaveButton.Enabled := true
+      MsgBox "設定を読み込みました。反映させるには「設定の適用」を押してください。"
+    }
+    MyGui.Opt("AlwaysOnTop")
+  }
+  SaveFile(*)
+  {
+    MyGui.Opt("-AlwaysOnTop")
+    if ConfFileDDL.Text = ConfFileName
+    {
+      if MsgBox("現在の設定を変更しますか？",, 4) = "No"
+        return
+    }
+    else
+    {
+      if MsgBox(ConfFileDDL.Text "`nにバックアップを取りますか？`n（現在の設定は変更されません。）",, 4) = "No"
+        return
+    }
+    IniWrite DateFormatComboBox.Text, ConfFileDDL.Text, "Timestamp", "DateFormat"
+    if (BeforeRadio.Value = 1)
+      IniWrite "before file name", ConfFileDDL.Text, "Timestamp", "Position"
+    else
+      IniWrite "after file name", ConfFileDDL.Text, "Timestamp", "Position"
+
+    if (EngDictionaryDDL.Value = 1)
+      IniWrite "https://ejje.weblio.jp/content/", ConfFileDDL.Text, "WebSite", "EngDictionary"
+    else if (EngDictionaryDDL.Value = 2)
+      IniWrite "https://eow.alc.co.jp/search?q=", ConfFileDDL.Text, "WebSite", "EngDictionary"
+    else if (EngDictionaryDDL.Value = 3)
+      IniWrite "https://www.ldoceonline.com/dictionary/", ConfFileDDL.Text, "WebSite", "EngDictionary"
+    else if (EngDictionaryDDL.Value = 4)
+      IniWrite "https://www.oxfordlearnersdictionaries.com/definition/english/", ConfFileDDL.Text, "WebSite", "EngDictionary"
+
+    if (ThesaurusDDL.Value = "1")
+      IniWrite "https://thesaurus.weblio.jp/content/", ConfFileDDL.Text, "WebSite", "Thesaurus"
+    else if (ThesaurusDDL.Value = "2")
+      IniWrite "https://renso-ruigo.com/word/", ConfFileDDL.Text, "WebSite", "Thesaurus"
+
+    if (TranslatorDDL.Value = "1")
+      IniWrite "https://www.deepl.com/translator#en/ja/", ConfFileDDL.Text, "WebSite", "Translator"
+    else if (TranslatorDDL.Value = "2")
+      IniWrite "https://translate.google.co.jp/?hl=ja&sl=auto&tl=ja&text=", ConfFileDDL.Text, "WebSite", "Translator"
+
+    if (SearchEngineDDL.Value = "1")
+      IniWrite "https://www.google.co.jp/search?q=", ConfFileDDL.Text, "WebSite", "SearchEngine"
+    else if (SearchEngineDDL.Value = "2")
+      IniWrite "https://duckduckgo.com/?q=", ConfFileDDL.Text, "WebSite", "SearchEngine"
+    else if (SearchEngineDDL.Value = "3")
+      IniWrite "https://search.yahoo.co.jp/search?p=", ConfFileDDL.Text, "WebSite", "SearchEngine"
+
+    IniWrite StrReplace(Folder1, A_UserName, "A_UserName"), ConfFileDDL.Text, "Folder", "Folder1"
+    IniWrite StrReplace(Folder2, A_UserName, "A_UserName"), ConfFileDDL.Text, "Folder", "Folder2"
+    IniWrite StrReplace(Folder3, A_UserName, "A_UserName"), ConfFileDDL.Text, "Folder", "Folder3"
+    IniWrite StrReplace(Folder4, A_UserName, "A_UserName"), ConfFileDDL.Text, "Folder", "Folder4"
+    IniWrite StrReplace(Folder5, A_UserName, "A_UserName"), ConfFileDDL.Text, "Folder", "Folder5"
+    
+    IniWrite StrReplace(Editor,  A_UserName, "A_UserName"), ConfFileDDL.Text, "Software", "Editor"
+    IniWrite StrReplace(Word,    A_UserName, "A_UserName"), ConfFileDDL.Text, "Software", "Word"
+    IniWrite StrReplace(EMail,   A_UserName, "A_UserName"), ConfFileDDL.Text, "Software", "EMail"
+    IniWrite StrReplace(Slide,   A_UserName, "A_UserName"), ConfFileDDL.Text, "Software", "Slide"
+    IniWrite StrReplace(PDF,     A_UserName, "A_UserName"), ConfFileDDL.Text, "Software", "PDF"
+    IniWrite StrReplace(Browser, A_UserName, "A_UserName"), ConfFileDDL.Text, "Software", "Browser"
+
+    if ConfFileDDL.Text = ConfFileName
+    {
+      MsgBox("設定を変更しました。`n設定画面を閉じます。")
+      Reload
+    }
+    else
+    {
+      MsgBox(ConfFileDDL.Text "`nにバックアップを作成しました。`n現在の変更を反映させるには「設定の適用」を押してください。")
+      ConfFileDDL.Value := 1
+      SaveButton.Text := "設定を適用"
+    }
   }
 }
-; F5 でAutoHotKey のスクリプトをセーブ&リロード（デバッグ用）
-SC07B & F5::
-{
-  Send "^s"
-  MsgBox A_ScriptFullPath "`nをセーブ&リロード"
-  Reload
-}
-; F6 でキー割当の変更
-SC07B & F6::
+; F3 でキー割当の変更
+SC07B & F3::
 {
   Path := StrReplace(WinGetProcessPath(WinExist("A")), A_UserName, "A_UserName")
   if (Path = A_WinDir "\explorer.exe")
@@ -350,7 +710,7 @@ SC07B & F6::
     Send "{Down}{Left}{Right}{Up}^c"  ; フォルダ内のファイルを何か選択してコピー
     if not ClipWait(1)
     {
-      MsgBox "中身のあるフォルダを選択してください。または、このフォルダは設定ができません。"
+      MsgBox "1. ソフトまたはフォルダを最前面にしてください。`n2. フォルダの場合、フォルダ内のファイルを選択してください。`n3. このフォルダは設定ができません。", "割り当て失敗"
       return
     }
     SelectedPath := StrReplace(A_Clipboard, A_UserName, "A_UserName")
@@ -366,32 +726,34 @@ SC07B & F6::
   }
   else
   {
-    CurrentKeys := "1 : " Folder1 "`n2 : " Folder2 "`n3 : " Folder3 "`n4 : " Folder4
-    EnableKeys := "1, 2, 3, 4"
+    CurrentKeys := "1 : " Folder1 "`n2 : " Folder2 "`n3 : " Folder3 "`n4 : " Folder4 "`n5 : " Folder5
+    EnableKeys := "1, 2, 3, 4, 5"
   }
   IB := InputBox(Path "`nに上書きしたいキーを入力してください`n`n設定可能なキー: 現在の設定`n" CurrentKeys, "キーの入力", "w600 h300")
-  if (IB.Result = "OK")
+  if (IB.Result = "OK" and IB.Value)
   {
-    if (EnableKeys = "1, 2, 3, 4" and IB.Value = "1")
+    if (EnableKeys = "1, 2, 3, 4, 5" and IB.Value = "1")
       ConfirmSetIni("Folder", "Folder1", Path)
-    else if (EnableKeys = "1, 2, 3, 4" and IB.Value = "2")
+    else if (EnableKeys = "1, 2, 3, 4, 5" and IB.Value = "2")
       ConfirmSetIni("Folder", "Folder2", Path)
-    else if (EnableKeys = "1, 2, 3, 4" and IB.Value = "3")
+    else if (EnableKeys = "1, 2, 3, 4, 5" and IB.Value = "3")
       ConfirmSetIni("Folder", "Folder3", Path)
-    else if (EnableKeys = "1, 2, 3, 4" and IB.Value = "4")
+    else if (EnableKeys = "1, 2, 3, 4, 5" and IB.Value = "4")
       ConfirmSetIni("Folder", "Folder4", Path)
+    else if (EnableKeys = "1, 2, 3, 4, 5" and IB.Value = "5")
+      ConfirmSetIni("Folder", "Folder5", Path)
     else if (EnableKeys = "a, w, e, s, d, f" and IB.Value = "a")
-      ConfirmSetIni("App", "Editor", Path)
+      ConfirmSetIni("Software", "Editor", Path)
     else if (EnableKeys = "a, w, e, s, d, f" and IB.Value = "w")
-      ConfirmSetIni("App", "Word", Path)
+      ConfirmSetIni("Software", "Word", Path)
     else if (EnableKeys = "a, w, e, s, d, f" and IB.Value = "e")
-      ConfirmSetIni("App", "EMail", Path)
+      ConfirmSetIni("Software", "EMail", Path)
     else if (EnableKeys = "a, w, e, s, d, f" and IB.Value = "s")
-      ConfirmSetIni("App", "Slide", Path)
+      ConfirmSetIni("Software", "Slide", Path)
     else if (EnableKeys = "a, w, e, s, d, f" and IB.Value = "d")
-      ConfirmSetIni("App", "PDF", Path)
+      ConfirmSetIni("Software", "PDF", Path)
     else if (EnableKeys = "a, w, e, s, d, f" and IB.Value = "f")
-      ConfirmSetIni("App", "Browser", Path)
+      ConfirmSetIni("Software", "Browser", Path)
     else
     {
       MsgBox IB.Value " には設定できません。"
@@ -402,11 +764,24 @@ ConfirmSetIni(Sec, Key, Path)
 {
   if (MsgBox(Key "を以下に設定します。`n" Path, , 1) = "OK")
   {
-    IniWrite " " Path, ConfFileName, Sec, Key
+    IniWrite Path, ConfFileName, Sec, Key
     Reload
   }
 }
 
+; F4 でスクリプトを終了 Alt + F4 から連想
+SC07B & F4::
+{
+  if (MsgBox("スクリプトを終了しますか？`n", , 1) = "OK")
+    ExitApp
+}
+; F5 でAutoHotKey のスクリプトをセーブ&リロード（デバッグ用）
+SC07B & F5::
+{
+  Send "^s"
+  MsgBox A_ScriptFullPath "`nをセーブ&リロード"
+  Reload
+}
 ;---------------------------------------
 ; CapsLock キーをCtrl キーへ変更
 ; 日本語キーボードではうまく動作しないのでCtrl2Cap に任せている
