@@ -368,12 +368,14 @@ SC07B & F2::
     ChooseSearchEngine := "Choose1"
   else if (SearchEngine = "https://duckduckgo.com/?q=")
     ChooseSearchEngine := "Choose2"
-  else if (SearchEngine = "https://search.yahoo.co.jp/search?p=")
+  else if (SearchEngine = "https://www.bing.com/search?q=")
     ChooseSearchEngine := "Choose3"
+  else if (SearchEngine = "https://search.yahoo.co.jp/search?p=")
+    ChooseSearchEngine := "Choose4"
   EngDictionaryDDL := MyGui.Add("DDL", "xs+130  ys+25 w100 " ChooseEngDictionary, ["Weblio","ALC","Longman","Oxford"])
   ThesaurusDDL := MyGui.Add("DDL", "xs+130  ys+50 w100 " ChooseThesaurus, ["Weblio","連想類語辞典"])
   TranslatorDDL := MyGui.Add("DDL", "xs+130  ys+75 w100 " ChooseTranslator, ["DeepL","Google 翻訳"])
-  SearchEngineDDL := MyGui.Add("DDL", "xs+130  ys+100 w100 " ChooseSearchEngine, ["Google","DuckDuckGo","Yahoo"])
+  SearchEngineDDL := MyGui.Add("DDL", "xs+130  ys+100 w100 " ChooseSearchEngine, ["Google","DuckDuckGo","Microsoft Bing","Yahoo"])
 
   ; フォルダ
   MyGui.Add("GroupBox", "xs+300 ys-125 w500 h120 section", "フォルダ")
@@ -592,6 +594,8 @@ SC07B & F2::
       ChooseSearchEngine := 1
     else if (SearchEngine = "https://duckduckgo.com/?q=")
       ChooseSearchEngine := 2
+    else if (SearchEngine = "https://www.bing.com/search?q=")
+      ChooseSearchEngine := 3
     else if (SearchEngine = "https://search.yahoo.co.jp/search?p=")
       ChooseSearchEngine := 3
 
@@ -671,6 +675,8 @@ SC07B & F2::
     else if (SearchEngineDDL.Value = "2")
       IniWrite "https://duckduckgo.com/?q=", ConfFileDDL.Text, "WebSite", "SearchEngine"
     else if (SearchEngineDDL.Value = "3")
+      IniWrite "https://www.bing.com/search?q=", ConfFileDDL.Text, "WebSite", "SearchEngine"
+    else if (SearchEngineDDL.Value = "4")
       IniWrite "https://search.yahoo.co.jp/search?p=", ConfFileDDL.Text, "WebSite", "SearchEngine"
 
     IniWrite StrReplace(Folder1Text.Text, A_UserName, "A_UserName"), ConfFileDDL.Text, "Folder", "Folder1"
