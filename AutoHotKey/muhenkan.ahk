@@ -1,4 +1,4 @@
-﻿;======================================
+;======================================
 ; 準備
 ;======================================
 #SingleInstance Force ; このスクリプトの再実行を許可する
@@ -548,7 +548,7 @@ SC07B & F2::
     else if (SearchEngine = "https://www.bing.com/search?q=")
       ChooseSearchEngine := 3
     else if (SearchEngine = "https://search.yahoo.co.jp/search?p=")
-      ChooseSearchEngine := 3
+      ChooseSearchEngine := 4
 
     EngDictionaryDDL.Value := ChooseEngDictionary
     ThesaurusDDL.Value := ChooseThesaurus
