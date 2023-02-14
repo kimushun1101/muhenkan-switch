@@ -13,11 +13,12 @@ try
   TimestampPosition := StrReplace(IniRead(ConfFileName, "Timestamp", "Position"), "A_UserName", A_UserName)
 
   ; フォルダの設定
-  Folder1 := StrReplace(IniRead(ConfFileName, "Folder", "Folder1"), "A_UserName", A_UserName)
-  Folder2 := StrReplace(IniRead(ConfFileName, "Folder", "Folder2"), "A_UserName", A_UserName)
-  Folder3 := StrReplace(IniRead(ConfFileName, "Folder", "Folder3"), "A_UserName", A_UserName)
-  Folder4 := StrReplace(IniRead(ConfFileName, "Folder", "Folder4"), "A_UserName", A_UserName)
-  Folder5 := StrReplace(IniRead(ConfFileName, "Folder", "Folder5"), "A_UserName", A_UserName)
+  FolderArray := Array()
+  FolderArray.Push(StrReplace(IniRead(ConfFileName, "Folder", "Folder1"), "A_UserName", A_UserName))
+  FolderArray.Push(StrReplace(IniRead(ConfFileName, "Folder", "Folder2"), "A_UserName", A_UserName))
+  FolderArray.Push(StrReplace(IniRead(ConfFileName, "Folder", "Folder3"), "A_UserName", A_UserName))
+  FolderArray.Push(StrReplace(IniRead(ConfFileName, "Folder", "Folder4"), "A_UserName", A_UserName))
+  FolderArray.Push(StrReplace(IniRead(ConfFileName, "Folder", "Folder5"), "A_UserName", A_UserName))
 
   ; Web サイトの設定
   EngDictionary := StrReplace(IniRead(ConfFileName, "WebSite", "EngDictionary"), "A_UserName", A_UserName)
@@ -26,12 +27,13 @@ try
   SearchEngine := StrReplace(IniRead(ConfFileName, "WebSite", "SearchEngine"), "A_UserName", A_UserName)
 
   ; ソフトウェアの設定
-  Editor := StrReplace(IniRead(ConfFileName, "Software", "Editor"), "A_UserName", A_UserName)
-  Word := StrReplace(IniRead(ConfFileName, "Software", "Word"), "A_UserName", A_UserName)
-  EMail := StrReplace(IniRead(ConfFileName, "Software", "EMail"), "A_UserName", A_UserName)
-  Slide := StrReplace(IniRead(ConfFileName, "Software", "Slide"), "A_UserName", A_UserName)
-  PDF := StrReplace(IniRead(ConfFileName, "Software", "PDF"), "A_UserName", A_UserName)
-  Browser := StrReplace(IniRead(ConfFileName, "Software", "Browser"), "A_UserName", A_UserName)
+  SoftwareArray := Array()
+  SoftwareArray.Push(StrReplace(IniRead(ConfFileName, "Software", "Editor"), "A_UserName", A_UserName))
+  SoftwareArray.Push(StrReplace(IniRead(ConfFileName, "Software", "Word"), "A_UserName", A_UserName))
+  SoftwareArray.Push(StrReplace(IniRead(ConfFileName, "Software", "EMail"), "A_UserName", A_UserName))
+  SoftwareArray.Push(StrReplace(IniRead(ConfFileName, "Software", "Slide"), "A_UserName", A_UserName))
+  SoftwareArray.Push(StrReplace(IniRead(ConfFileName, "Software", "PDF"), "A_UserName", A_UserName))
+  SoftwareArray.Push(StrReplace(IniRead(ConfFileName, "Software", "Browser"), "A_UserName", A_UserName))
 }
 catch as Err
 {
@@ -119,11 +121,11 @@ ActiveFolder(folder)
     Run "explorer `"" folder "`"" 
 }
 
-SC07B & 1::ActiveFolder Folder1
-SC07B & 2::ActiveFolder Folder2
-SC07B & 3::ActiveFolder Folder3
-SC07B & 4::ActiveFolder Folder4
-SC07B & 5::ActiveFolder Folder5
+SC07B & 1::ActiveFolder FolderArray[1]
+SC07B & 2::ActiveFolder FolderArray[2]
+SC07B & 3::ActiveFolder FolderArray[3]
+SC07B & 4::ActiveFolder FolderArray[4]
+SC07B & 5::ActiveFolder FolderArray[5]
 
 ;======================================
 ; 選択文字列を検索
@@ -163,17 +165,17 @@ ActiveSoftware(Software)
     Run Software
 }
 ; a : エディタ(Atom のA で覚えた)
-SC07B & a::ActiveSoftware(Editor)
+SC07B & a::ActiveSoftware(SoftwareArray[1])
 ; w : ワード
-SC07B & w::ActiveSoftware(Word)
+SC07B & w::ActiveSoftware(SoftwareArray[2])
 ; e : E-mail
-SC07B & e::ActiveSoftware(EMail)
+SC07B & e::ActiveSoftware(SoftwareArray[3])
 ; s : スライド作成
-SC07B & s::ActiveSoftware(Slide)
+SC07B & s::ActiveSoftware(SoftwareArray[4])
 ; d : PDF Viewer
-SC07B & d::ActiveSoftware(PDF)
+SC07B & d::ActiveSoftware(SoftwareArray[5])
 ; f : ブラウザ（FireFox のF で覚えた）
-SC07B & f::ActiveSoftware(Browser)
+SC07B & f::ActiveSoftware(SoftwareArray[6])
 
 ;======================================
 ; 選択しているファイル名やフォルダ名の操作
@@ -273,7 +275,7 @@ SC07B & p::PrintScreen
 
 ; Ctrl＋Shift＋v : 書式なし貼り付け
 ; エディタ（VS Code）ではCtrl＋Shift＋v を他の機能で使うので無効化しておく
-HotIfWinNotActive "ahk_exe " Editor
+HotIfWinNotActive "ahk_exe " SoftwareArray[1]
 Hotkey "^+v", PastePlaneText  ; Creates a hotkey that works only in Notepad.
 PastePlaneText(ThisHotkey)
 {
@@ -344,10 +346,9 @@ SC07B & F2::
 
   ; ウェブサイト
   MyGui.Add("GroupBox", "xs ys+125 w290 h140 section", "ウェブサイト")
-  MyGui.Add("Text", "xs+10  ys+25",  "Q 英語辞典")
-  MyGui.Add("Text", "xs+10  ys+50",  "R 類語辞典")
-  MyGui.Add("Text", "xs+10  ys+75",  "T 翻訳")
-  MyGui.Add("Text", "xs+10  ys+100", "G 検索エンジン")
+  for Index, Site in ["Q 英語辞典", "R 類語辞典", "T 翻訳", "G 検索エンジン"]
+    MyGui.Add("Text", "xs+10  ys+" Index*25,  Site)
+
   if (EngDictionary = "https://ejje.weblio.jp/content/")
     ChooseEngDictionary := "Choose1"
   else if (EngDictionary = "https://eow.alc.co.jp/search?q=")
@@ -372,6 +373,7 @@ SC07B & F2::
     ChooseSearchEngine := "Choose3"
   else if (SearchEngine = "https://search.yahoo.co.jp/search?p=")
     ChooseSearchEngine := "Choose4"
+
   EngDictionaryDDL := MyGui.Add("DDL", "xs+130  ys+25 w100 " ChooseEngDictionary, ["Weblio","ALC","Longman","Oxford"])
   ThesaurusDDL := MyGui.Add("DDL", "xs+130  ys+50 w100 " ChooseThesaurus, ["Weblio","連想類語辞典"])
   TranslatorDDL := MyGui.Add("DDL", "xs+130  ys+75 w100 " ChooseTranslator, ["DeepL","Google 翻訳"])
@@ -379,42 +381,22 @@ SC07B & F2::
 
   ; フォルダ
   MyGui.Add("GroupBox", "xs+300 ys-125 w500 h120 section", "フォルダ")
-  MyGui.Add("Text", "xs+10 ys+20",  "1")
-  MyGui.Add("Text", "xs+10 ys+40",  "2")
-  MyGui.Add("Text", "xs+10 ys+60",  "3")
-  MyGui.Add("Text", "xs+10 ys+80",  "4")
-  MyGui.Add("Text", "xs+10 ys+100", "5")
-  Folder1Text := MyGui.Add("Text", "xs+20 ys+20  w470 BackgroundWhite", Folder1)
-  Folder2Text := MyGui.Add("Text", "xs+20 ys+40  w470 BackgroundWhite", Folder2)
-  Folder3Text := MyGui.Add("Text", "xs+20 ys+60  w470 BackgroundWhite", Folder3)
-  Folder4Text := MyGui.Add("Text", "xs+20 ys+80  w470 BackgroundWhite", Folder4)
-  Folder5Text := MyGui.Add("Text", "xs+20 ys+100 w470 BackgroundWhite", Folder5)
-  Folder1Text.OnEvent("Click", SelectFolder1)
-  Folder2Text.OnEvent("Click", SelectFolder2)
-  Folder3Text.OnEvent("Click", SelectFolder3)
-  Folder4Text.OnEvent("Click", SelectFolder4)
-  Folder5Text.OnEvent("Click", SelectFolder5)
-
+  FolderTextBox := Array()
+  for Index in ["1", "2", "3", "4", "5"]
+  {
+    MyGui.Add("Text", "xs+10  ys+" Index*20, Index)
+    FolderTextBox.Push(MyGui.Add("Text", "w470 BackgroundWhite xs+20 ys+" Index*20, FolderArray[Index]))
+    FolderTextBox[Index].OnEvent("Click", SelectFolderCallback.Bind(Index))
+  }
   ; ソフトウェア
   MyGui.Add("GroupBox", "xs ys+125 w500 h140 section", "ソフトウェア")
-  MyGui.Add("Text", "xs+10 ys+20",  "A エディタ")
-  MyGui.Add("Text", "xs+10 ys+40",  "W ワード")
-  MyGui.Add("Text", "xs+10 ys+60",  "E Eメール")
-  MyGui.Add("Text", "xs+10 ys+80",  "S スライド")
-  MyGui.Add("Text", "xs+10 ys+100", "D PDF")
-  MyGui.Add("Text", "xs+10 ys+120", "F ブラウザ")
-  EditorText  := MyGui.Add("Text", "xs+60 ys+20 w430 BackgroundWhite", Editor)
-  WordText    := MyGui.Add("Text", "xs+60 ys+40 w430 BackgroundWhite", Word)
-  EMailText   := MyGui.Add("Text", "xs+60 ys+60 w430 BackgroundWhite", EMail)
-  SlideText   := MyGui.Add("Text", "xs+60 ys+80 w430 BackgroundWhite", Slide)
-  PDFText     := MyGui.Add("Text", "xs+60 ys+100 w430 BackgroundWhite", PDF)
-  BrowserText := MyGui.Add("Text", "xs+60 ys+120 w430 BackgroundWhite", Browser)
-  EditorText.OnEvent("Click", NavigateF3)
-  WordText.OnEvent("Click", NavigateF3)
-  EMailText.OnEvent("Click", NavigateF3)
-  SlideText.OnEvent("Click", NavigateF3)
-  PDFText.OnEvent("Click", NavigateF3)
-  BrowserText.OnEvent("Click", NavigateF3)
+  SoftwareTextBox := Array()
+  for Index, Software in ["A エディタ", "W ワード", "E Eメール", "S スライド", "D PDF", "F ブラウザ"]
+  {
+    MyGui.Add("Text", "xs+10  ys+" Index*20,  Software)
+    SoftwareTextBox.Push(MyGui.Add("Text", "w430 BackgroundWhite xs+60 ys+" Index*20, SoftwareArray[Index]))
+    SoftwareTextBox[Index].OnEvent("Click", NavigateF3)
+  }
 
   ; 設定ファイル
   MyGui.Add("GroupBox", "xs-300 ys+150 w800 h50 section", "設定ファイル")
@@ -489,53 +471,22 @@ SC07B & F2::
       SaveButton.Enabled := true
     }
   }
-  SelectFolder1(*)
+
+  SelectFolderCallback(Num, *)
   {
       MyGui.Opt("-AlwaysOnTop")
-      SelectedFolder := FileSelect("D", Folder1Text.Text, "Select a folder")
+      SelectedFolder := FileSelect("D", FolderTextBox[Num].Text, "Select a folder")
       if SelectedFolder
-        Folder1Text.Text := SelectedFolder
-      MyGui.Opt("AlwaysOnTop")    
-  }
-  SelectFolder2(*)
-  {
-      MyGui.Opt("-AlwaysOnTop")
-      SelectedFolder := FileSelect("D", Folder2Text.Text, "Select a folder")
-      if SelectedFolder
-        Folder2Text.Text := SelectedFolder
-      MyGui.Opt("AlwaysOnTop")    
-  }
-  SelectFolder3(*)
-  {
-      MyGui.Opt("-AlwaysOnTop")
-      SelectedFolder := FileSelect("D", Folder3Text.Text, "Select a folder")
-      if SelectedFolder
-        Folder3Text.Text := SelectedFolder
-      MyGui.Opt("AlwaysOnTop")    
-  }
-  SelectFolder4(*)
-  {
-      MyGui.Opt("-AlwaysOnTop")
-      SelectedFolder := FileSelect("D", Folder4Text.Text, "Select a folder")
-      if SelectedFolder
-        Folder4Text.Text := SelectedFolder
-      MyGui.Opt("AlwaysOnTop")    
-  }
-  SelectFolder5(*)
-  {
-      MyGui.Opt("-AlwaysOnTop")
-      SelectedFolder := FileSelect("D", Folder5Text.Text, "Select a folder")
-      if SelectedFolder
-        Folder5Text.Text := SelectedFolder
+        FolderTextBox[Num].Text := SelectedFolder
       MyGui.Opt("AlwaysOnTop")    
   }
   NavigateF3(*)
   {
-      MyGui.Opt("-AlwaysOnTop")
-      if MsgBox("設定画面を閉じて、割り当てたいソフトを最前面に出して無変換＋F3キーを押してください。`n設定画面を閉じますか？",, 4) ="YES"
-        MyGui.Destroy()
-      else
-        MyGui.Opt("AlwaysOnTop")    
+    MyGui.Opt("-AlwaysOnTop")
+    if MsgBox("設定画面を閉じて、割り当てたいソフトを最前面に出して無変換＋F3キーを押してください。`n設定画面を閉じますか？",, 4) ="YES"
+      MyGui.Destroy()
+    else
+      MyGui.Opt("AlwaysOnTop")    
   }
   LoadFile(*)
   {
@@ -605,20 +556,11 @@ SC07B & F2::
     SearchEngineDDL.Value := ChooseSearchEngine
 
     ; フォルダの設定
-    Folder1Text.Text := StrReplace(IniRead(ConfFileDDL.Text, "Folder", "Folder1"), "A_UserName", A_UserName)
-    Folder2Text.Text := StrReplace(IniRead(ConfFileDDL.Text, "Folder", "Folder2"), "A_UserName", A_UserName)
-    Folder3Text.Text := StrReplace(IniRead(ConfFileDDL.Text, "Folder", "Folder3"), "A_UserName", A_UserName)
-    Folder4Text.Text := StrReplace(IniRead(ConfFileDDL.Text, "Folder", "Folder4"), "A_UserName", A_UserName)
-    Folder5Text.Text := StrReplace(IniRead(ConfFileDDL.Text, "Folder", "Folder5"), "A_UserName", A_UserName)
-
+    for Index, Key in ["Folder1", "Folder2", "Folder3", "Folder4", "Folder5"]
+      FolderTextBox[Index].Text := StrReplace(IniRead(ConfFileDDL.Text, "Folder", Key), "A_UserName", A_UserName)
     ; ソフトウェアの設定
-    EditorText.Text := StrReplace(IniRead(ConfFileDDL.Text, "Software", "Editor"), "A_UserName", A_UserName)
-    WordText.Text := StrReplace(IniRead(ConfFileDDL.Text, "Software", "Word"), "A_UserName", A_UserName)
-    EMailText.Text := StrReplace(IniRead(ConfFileDDL.Text, "Software", "EMail"), "A_UserName", A_UserName)
-    SlideText.Text := StrReplace(IniRead(ConfFileDDL.Text, "Software", "Slide"), "A_UserName", A_UserName)
-    PDFText.Text := StrReplace(IniRead(ConfFileDDL.Text, "Software", "PDF"), "A_UserName", A_UserName)
-    BrowserText.Text := StrReplace(IniRead(ConfFileDDL.Text, "Software", "Browser"), "A_UserName", A_UserName)
-
+    for Index, Key in ["Editor", "Word", "EMail", "Slide", "PDF", "Browser"]
+      SoftwareTextBox[Index].Text := StrReplace(IniRead(ConfFileDDL.Text, "Software", Key), "A_UserName", A_UserName)
 
     MyGui.Opt("-AlwaysOnTop")
     if ConfFileDDL.Text = ConfFileName
@@ -679,18 +621,12 @@ SC07B & F2::
     else if (SearchEngineDDL.Value = "4")
       IniWrite "https://search.yahoo.co.jp/search?p=", ConfFileDDL.Text, "WebSite", "SearchEngine"
 
-    IniWrite StrReplace(Folder1Text.Text, A_UserName, "A_UserName"), ConfFileDDL.Text, "Folder", "Folder1"
-    IniWrite StrReplace(Folder2Text.Text, A_UserName, "A_UserName"), ConfFileDDL.Text, "Folder", "Folder2"
-    IniWrite StrReplace(Folder3Text.Text, A_UserName, "A_UserName"), ConfFileDDL.Text, "Folder", "Folder3"
-    IniWrite StrReplace(Folder4Text.Text, A_UserName, "A_UserName"), ConfFileDDL.Text, "Folder", "Folder4"
-    IniWrite StrReplace(Folder5Text.Text, A_UserName, "A_UserName"), ConfFileDDL.Text, "Folder", "Folder5"
-    
-    IniWrite StrReplace(EditorText.Text,  A_UserName, "A_UserName"), ConfFileDDL.Text, "Software", "Editor"
-    IniWrite StrReplace(WordText.Text,    A_UserName, "A_UserName"), ConfFileDDL.Text, "Software", "Word"
-    IniWrite StrReplace(EMailText.Text,   A_UserName, "A_UserName"), ConfFileDDL.Text, "Software", "EMail"
-    IniWrite StrReplace(SlideText.Text,   A_UserName, "A_UserName"), ConfFileDDL.Text, "Software", "Slide"
-    IniWrite StrReplace(PDFText.Text,     A_UserName, "A_UserName"), ConfFileDDL.Text, "Software", "PDF"
-    IniWrite StrReplace(BrowserText.Text, A_UserName, "A_UserName"), ConfFileDDL.Text, "Software", "Browser"
+
+    for Index, Key in ["Folder1", "Folder2", "Folder3", "Folder4", "Folder5"]
+      IniWrite StrReplace(FolderTextBox[Index].Text, A_UserName, "A_UserName"), ConfFileDDL.Text, "Folder", Key
+    ; ソフトウェアの設定
+    for Index, Key in ["Editor", "Word", "EMail", "Slide", "PDF", "Browser"]
+      IniWrite StrReplace(SoftwareTextBox[Index].Text,  A_UserName, "A_UserName"), ConfFileDDL.Text, "Software", Key
 
     if ConfFileDDL.Text = ConfFileName
     {
@@ -727,12 +663,12 @@ SC07B & F3::
   SplitPath(Path, &name, &dir, &ext)
   if (ext = "exe")       ; exe ファイルの場合
   {
-    CurrentKeys := "a (Editor) :`t" Editor "`nw (Word) :`t" Word "`ne (Email) :`t" EMail  "`ns (Slide) :`t`t" Slide "`nd (PDF) :`t`t" PDF "`nf (Browser) :`t" Browser
+    CurrentKeys := "a (Editor) :`t" SoftwareArray[1] "`nw (Word) :`t" SoftwareArray[2] "`ne (Email) :`t" SoftwareArray[3]  "`ns (Slide) :`t`t" SoftwareArray[4] "`nd (PDF) :`t`t" SoftwareArray[5] "`nf (Browser) :`t" SoftwareArray[6]
     EnableKeys := "a, w, e, s, d, f"
   }
   else
   {
-    CurrentKeys := "1 : " Folder1 "`n2 : " Folder2 "`n3 : " Folder3 "`n4 : " Folder4 "`n5 : " Folder5
+    CurrentKeys := "1 : " FolderArray[1] "`n2 : " FolderArray[2] "`n3 : " FolderArray[3] "`n4 : " FolderArray[4] "`n5 : " FolderArray[5]
     EnableKeys := "1, 2, 3, 4, 5"
   }
   IB := InputBox(Path "`nに上書きしたいキーを入力してください`n`n設定可能なキー: 現在の設定`n" CurrentKeys, "キーの入力", "w600 h300")
