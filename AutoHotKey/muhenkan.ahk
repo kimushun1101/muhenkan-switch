@@ -1,4 +1,4 @@
-;======================================
+﻿;======================================
 ; 準備
 ;======================================
 #SingleInstance Force ; このスクリプトの再実行を許可する
@@ -305,9 +305,9 @@ SC07B & F2::
   MyGui.Add("Text", "ym+10 w200 section", "現在起動しているファイル : ")
   MyGui.Add("Text", "xs+130 ys w550 BackgroundWhite", A_ScriptFullPath)
   if FileExist(A_Startup "\muhenkan_ahk_or_exe.lnk")
-    TextStartup := MyGui.Add("Text",  "xs+700 ys h15 Background69B076", "自動起動ON　")
+    TextStartup := MyGui.Add("Text",  "xs+700 ys h15 w100 Background69B076", "自動起動ON")
   else
-    TextStartup := MyGui.Add("Text",  "xs+700 ys h15 BackgroundFADBDA", "自動起動OFF")
+    TextStartup := MyGui.Add("Text",  "xs+700 ys h15 w100 BackgroundFADBDA", "自動起動OFF")
   BtnStartUP := MyGui.Add("Button", "xs+770 ys-5", "切替").OnEvent("Click", ToggleStartUp)
 
   ; タイムスタンプ
@@ -333,13 +333,13 @@ SC07B & F2::
   {
     BeforeRadio := MyGui.Add("Radio", "xs+10  ys+55 checked", "ファイル名の前")
     AfterRadio  := MyGui.Add("Radio", "xs+10  ys+75", "ファイル名の後")
-    TextTimestamp := MyGui.Add("Text",  "xs+10  ys+100 w280", "例:  " Timestamp "_ファイル名.txt")
+    TextTimestamp := MyGui.Add("Text",  "xs+10  ys+100 w270", "例:  " Timestamp "_ファイル名.txt")
   }
   else if (TimestampPosition = "after file name")
   {
     BeforeRadio := MyGui.Add("Radio", "xs+10  ys+55", "ファイル名の前")
     AfterRadio  := MyGui.Add("Radio", "xs+10  ys+75 checked", "ファイル名の後")
-    TextTimestamp := MyGui.Add("Text",  "xs+20  ys+100 w280", "例:  ファイル名_" Timestamp ".txt")
+    TextTimestamp := MyGui.Add("Text",  "xs+20  ys+100 w270", "例:  ファイル名_" Timestamp ".txt")
   }
   BeforeRadio.OnEvent("Click", ChangeTimestampExample)
   AfterRadio.OnEvent("Click", ChangeTimestampExample)
@@ -380,32 +380,32 @@ SC07B & F2::
   SearchEngineDDL := MyGui.Add("DDL", "xs+130  ys+100 w100 " ChooseSearchEngine, ["Google","DuckDuckGo","Microsoft Bing","Yahoo"])
 
   ; フォルダ
-  MyGui.Add("GroupBox", "xs+300 ys-125 w500 h120 section", "フォルダ")
+  MyGui.Add("GroupBox", "xs+300 ys-125 w510 h120 section", "フォルダ")
   FolderTextBox := Array()
   for Index in ["1", "2", "3", "4", "5"]
   {
     MyGui.Add("Text", "xs+10  ys+" Index*20, Index)
-    FolderTextBox.Push(MyGui.Add("Text", "w470 BackgroundWhite xs+20 ys+" Index*20, FolderArray[Index]))
+    FolderTextBox.Push(MyGui.Add("Text", "w480 BackgroundWhite xs+20 ys+" Index*20, FolderArray[Index]))
     FolderTextBox[Index].OnEvent("Click", SelectFolderCallback.Bind(Index))
   }
   ; ソフトウェア
-  MyGui.Add("GroupBox", "xs ys+125 w500 h140 section", "ソフトウェア")
+  MyGui.Add("GroupBox", "xs ys+125 w510 h140 section", "ソフトウェア")
   SoftwareTextBox := Array()
   for Index, Software in ["A エディタ", "W ワード", "E Eメール", "S スライド", "D PDF", "F ブラウザ"]
   {
     MyGui.Add("Text", "xs+10  ys+" Index*20,  Software)
-    SoftwareTextBox.Push(MyGui.Add("Text", "w430 BackgroundWhite xs+60 ys+" Index*20, SoftwareArray[Index]))
+    SoftwareTextBox.Push(MyGui.Add("Text", "w440 BackgroundWhite xs+60 ys+" Index*20, SoftwareArray[Index]))
     SoftwareTextBox[Index].OnEvent("Click", NavigateF3)
   }
 
   ; 設定ファイル
-  MyGui.Add("GroupBox", "xs-300 ys+150 w800 h50 section", "設定ファイル")
+  MyGui.Add("GroupBox", "xs-300 ys+150 w810 h50 section", "設定ファイル")
   BackupFileName := A_ScriptDir "\backup.ini"
   DefaultFileName := A_ScriptDir "\default.ini"
   ConfFileDDL := MyGui.Add("DDL", "xs+10 ys+20 w650 Choose1", [ConfFileName, BackupFileName, DefaultFileName, "Another File"])
   ConfFileDDL.OnEvent("Change", ChangeSaveFileButton)
   MyGui.Add("Button", "xs+670 ys+18 w50", "読込").OnEvent("Click", LoadFile)
-  SaveButton := MyGui.Add("Button", "xs+725 ys+18 w50 w70", "設定を適用")
+  SaveButton := MyGui.Add("Button", "xs+725 ys+18 w50 w80", "設定を適用")
   SaveButton.OnEvent("Click", SaveFile)
 
   MyGui.Show()
@@ -415,7 +415,7 @@ SC07B & F2::
     if not FileExist(A_Startup "\muhenkan_ahk_or_exe.lnk")
     {
       FileCreateShortcut(A_ScriptFullPath, A_Startup "\muhenkan_ahk_or_exe.lnk")
-      TextStartup.Value := "自動起動ON　"
+      TextStartup.Value := "自動起動ON"
       TextStartup.Opt("Background69B076")
       TextStartup.Redraw()
     }
