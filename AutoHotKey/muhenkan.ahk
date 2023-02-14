@@ -21,10 +21,10 @@ try
   FolderArray.Push(StrReplace(IniRead(ConfFileName, "Folder", "Folder5"), "A_UserName", A_UserName))
 
   ; Web サイトの設定
-  EngDictionary := StrReplace(IniRead(ConfFileName, "WebSite", "EngDictionary"), "A_UserName", A_UserName)
-  Thesaurus := StrReplace(IniRead(ConfFileName, "WebSite", "Thesaurus"), "A_UserName", A_UserName)
-  Translator := StrReplace(IniRead(ConfFileName, "WebSite", "Translator"), "A_UserName", A_UserName)
-  SearchEngine := StrReplace(IniRead(ConfFileName, "WebSite", "SearchEngine"), "A_UserName", A_UserName)
+  EngDictionary := StrReplace(IniRead(ConfFileName, "Website", "EngDictionary"), "A_UserName", A_UserName)
+  Thesaurus := StrReplace(IniRead(ConfFileName, "Website", "Thesaurus"), "A_UserName", A_UserName)
+  Translator := StrReplace(IniRead(ConfFileName, "Website", "Translator"), "A_UserName", A_UserName)
+  SearchEngine := StrReplace(IniRead(ConfFileName, "Website", "SearchEngine"), "A_UserName", A_UserName)
 
   ; ソフトウェアの設定
   SoftwareArray := Array()
@@ -521,10 +521,10 @@ SC07B & F2::
     }
 
     ; Web サイトの設定
-    EngDictionary := StrReplace(IniRead(ConfFileDDL.Text, "WebSite", "EngDictionary"), "A_UserName", A_UserName)
-    Thesaurus := StrReplace(IniRead(ConfFileDDL.Text, "WebSite", "Thesaurus"), "A_UserName", A_UserName)
-    Translator := StrReplace(IniRead(ConfFileDDL.Text, "WebSite", "Translator"), "A_UserName", A_UserName)
-    SearchEngine := StrReplace(IniRead(ConfFileDDL.Text, "WebSite", "SearchEngine"), "A_UserName", A_UserName)
+    EngDictionary := StrReplace(IniRead(ConfFileDDL.Text, "Website", "EngDictionary"), "A_UserName", A_UserName)
+    Thesaurus := StrReplace(IniRead(ConfFileDDL.Text, "Website", "Thesaurus"), "A_UserName", A_UserName)
+    Translator := StrReplace(IniRead(ConfFileDDL.Text, "Website", "Translator"), "A_UserName", A_UserName)
+    SearchEngine := StrReplace(IniRead(ConfFileDDL.Text, "Website", "SearchEngine"), "A_UserName", A_UserName)
     if (EngDictionary = "https://ejje.weblio.jp/content/")
       ChooseEngDictionary := 1
     else if (EngDictionary = "https://eow.alc.co.jp/search?q=")
@@ -594,32 +594,32 @@ SC07B & F2::
       IniWrite "after file name", ConfFileDDL.Text, "Timestamp", "Position"
 
     if (EngDictionaryDDL.Value = 1)
-      IniWrite "https://ejje.weblio.jp/content/", ConfFileDDL.Text, "WebSite", "EngDictionary"
+      IniWrite "https://ejje.weblio.jp/content/", ConfFileDDL.Text, "Website", "EngDictionary"
     else if (EngDictionaryDDL.Value = 2)
-      IniWrite "https://eow.alc.co.jp/search?q=", ConfFileDDL.Text, "WebSite", "EngDictionary"
+      IniWrite "https://eow.alc.co.jp/search?q=", ConfFileDDL.Text, "Website", "EngDictionary"
     else if (EngDictionaryDDL.Value = 3)
-      IniWrite "https://www.ldoceonline.com/dictionary/", ConfFileDDL.Text, "WebSite", "EngDictionary"
+      IniWrite "https://www.ldoceonline.com/dictionary/", ConfFileDDL.Text, "Website", "EngDictionary"
     else if (EngDictionaryDDL.Value = 4)
-      IniWrite "https://www.oxfordlearnersdictionaries.com/definition/english/", ConfFileDDL.Text, "WebSite", "EngDictionary"
+      IniWrite "https://www.oxfordlearnersdictionaries.com/definition/english/", ConfFileDDL.Text, "Website", "EngDictionary"
 
     if (ThesaurusDDL.Value = "1")
-      IniWrite "https://thesaurus.weblio.jp/content/", ConfFileDDL.Text, "WebSite", "Thesaurus"
+      IniWrite "https://thesaurus.weblio.jp/content/", ConfFileDDL.Text, "Website", "Thesaurus"
     else if (ThesaurusDDL.Value = "2")
-      IniWrite "https://renso-ruigo.com/word/", ConfFileDDL.Text, "WebSite", "Thesaurus"
+      IniWrite "https://renso-ruigo.com/word/", ConfFileDDL.Text, "Website", "Thesaurus"
 
     if (TranslatorDDL.Value = "1")
-      IniWrite "https://www.deepl.com/translator#en/ja/", ConfFileDDL.Text, "WebSite", "Translator"
+      IniWrite "https://www.deepl.com/translator#en/ja/", ConfFileDDL.Text, "Website", "Translator"
     else if (TranslatorDDL.Value = "2")
-      IniWrite "https://translate.google.co.jp/?hl=ja&sl=auto&tl=ja&text=", ConfFileDDL.Text, "WebSite", "Translator"
+      IniWrite "https://translate.google.co.jp/?hl=ja&sl=auto&tl=ja&text=", ConfFileDDL.Text, "Website", "Translator"
 
     if (SearchEngineDDL.Value = "1")
-      IniWrite "https://www.google.co.jp/search?q=", ConfFileDDL.Text, "WebSite", "SearchEngine"
+      IniWrite "https://www.google.co.jp/search?q=", ConfFileDDL.Text, "Website", "SearchEngine"
     else if (SearchEngineDDL.Value = "2")
-      IniWrite "https://duckduckgo.com/?q=", ConfFileDDL.Text, "WebSite", "SearchEngine"
+      IniWrite "https://duckduckgo.com/?q=", ConfFileDDL.Text, "Website", "SearchEngine"
     else if (SearchEngineDDL.Value = "3")
-      IniWrite "https://www.bing.com/search?q=", ConfFileDDL.Text, "WebSite", "SearchEngine"
+      IniWrite "https://www.bing.com/search?q=", ConfFileDDL.Text, "Website", "SearchEngine"
     else if (SearchEngineDDL.Value = "4")
-      IniWrite "https://search.yahoo.co.jp/search?p=", ConfFileDDL.Text, "WebSite", "SearchEngine"
+      IniWrite "https://search.yahoo.co.jp/search?p=", ConfFileDDL.Text, "Website", "SearchEngine"
 
 
     for Index, Key in ["Folder1", "Folder2", "Folder3", "Folder4", "Folder5"]
