@@ -162,7 +162,7 @@ SearchClipbard(url)
   A_Clipboard := "" ; https://www.autohotkey.com/docs/v2/lib/A_Clipboard.htm
   Send "^c"
   ClipWait
-  Run url . A_Clipboard
+  Run url StrReplace(StrReplace(A_Clipboard, "/", "%5C%2F"), "`r`n", " ")
   A_Clipboard := old_clip
 }
 ; 文字列選択状態で、無変換キー+
