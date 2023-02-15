@@ -6,34 +6,58 @@
 ; conf ファイルの指定
 ConfFileName := A_ScriptDir "\conf.ini"
 
+WebsiteIniKeyList := ["EngDictionary", "Thesaurus", "Translator", "SearchEngine"]
+WebsiteOption := Map()
+for Website in WebsiteIniKeyList
+  WebsiteOption[Website] := Map("Name", Array(), "URL", Array())
+
+WebsiteOption["EngDictionary"]["Name"] := ["Weblio英和和英辞典", "英辞郎 on the WEB", "Longman", "Oxford Learner's Dictionaries"]
+WebsiteOption["EngDictionary"]["URL"] := [
+  "https://ejje.weblio.jp/content/",
+  "https://eow.alc.co.jp/search?q=",
+  "https://www.ldoceonline.com/dictionary/",
+  "https://www.oxfordlearnersdictionaries.com/definition/english/"
+]
+WebsiteOption["Thesaurus"]["Name"] := ["Weblio類語辞典","連想類語辞典"]
+WebsiteOption["Thesaurus"]["URL"] := [
+  "https://thesaurus.weblio.jp/content/",
+  "https://renso-ruigo.com/word/"
+]
+WebsiteOption["Translator"]["Name"] := ["DeepL 翻訳","Google 翻訳"]
+WebsiteOption["Translator"]["URL"] := [
+  "https://www.deepl.com/translator#en/ja/",
+  "https://translate.google.co.jp/?hl=ja&sl=auto&tl=ja&text="
+]
+WebsiteOption["SearchEngine"]["Name"] := ["Google","DuckDuckGo","Microsoft Bing","Yahoo"]
+WebsiteOption["SearchEngine"]["URL"] := [
+  "https://www.google.co.jp/search?q=",
+  "https://duckduckgo.com/?q=",
+  "https://www.bing.com/search?q=",
+  "https://search.yahoo.co.jp/search?p="
+]
+
 try
 {
   ; タイムスタンプの設定
   DateFormat := StrReplace(IniRead(ConfFileName, "Timestamp", "DateFormat"), "A_UserName", A_UserName)
   TimestampPosition := StrReplace(IniRead(ConfFileName, "Timestamp", "Position"), "A_UserName", A_UserName)
 
+  ; Web サイトの設定
+  WebsiteArray := Array()
+  for Website in WebsiteIniKeyList
+    WebsiteArray.Push(StrReplace(IniRead(ConfFileName, "Website", Website), "A_UserName", A_UserName))
+
   ; フォルダの設定
   FolderArray := Array()
-  FolderArray.Push(StrReplace(IniRead(ConfFileName, "Folder", "Folder1"), "A_UserName", A_UserName))
-  FolderArray.Push(StrReplace(IniRead(ConfFileName, "Folder", "Folder2"), "A_UserName", A_UserName))
-  FolderArray.Push(StrReplace(IniRead(ConfFileName, "Folder", "Folder3"), "A_UserName", A_UserName))
-  FolderArray.Push(StrReplace(IniRead(ConfFileName, "Folder", "Folder4"), "A_UserName", A_UserName))
-  FolderArray.Push(StrReplace(IniRead(ConfFileName, "Folder", "Folder5"), "A_UserName", A_UserName))
-
-  ; Web サイトの設定
-  EngDictionary := StrReplace(IniRead(ConfFileName, "Website", "EngDictionary"), "A_UserName", A_UserName)
-  Thesaurus := StrReplace(IniRead(ConfFileName, "Website", "Thesaurus"), "A_UserName", A_UserName)
-  Translator := StrReplace(IniRead(ConfFileName, "Website", "Translator"), "A_UserName", A_UserName)
-  SearchEngine := StrReplace(IniRead(ConfFileName, "Website", "SearchEngine"), "A_UserName", A_UserName)
+  FolderIniKeyList := ["Folder1", "Folder2", "Folder3", "Folder4", "Folder5"]
+  for Folder in FolderIniKeyList
+    FolderArray.Push(StrReplace(IniRead(ConfFileName, "Folder", Folder), "A_UserName", A_UserName))
 
   ; ソフトウェアの設定
   SoftwareArray := Array()
-  SoftwareArray.Push(StrReplace(IniRead(ConfFileName, "Software", "Editor"), "A_UserName", A_UserName))
-  SoftwareArray.Push(StrReplace(IniRead(ConfFileName, "Software", "Word"), "A_UserName", A_UserName))
-  SoftwareArray.Push(StrReplace(IniRead(ConfFileName, "Software", "EMail"), "A_UserName", A_UserName))
-  SoftwareArray.Push(StrReplace(IniRead(ConfFileName, "Software", "Slide"), "A_UserName", A_UserName))
-  SoftwareArray.Push(StrReplace(IniRead(ConfFileName, "Software", "PDF"), "A_UserName", A_UserName))
-  SoftwareArray.Push(StrReplace(IniRead(ConfFileName, "Software", "Browser"), "A_UserName", A_UserName))
+  SoftwareIniKeyList := ["Editor", "Word", "EMail", "Slide", "PDF", "Browser"]
+  for Software in SoftwareIniKeyList
+    SoftwareArray.Push(StrReplace(IniRead(ConfFileName, "Software", Software), "A_UserName", A_UserName))
 }
 catch as Err
 {
@@ -143,13 +167,13 @@ SearchClipbard(url)
 }
 ; 文字列選択状態で、無変換キー+
 ; q : 英単語検索
-SC07B & q::SearchClipbard EngDictionary
+SC07B & q::SearchClipbard WebsiteArray[1]
 ; r : 類語辞典
-SC07B & r::SearchClipbard Thesaurus
+SC07B & r::SearchClipbard WebsiteArray[2]
 ; t : Translator
-SC07B & t::SearchClipbard Translator
+SC07B & t::SearchClipbard WebsiteArray[3]
 ; g : Google 検索
-SC07B & g::SearchClipbard SearchEngine
+SC07B & g::SearchClipbard WebsiteArray[4]
 
 ;======================================
 ; ソフトウェアのアクティブ化
@@ -302,12 +326,12 @@ SC07B & F1::
 SC07B & F2::
 {
   MyGui := Gui("AlwaysOnTop", "設定")
-  MyGui.Add("Text", "ym+10 w200 section", "現在起動しているファイル : ")
+  MyGui.Add("Text", "ym+10 w205 section", "現在起動しているファイル : ")
   MyGui.Add("Text", "xs+130 ys w550 BackgroundWhite", A_ScriptFullPath)
   if FileExist(A_Startup "\muhenkan_ahk_or_exe.lnk")
-    TextStartup := MyGui.Add("Text",  "xs+700 ys h15 w100 Background69B076", "自動起動ON")
+    TextStartup := MyGui.Add("Text",  "xs+695 ys h15 w80 Background69B076", " 自動起動ON")
   else
-    TextStartup := MyGui.Add("Text",  "xs+700 ys h15 w100 BackgroundFADBDA", "自動起動OFF")
+    TextStartup := MyGui.Add("Text",  "xs+695 ys h15 w80 BackgroundFADBDA", " 自動起動OFF")
   BtnStartUP := MyGui.Add("Button", "xs+770 ys-5", "切替").OnEvent("Click", ToggleStartUp)
 
   ; タイムスタンプ
@@ -348,36 +372,17 @@ SC07B & F2::
   MyGui.Add("GroupBox", "xs ys+125 w290 h140 section", "ウェブサイト")
   for Index, Site in ["Q 英語辞典", "R 類語辞典", "T 翻訳", "G 検索エンジン"]
     MyGui.Add("Text", "xs+10  ys+" Index*25,  Site)
-
-  if (EngDictionary = "https://ejje.weblio.jp/content/")
-    ChooseEngDictionary := "Choose1"
-  else if (EngDictionary = "https://eow.alc.co.jp/search?q=")
-    ChooseEngDictionary := "Choose2"
-  else if (EngDictionary = "https://www.ldoceonline.com/dictionary/")
-    ChooseEngDictionary := "Choose3"
-  else if (EngDictionary = "https://www.oxfordlearnersdictionaries.com/definition/english/")
-    ChooseEngDictionary := "Choose4"
-  if (Thesaurus = "https://thesaurus.weblio.jp/content/")
-    ChooseThesaurus := "Choose1"
-  else if (Thesaurus = "https://renso-ruigo.com/word/")
-    ChooseThesaurus := "Choose2"
-  if (Translator = "https://www.deepl.com/translator#en/ja/")
-    ChooseTranslator := "Choose1"
-  else if (Translator = "https://translate.google.co.jp/?hl=ja&sl=auto&tl=ja&text=")
-    ChooseTranslator := "Choose2"
-  if (SearchEngine = "https://www.google.co.jp/search?q=")
-    ChooseSearchEngine := "Choose1"
-  else if (SearchEngine = "https://duckduckgo.com/?q=")
-    ChooseSearchEngine := "Choose2"
-  else if (SearchEngine = "https://www.bing.com/search?q=")
-    ChooseSearchEngine := "Choose3"
-  else if (SearchEngine = "https://search.yahoo.co.jp/search?p=")
-    ChooseSearchEngine := "Choose4"
-
-  EngDictionaryDDL := MyGui.Add("DDL", "xs+130  ys+25 w100 " ChooseEngDictionary, ["Weblio","ALC","Longman","Oxford"])
-  ThesaurusDDL := MyGui.Add("DDL", "xs+130  ys+50 w100 " ChooseThesaurus, ["Weblio","連想類語辞典"])
-  TranslatorDDL := MyGui.Add("DDL", "xs+130  ys+75 w100 " ChooseTranslator, ["DeepL","Google 翻訳"])
-  SearchEngineDDL := MyGui.Add("DDL", "xs+130  ys+100 w100 " ChooseSearchEngine, ["Google","DuckDuckGo","Microsoft Bing","Yahoo"])
+  WebsiteDDL := Array()
+  for KeyIndex, Key in WebsiteIniKeyList
+  {
+    for URLIndex, URL in WebsiteOption[Key]["URL"]
+    {
+      if (WebsiteArray[KeyIndex] = URL)
+      {
+        WebsiteDDL.Push(MyGui.Add("DDL", "w180 xs+90  ys+" KeyIndex*25  " Choose" URLIndex, WebsiteOption[Key]["Name"]))
+      }
+    }
+  }
 
   ; フォルダ
   MyGui.Add("GroupBox", "xs+300 ys-125 w510 h120 section", "フォルダ")
@@ -415,14 +420,14 @@ SC07B & F2::
     if not FileExist(A_Startup "\muhenkan_ahk_or_exe.lnk")
     {
       FileCreateShortcut(A_ScriptFullPath, A_Startup "\muhenkan_ahk_or_exe.lnk")
-      TextStartup.Value := "自動起動ON"
+      TextStartup.Value := " 自動起動ON"
       TextStartup.Opt("Background69B076")
       TextStartup.Redraw()
     }
     else
     {
       FileDelete(A_Startup "\muhenkan_ahk_or_exe.lnk")
-      TextStartup.Value := "自動起動OFF"
+      TextStartup.Value := " 自動起動OFF"
       TextStartup.Opt("BackgroundFADBDA")
       TextStartup.Redraw()
     }
@@ -519,47 +524,21 @@ SC07B & F2::
       Timestamp := FormatTime(, DateFormatComboBox.Text)
       TextTimestamp.Text := "例:  ファイル名_" Timestamp ".txt"
     }
-
     ; Web サイトの設定
-    EngDictionary := StrReplace(IniRead(ConfFileDDL.Text, "Website", "EngDictionary"), "A_UserName", A_UserName)
-    Thesaurus := StrReplace(IniRead(ConfFileDDL.Text, "Website", "Thesaurus"), "A_UserName", A_UserName)
-    Translator := StrReplace(IniRead(ConfFileDDL.Text, "Website", "Translator"), "A_UserName", A_UserName)
-    SearchEngine := StrReplace(IniRead(ConfFileDDL.Text, "Website", "SearchEngine"), "A_UserName", A_UserName)
-    if (EngDictionary = "https://ejje.weblio.jp/content/")
-      ChooseEngDictionary := 1
-    else if (EngDictionary = "https://eow.alc.co.jp/search?q=")
-      ChooseEngDictionary := 2
-    else if (EngDictionary = "https://www.ldoceonline.com/dictionary/")
-      ChooseEngDictionary := 3
-    else if (EngDictionary = "https://www.oxfordlearnersdictionaries.com/definition/english/")
-      ChooseEngDictionary := "Choose4"
-    if (Thesaurus = "https://thesaurus.weblio.jp/content/")
-      ChooseThesaurus := 1
-    else if (Thesaurus = "https://renso-ruigo.com/word/")
-      ChooseThesaurus := 2
-    if (Translator = "https://www.deepl.com/translator#en/ja/")
-      ChooseTranslator := 1
-    else if (Translator = "https://translate.google.co.jp/?hl=ja&sl=auto&tl=ja&text=")
-      ChooseTranslator := 2
-    if (SearchEngine = "https://www.google.co.jp/search?q=")
-      ChooseSearchEngine := 1
-    else if (SearchEngine = "https://duckduckgo.com/?q=")
-      ChooseSearchEngine := 2
-    else if (SearchEngine = "https://www.bing.com/search?q=")
-      ChooseSearchEngine := 3
-    else if (SearchEngine = "https://search.yahoo.co.jp/search?p=")
-      ChooseSearchEngine := 4
-
-    EngDictionaryDDL.Value := ChooseEngDictionary
-    ThesaurusDDL.Value := ChooseThesaurus
-    TranslatorDDL.Value := ChooseTranslator
-    SearchEngineDDL.Value := ChooseSearchEngine
-
+    for KeyIndex, Key in WebsiteIniKeyList
+    {
+      WebsiteArray[KeyIndex] := StrReplace(IniRead(ConfFileDDL.Text, "Website", Key), "A_UserName", A_UserName)
+      for URLIndex, URL in WebsiteOption[Key]["URL"]
+      {
+        if (WebsiteArray[KeyIndex] = URL)
+          WebsiteDDL[KeyIndex].Value := URLIndex
+      }
+    }
     ; フォルダの設定
-    for Index, Key in ["Folder1", "Folder2", "Folder3", "Folder4", "Folder5"]
+    for Index, Key in FolderIniKeyList
       FolderTextBox[Index].Text := StrReplace(IniRead(ConfFileDDL.Text, "Folder", Key), "A_UserName", A_UserName)
     ; ソフトウェアの設定
-    for Index, Key in ["Editor", "Word", "EMail", "Slide", "PDF", "Browser"]
+    for Index, Key in SoftwareIniKeyList
       SoftwareTextBox[Index].Text := StrReplace(IniRead(ConfFileDDL.Text, "Software", Key), "A_UserName", A_UserName)
 
     MyGui.Opt("-AlwaysOnTop")
@@ -593,39 +572,18 @@ SC07B & F2::
     else
       IniWrite "after file name", ConfFileDDL.Text, "Timestamp", "Position"
 
-    if (EngDictionaryDDL.Value = 1)
-      IniWrite "https://ejje.weblio.jp/content/", ConfFileDDL.Text, "Website", "EngDictionary"
-    else if (EngDictionaryDDL.Value = 2)
-      IniWrite "https://eow.alc.co.jp/search?q=", ConfFileDDL.Text, "Website", "EngDictionary"
-    else if (EngDictionaryDDL.Value = 3)
-      IniWrite "https://www.ldoceonline.com/dictionary/", ConfFileDDL.Text, "Website", "EngDictionary"
-    else if (EngDictionaryDDL.Value = 4)
-      IniWrite "https://www.oxfordlearnersdictionaries.com/definition/english/", ConfFileDDL.Text, "Website", "EngDictionary"
+    for KeyIndex, Key in WebsiteIniKeyList
+    {
+      for URLIndex, URL in WebsiteOption[Key]["URL"]
+      {
+        if (URLIndex = WebsiteDDL[KeyIndex].Value)
+          IniWrite URL, ConfFileDDL.Text, "Website", Key
+      }
+    }
 
-    if (ThesaurusDDL.Value = "1")
-      IniWrite "https://thesaurus.weblio.jp/content/", ConfFileDDL.Text, "Website", "Thesaurus"
-    else if (ThesaurusDDL.Value = "2")
-      IniWrite "https://renso-ruigo.com/word/", ConfFileDDL.Text, "Website", "Thesaurus"
-
-    if (TranslatorDDL.Value = "1")
-      IniWrite "https://www.deepl.com/translator#en/ja/", ConfFileDDL.Text, "Website", "Translator"
-    else if (TranslatorDDL.Value = "2")
-      IniWrite "https://translate.google.co.jp/?hl=ja&sl=auto&tl=ja&text=", ConfFileDDL.Text, "Website", "Translator"
-
-    if (SearchEngineDDL.Value = "1")
-      IniWrite "https://www.google.co.jp/search?q=", ConfFileDDL.Text, "Website", "SearchEngine"
-    else if (SearchEngineDDL.Value = "2")
-      IniWrite "https://duckduckgo.com/?q=", ConfFileDDL.Text, "Website", "SearchEngine"
-    else if (SearchEngineDDL.Value = "3")
-      IniWrite "https://www.bing.com/search?q=", ConfFileDDL.Text, "Website", "SearchEngine"
-    else if (SearchEngineDDL.Value = "4")
-      IniWrite "https://search.yahoo.co.jp/search?p=", ConfFileDDL.Text, "Website", "SearchEngine"
-
-
-    for Index, Key in ["Folder1", "Folder2", "Folder3", "Folder4", "Folder5"]
+    for Index, Key in FolderIniKeyList
       IniWrite StrReplace(FolderTextBox[Index].Text, A_UserName, "A_UserName"), ConfFileDDL.Text, "Folder", Key
-    ; ソフトウェアの設定
-    for Index, Key in ["Editor", "Word", "EMail", "Slide", "PDF", "Browser"]
+    for Index, Key in SoftwareIniKeyList
       IniWrite StrReplace(SoftwareTextBox[Index].Text,  A_UserName, "A_UserName"), ConfFileDDL.Text, "Software", Key
 
     if ConfFileDDL.Text = ConfFileName
