@@ -414,7 +414,13 @@ SC07B & F2::
   SaveButton.OnEvent("Click", SaveFile)
 
   MyGui.Show()
+  MyGui.OnEvent("Escape", GUIEsc)
 
+  GUIEsc(*)
+  {
+   MyGui.Destroy()
+  }
+  
   ToggleStartUp(*)
   {
     if not FileExist(A_Startup "\muhenkan_ahk_or_exe.lnk")
@@ -655,9 +661,7 @@ SC07B & F3::
     else if (EnableKeys = "a, w, e, s, d, f" and IB.Value = "f")
       ConfirmSetIni("Software", "Browser", Path)
     else
-    {
       MsgBox IB.Value " には設定できません。"
-    }
   }
 }
 ConfirmSetIni(Sec, Key, Path)
