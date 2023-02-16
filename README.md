@@ -82,7 +82,7 @@ Windows のキーボード操作を効率化するプログラムです。
 #### ソフトを最前面に出す(ソフトの切り替え)
 ![ソフトの切り替え](AutoHotKey/Img/activeapp.gif)
 
-### 使用方法
+### 導入方法
 ![設定画面](AutoHotKey/Img/config.png)
 1. `AutoHotKey\muhenkan.exe` を実行する。
 2. `無変換キー`+`F2` で設定を確認して、好みの設定に変更。
@@ -133,8 +133,6 @@ Windows のキーボード操作を効率化するプログラムです。
 `CapsLock キー`を`Ctrl キー`に置き換えることができるソフトウェアです。
 本当はAutoHotKey スクリプトで実現したかったのですが、日本語キーボードでは難しかったのでこちらで設定しました。
 解決できる方がおりましたらPull Request、もしくはSNS などで教えてください。
-### できること
-同上
 ### 導入方法
 1. https://learn.microsoft.com/ja-jp/sysinternals/downloads/ctrl2cap
 公式のホームページで内容を確認
