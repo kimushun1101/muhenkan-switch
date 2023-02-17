@@ -36,6 +36,37 @@ WebsiteOption["SearchEngine"]["URL"] := [
   "https://search.yahoo.co.jp/search?p="
 ]
 
+CharList := ["%", "`r`n", "`"", "#", "$", "&", "`'", "(", ")", "*", "+", ",", "/", "`:", "`;", "<", "=", ">", "?", "@", "`[", "`]", "^", "``", "`{", "|", "`}", "~"]
+URLChar := Map()
+URLChar["%"] :=	"%25"
+URLChar["`r`n"] := "%20"
+URLChar["`""] := "%22"
+URLChar["#"] :=	"%23"
+URLChar["$"] :=	"%24"
+URLChar["&"] :=	"%26"
+URLChar["`'"] := "%27"
+URLChar["("] :=	"%28"
+URLChar[")"] :=	"%29"
+URLChar["*"] :=	"%2A"
+URLChar["+"] :=	"%2B"
+URLChar[","] :=	"%2C"
+URLChar["/"] :=	"%5C%2F"
+URLChar["`:"] := "%3A"
+URLChar["`;"] := "%3B"
+URLChar["<"] :=	"%3C"
+URLChar["="] :=	"%3D"
+URLChar[">"] :=	"%3E"
+URLChar["?"] :=	"%3F"
+URLChar["@"] :=	"%40"
+URLChar["`["] := "%5B"
+URLChar["`]"] := "%5D"
+URLChar["^"] :=	"%5E"
+URLChar["``"] := "%60"
+URLChar["`{"] := "%7B"
+URLChar["|"] :=	"%5C%7C"
+URLChar["`}"] := "%7D"
+URLChar["~"] :=	"%7E"
+
 try
 {
   ; タイムスタンプの設定
@@ -162,7 +193,10 @@ SearchClipbard(url)
   A_Clipboard := "" ; https://www.autohotkey.com/docs/v2/lib/A_Clipboard.htm
   Send "^c"
   ClipWait
-  Run url StrReplace(StrReplace(A_Clipboard, "/", "%5C%2F"), "`r`n", " ")
+  SearchText := A_Clipboard
+  for Key in CharList
+    SearchText := StrReplace(SearchText, Key, URLChar[Key])
+  Run url SearchText
   A_Clipboard := old_clip
 }
 ; 文字列選択状態で、無変換キー+
