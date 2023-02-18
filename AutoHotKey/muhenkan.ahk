@@ -5,6 +5,8 @@
 
 ; conf ファイルの指定
 ConfFileName := A_ScriptDir "\conf.ini"
+BackupFileName := A_ScriptDir "\backup.ini"
+DefaultFileName := A_ScriptDir "\default.ini"
 
 WebsiteIniKeyList := ["EngDictionary", "Thesaurus", "Translator", "SearchEngine"]
 WebsiteOption := Map()
@@ -67,6 +69,37 @@ URLChar["|"] :=	"%5C%7C"
 URLChar["`}"] := "%7D"
 URLChar["~"] :=	"%7E"
 
+MikeDefaultIniFile(IniFileName)
+{
+  try
+  {
+    IniWrite "yyyyMMdd", IniFileName, "Timestamp", "DateFormat"
+    IniWrite "before file name", IniFileName, "Timestamp", "Position"
+    IniWrite "https://ejje.weblio.jp/content/", IniFileName, "Website", "EngDictionary"
+    IniWrite "https://thesaurus.weblio.jp/content/", IniFileName, "Website", "Thesaurus"
+    IniWrite "https://www.deepl.com/translator#en/ja/", IniFileName, "Website", "Translator"
+    IniWrite "https://www.google.co.jp/search?q=", IniFileName, "Website", "SearchEngine"
+    IniWrite "C:\Users\A_UserName\Documents", IniFileName, "Folder", "Folder1"
+    IniWrite "C:\Users\A_UserName\Downloads", IniFileName, "Folder", "Folder2"
+    IniWrite "C:\Users\A_UserName\Desktop", IniFileName, "Folder", "Folder3"
+    IniWrite "C:\Users\A_UserName\OneDrive", IniFileName, "Folder", "Folder4"
+    IniWrite "shell:RecycleBinFolder", IniFileName, "Folder", "Folder5"
+    IniWrite "C:\Users\A_UserName\AppData\Local\Programs\Microsoft VS Code\Code.exe", IniFileName, "Software", "Editor"
+    IniWrite "C:\Program Files (x86)\Microsoft Office\root\Office16\WINWORD.EXE", IniFileName, "Software", "Word"
+    IniWrite "C:\Program Files (x86)\Microsoft Office\root\Office16\OUTLOOK.EXE", IniFileName, "Software", "EMail"
+    IniWrite "C:\Program Files (x86)\Microsoft Office\root\Office16\POWERPNT.EXE", IniFileName, "Software", "Slide"
+    IniWrite "C:\Program Files\Adobe\Acrobat DC\Acrobat\Acrobat.exe", IniFileName, "Software", "PDF"
+    IniWrite "C:\Program Files\Google\Chrome\Application\chrome.exe", IniFileName, "Software", "Browser"
+  }
+  catch as Err
+  {
+    MsgBox "ファイルを書き込めません。ソフトを別のフォルダに移動してください。"
+        . "`n`n" Type(Err) ": " Err.Message
+    ExitApp
+  }
+}
+
+; 設定の読み込み、無ければ作成
 try
 {
   ; タイムスタンプの設定
@@ -92,13 +125,11 @@ try
 }
 catch as Err
 {
-  StackLines := StrSplit(Err.Stack, "`n")
-  ObjectLine := StrSplit(StackLines[2], "=")
-  ConfParam := StrSplit(ObjectLine[2], ")")
-  Run "powershell -Command `"Invoke-Item '" ConfFileName "'`""
-  MsgBox ConfFileName "`nの設定が間違っています。以下の設定を見直してください。`n --- `n" SubStr(ConfParam[1], 34)
-  ExitApp
+  MikeDefaultIniFile(ConfFileName)
+  Reload
 }
+if not FileExist(DefaultFileName)
+  MikeDefaultIniFile(DefaultFileName)
 
 OnExit ExitFunc
 ExitFunc(ExitReason, ExitCode)
@@ -439,8 +470,6 @@ SC07B & F2::
 
   ; 設定ファイル
   MyGui.Add("GroupBox", "xs-300 ys+150 w810 h50 section", "設定ファイル")
-  BackupFileName := A_ScriptDir "\backup.ini"
-  DefaultFileName := A_ScriptDir "\default.ini"
   ConfFileDDL := MyGui.Add("DDL", "xs+10 ys+20 w650 Choose1", [ConfFileName, BackupFileName, DefaultFileName, "Another File"])
   ConfFileDDL.OnEvent("Change", ChangeSaveFileButton)
   MyGui.Add("Button", "xs+670 ys+18 w50", "読込").OnEvent("Click", LoadFile)
@@ -523,7 +552,7 @@ SC07B & F2::
       SelectedFolder := FileSelect("D", FolderTextBox[Num].Text, "Select a folder")
       if SelectedFolder
         FolderTextBox[Num].Text := SelectedFolder
-      MyGui.Opt("AlwaysOnTop")    
+      MyGui.Opt("AlwaysOnTop")
   }
   NavigateF3(*)
   {
@@ -531,7 +560,7 @@ SC07B & F2::
     if MsgBox("設定画面を閉じて、割り当てたいソフトを最前面に出して無変換＋F3キーを押してください。`n設定画面を閉じますか？",, 4) ="YES"
       MyGui.Destroy()
     else
-      MyGui.Opt("AlwaysOnTop")    
+      MyGui.Opt("AlwaysOnTop")
   }
   LoadFile(*)
   {
