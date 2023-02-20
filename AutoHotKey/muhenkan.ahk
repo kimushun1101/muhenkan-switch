@@ -437,19 +437,20 @@ SC07B & F2::
 
   DateFormatComboBox := MyGui.Add("ComboBox", "xs+10 ys+20 w150 " ChooseDateFormat, DateFormatList)
   DateFormatComboBox.OnEvent("Change", ChangeTimestampExample)
-  MyGui.Add("Link", "xs+170  ys+25", 'フォーマットは <a href="https://www.autohotkey.com/docs/v2/lib/FormatTime.htm">こちら</a>')
+  MyGui.Add("Link", "xs+170  ys+25", 'フォーマットは <a href="https://www.autohotkey.com/docs/v2/lib/FormatTime.htm#Date_Formats">こちら</a>')
+  ExampleText := MyGui.Add("Text",  "xs+10  ys+100", "例:")
   Timestamp := FormatTime(, DateFormat)
   if (TimestampPosition = "before file name")
   {
     BeforeRadio := MyGui.Add("Radio", "xs+10  ys+55 checked", "ファイル名の前")
     AfterRadio  := MyGui.Add("Radio", "xs+10  ys+75", "ファイル名の後")
-    TextTimestamp := MyGui.Add("Text",  "xs+10  ys+100 w270", "例:  " Timestamp "_ファイル名.txt")
+    TimestampText := MyGui.Add("Text",  "xs+30  ys+100 w250 BackgroundWhite", Timestamp "_ファイル名.txt")
   }
   else if (TimestampPosition = "after file name")
   {
     BeforeRadio := MyGui.Add("Radio", "xs+10  ys+55", "ファイル名の前")
     AfterRadio  := MyGui.Add("Radio", "xs+10  ys+75 checked", "ファイル名の後")
-    TextTimestamp := MyGui.Add("Text",  "xs+20  ys+100 w270", "例:  ファイル名_" Timestamp ".txt")
+    TimestampText := MyGui.Add("Text",  "xs+30  ys+100 w250 BackgroundWhite", "ファイル名_" Timestamp ".txt")
   }
   BeforeRadio.OnEvent("Click", ChangeTimestampExample)
   AfterRadio.OnEvent("Click", ChangeTimestampExample)
@@ -526,9 +527,9 @@ SC07B & F2::
   {
     Timestamp := FormatTime(, DateFormatComboBox.Text)
     if (BeforeRadio.Value = 1)
-      TextTimestamp.Value := "例:  " Timestamp "_ファイル名.txt"
+      TimestampText.Value := Timestamp "_ファイル名.txt"
     else
-      TextTimestamp.Value := "例:  ファイル名_" Timestamp ".txt"
+      TimestampText.Value := "ファイル名_" Timestamp ".txt"
   }
   ChangeSaveFileButton(*)
   {
@@ -606,13 +607,13 @@ SC07B & F2::
     {
       BeforeRadio.Value := 1
       Timestamp := FormatTime(, DateFormatComboBox.Text)
-      TextTimestamp.Text := "例:  " Timestamp "_ファイル名.txt"
+      TimestampText.Text := Timestamp "_ファイル名.txt"
     }
     else if (TimestampPosition = "after file name")
     {
       AfterRadio.Value := 1
       Timestamp := FormatTime(, DateFormatComboBox.Text)
-      TextTimestamp.Text := "例:  ファイル名_" Timestamp ".txt"
+      TimestampText.Text := "ファイル名_" Timestamp ".txt"
     }
     ; Web サイトの設定
     for KeyIndex, Key in WebsiteIniKeyList
