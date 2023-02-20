@@ -398,10 +398,13 @@ PastePlaneText(ThisHotkey)
 ; F1 でキーボード画像を出す（ヘルプ）
 SC07B & F1::
 {
-  Run "powershell -Command `"Invoke-Item '" A_ScriptDir "\Img\keyboard.png'`""
-  WinWait "keyboard.png"
-  WinActivate "keyboard.png"
-  WinMove 0, 0, , , "keyboard.png"
+  if FileExist(A_ScriptDir "\Img\keyboard.png")
+  {
+    Run "powershell -Command `"Invoke-Item '" A_ScriptDir "\Img\keyboard.png'`""
+    WinWait "keyboard.png"
+    WinActivate "keyboard.png"
+    WinMove 0, 0, , , "keyboard.png"
+  }
   MsgBox "設定変更は``無変換``+``F2```nフォルダやソフトの割当変更は`n割り当てたいフォルダやソフトを最前面に出した状態で``無変換``+``F3``", "Help"
   try WinClose "keyboard.png"
 }
