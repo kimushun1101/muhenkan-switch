@@ -722,7 +722,7 @@ SC07B & F3::
     CurrentKeys := "1 : " FolderArray[1] "`n2 : " FolderArray[2] "`n3 : " FolderArray[3] "`n4 : " FolderArray[4] "`n5 : " FolderArray[5]
     EnableKeys := "1, 2, 3, 4, 5"
   }
-  IB := InputBox(Path "`nに上書きしたいキーを入力してください`n`n設定可能なキー: 現在の設定`n" CurrentKeys, "キーの入力", "w600 h300")
+  IB := InputBox(Path "`nに上書きしたいキー（" EnableKeys "）を入力してください`n`n設定可能なキー: 現在の設定`n" CurrentKeys, "キーの入力", "w600 h300")
   if (IB.Result = "OK" and IB.Value)
   {
     if (EnableKeys = "1, 2, 3, 4, 5" and IB.Value = "1")
@@ -748,12 +748,12 @@ SC07B & F3::
     else if (EnableKeys = "a, w, e, s, d, f" and IB.Value = "f")
       ConfirmSetIni("Software", "Browser", Path)
     else
-      MsgBox IB.Value " には設定できません。"
+      MsgBox IB.Value " には設定できません。`n" EnableKeys " から選択してください．"
   }
 }
 ConfirmSetIni(Sec, Key, Path)
 {
-  if (MsgBox(Key "を以下に設定します。`n" Path, , 1) = "OK")
+  if (MsgBox(Key "を以下に設定します。`n" Path, , "OKCancel") = "OK")
   {
     IniWrite Path, ConfFileName, Sec, Key
     Reload
@@ -763,7 +763,7 @@ ConfirmSetIni(Sec, Key, Path)
 ; F4 でスクリプトを終了 Alt + F4 から連想
 SC07B & F4::
 {
-  if (MsgBox("スクリプトを終了しますか？`n", , 1) = "OK")
+  if (MsgBox("スクリプトを終了しますか？`n", , "OKCancel") = "OK")
     ExitApp
 }
 ; F5 でAutoHotKey のスクリプトをセーブ&リロード（デバッグ用）
