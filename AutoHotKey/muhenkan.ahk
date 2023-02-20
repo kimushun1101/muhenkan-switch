@@ -404,9 +404,11 @@ SC07B & F1::
     WinWait "keyboard.png"
     WinActivate "keyboard.png"
     WinMove 0, 0, , , "keyboard.png"
+    if MsgBox("設定変更は``無変換``+``F2 キー```nフォルダやソフトの割当変更は`n割り当てたいフォルダやソフトを最前面に出した状態で``無変換``+``F3 キー```n`nキーボード画像を閉じますか？",, "YesNo") ="YES"
+      try WinClose "keyboard.png"
   }
-  MsgBox "設定変更は``無変換``+``F2```nフォルダやソフトの割当変更は`n割り当てたいフォルダやソフトを最前面に出した状態で``無変換``+``F3``", "Help"
-  try WinClose "keyboard.png"
+  else
+    MsgBox "設定変更は``無変換``+``F2 キー```nフォルダやソフトの割当変更は`n割り当てたいフォルダやソフトを最前面に出した状態で``無変換``+``F3 キー``"
 }
 ; F2 で設定の変更
 SC07B & F2::
@@ -579,7 +581,7 @@ SC07B & F2::
   NavigateF3(*)
   {
     MyGui.Opt("-AlwaysOnTop")
-    if MsgBox("設定画面を閉じて、割り当てたいソフトを最前面に出して無変換＋F3キーを押してください。`n設定画面を閉じますか？",, 4) ="YES"
+    if MsgBox("設定画面を閉じた後、`n割り当てたいソフトを最前面に出して``無変換``+``F3キー``を押してください。`n設定画面を閉じますか？",, "YesNo") ="YES"
       MyGui.Destroy()
     else
       MyGui.Opt("AlwaysOnTop")
@@ -595,7 +597,7 @@ SC07B & F2::
     }
 
     MyGui.Opt("-AlwaysOnTop")
-    Result := MsgBox(ConfFileDDL.Text "`nを読み込みますか？",, 4) ="No"
+    Result := MsgBox(ConfFileDDL.Text "`nを読み込みますか？",, "YesNo") ="No"
     MyGui.Opt("AlwaysOnTop")
     if Result
       return
@@ -649,12 +651,12 @@ SC07B & F2::
     MyGui.Opt("-AlwaysOnTop")
     if ConfFileDDL.Text = ConfFileName
     {
-      if MsgBox("現在の設定を変更しますか？",, 4) = "No"
+      if MsgBox("現在の設定を変更しますか？",, "YesNo") = "No"
         return
     }
     else
     {
-      if MsgBox(ConfFileDDL.Text "`nにバックアップを取りますか？`n（現在の設定は変更されません。）",, 4) = "No"
+      if MsgBox(ConfFileDDL.Text "`nにバックアップを取りますか？`n（現在の設定は変更されません。）",, "YesNo") = "No"
         return
     }
     IniWrite DateFormatComboBox.Text, ConfFileDDL.Text, "Timestamp", "DateFormat"
