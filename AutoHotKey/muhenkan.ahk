@@ -286,6 +286,15 @@ SC07B & v::
   if (dir = "") ; 選択されているのがフォルダやファイルではない場合
     return
   Timestamp := FormatTime(FileGetTime(TergetFile, "M"), DateFormat)
+  if (ext = "") ; フォルダの場合
+  {
+    Loop Files, TergetFile "\*", "R"  ; Recurse into subfolders.
+    {
+      TimestampCandidate := FormatTime(FileGetTime(A_LoopFilePath, "M"), DateFormat)
+      if TimestampCandidate > Timestamp
+        Timestamp := TimestampCandidate
+    }
+  }
   if (TimestampPosition = "before file name")
     Send "{F2}{Left}{SC07B}" Timestamp "_{Enter}"
   else if (TimestampPosition = "after file name")
@@ -306,6 +315,15 @@ SC07B & c::
   if (dir = "")       ; 選択されているのがフォルダやファイルではない場合
     return
   Timestamp := FormatTime(FileGetTime(TergetFile, "M"), DateFormat)
+  if (ext = "") ; フォルダの場合
+  {
+    Loop Files, TergetFile "\*", "R"  ; Recurse into subfolders.
+    {
+      TimestampCandidate := FormatTime(FileGetTime(A_LoopFilePath, "M"), DateFormat)
+      if TimestampCandidate > Timestamp
+        Timestamp := TimestampCandidate
+    }
+  }
   if (TimestampPosition = "before file name")
     NewFile := dir "\" Timestamp "_" name
   else if (TimestampPosition = "after file name")
