@@ -135,10 +135,8 @@ OnExit ExitFunc
 ExitFunc(ExitReason, ExitCode)
 {
   if ExitReason != "Reload" and ExitReason != "Logoff" and ExitReason != "Shutdown"
-  {
-    MsgBox A_ScriptFullPath "`nを終了します。`n" A_ScriptDir "`nを開きます。", "終了"
-    Run A_ScriptDir ; 再起動したい場合のためにこのスクリプトの場所を開いておく
-  }
+    if MsgBox(A_ScriptFullPath "`nを終了します。`n" A_ScriptDir "`nを開きますか？", "終了", "YesNo") ="YES"
+      Run A_ScriptDir ; 再起動したい場合のためにこのスクリプトの場所を開いておく
 }
 
 ; https://www.autohotkey.com/docs/v2/KeyList.htm#SpecialKeys
@@ -767,3 +765,5 @@ SC07B & F5::
 ;---------------------------------------
 ; https://www.autohotkey.com/docs/v2/KeyList.htm#IME
 ; ここも試してみたが、2回目以降からCapsLock UP が効かない状況、までは確認済み
+
+MsgBox A_ScriptFullPath "`nを起動しました。"
