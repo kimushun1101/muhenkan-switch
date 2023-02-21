@@ -13,18 +13,18 @@
   - `Y`, `O`: Home、End カーソル移動
   - `N`, `M`, `.` BackSpace, Delete, Esc
 - `無変換キー`+`左手`（右手はマウスを操作していることを想定）
-  - (黄色)数字キー→エクスプローラーでフォルダを開く ***【設定変更可能】***
+  - (黄色)数字キー→エクスプローラーでフォルダを開く ***[【設定変更可能】](#設定変更)***
     - `1`: ドキュメント
     - `2`: ダウンロード
     - `3`: デスクトップ
     - `4`: OneDrive
     - `5`: ごみ箱
-  - (オレンジ)左手上段→選択文字列を検索 ***【設定変更可能】***
+  - (オレンジ)左手上段→選択文字列を検索 ***[【設定変更可能】](#設定変更)***
     - `Q`: 英単語検索、Weblio英和和英辞典
     - `R`: 類語辞典、Weblio類語辞典
     - `T`: 翻訳、DeepL Translator
     - `G`: Web 検索、Google 検索
-  - (赤)左手中段→ソフトを最前面に出す ***【設定変更可能】***
+  - (赤)左手中段→ソフトを最前面に出す ***[【設定変更可能】](#設定変更)***
     - `A`: エディタ、VS Code
     - `W`: ワード、Microsoft Word
     - `E`: Eメール、Microsoft Outlook
@@ -79,7 +79,7 @@
     - `default.ini` : 初期設定。`読込` のみ可能で、このファイルの書き換えはできないようにしています。
 
 ## ソースコードを編集したい場合
-1. https://www.autohotkey.com/ ここのDownload からv2.0 を選択してインストール
+1. [https://www.autohotkey.com/](https://www.autohotkey.com/) ここのDownload からv2.0 を選択してインストール
 2. `muhenkan.ahk` を編集して実行
 3. デバッグには`無変換キー`+`F5` が便利
 4. AutoHotkey ソフトを立ち上げ、AutoHotKeyDash のCompile からexe ファイルを作成可能
@@ -94,4 +94,4 @@
 
 ## ライセンス
 公式のサンプルを参考にしているため、GNU GPLv2 とします。
-- AutoHotKey : https://www.autohotkey.com/docs/v2/license.htm
+- AutoHotKey : [https://www.autohotkey.com/docs/v2/license.htm](https://www.autohotkey.com/docs/v2/license.htm)
