@@ -177,12 +177,8 @@ SC07B & .::Send "{Esc}"
 ; エクスプローラーの表示
 ; 左手上段の数字キーに割り当てる
 ;======================================
-;======================================
-; エクスプローラーの表示
-; 左手上段の数字キーに割り当てる
-;======================================
 ; 指定のフォルダを最前面にする。
-; もし指定したソフトが起動していなければ起動する。
+; もし指定したフォルダが開かれていなかったら新規エクスプローラーで開く
 ActiveFolder(folder)
 {
   SplitPath(folder, &name)
@@ -242,10 +238,10 @@ SC07B & g::SearchClipbard WebsiteArray[4]
 
 ;======================================
 ; ソフトウェアのアクティブ化
-; 左手中段 A S D F に割り当てる
+; 左手中段 A W E S D F に割り当てる
 ;======================================
-; 指定のソフトを最前面にする。
-; もし指定したソフトが起動していなければ起動する。
+; 指定のソフトを最前面にする
+; もし指定したソフトが起動していなければ起動する
 ActiveSoftware(Software)
 {
   if WinExist("ahk_exe " Software) ; https://www.autohotkey.com/docs/v2/misc/WinTitle.htm#ahk_exe
@@ -394,21 +390,13 @@ PastePlaneText(ThisHotkey)
 ; 設定関連
 ; ファンクションキーに割り当てる
 ;======================================
-
 ; F1 でキーボード画像を出す（ヘルプ）
 SC07B & F1::
 {
-  if FileExist(A_ScriptDir "\Img\keyboard.png")
-  {
-    Run "powershell -Command `"Invoke-Item '" A_ScriptDir "\Img\keyboard.png'`""
-    WinWait "keyboard.png"
-    WinActivate "keyboard.png"
-    WinMove 0, 0, , , "keyboard.png"
-    if MsgBox("設定変更は``無変換``+``F2 キー```nフォルダやソフトの割当変更は`n割り当てたいフォルダやソフトを最前面に出した状態で``無変換``+``F3 キー```n`nキーボード画像を閉じますか？",, "YesNo") ="YES"
-      try WinClose "keyboard.png"
-  }
+  if FileExist(A_ScriptDir "/README.html")
+    Run A_ScriptDir "/README.html"
   else
-    MsgBox "設定変更は``無変換``+``F2 キー```nフォルダやソフトの割当変更は`n割り当てたいフォルダやソフトを最前面に出した状態で``無変換``+``F3 キー``"
+    Run "https://github.com/kimushun1101/muhenkan-switch"
 }
 ; F2 で設定の変更
 SC07B & F2::
