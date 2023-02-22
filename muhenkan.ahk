@@ -93,13 +93,17 @@ MikeDefaultIniFile(IniFileName)
   }
   catch as Err
   {
-    MsgBox "ファイルを書き込めません。ソフトを別のフォルダに移動してください。"
-        . "`n`n" Type(Err) ": " Err.Message
+    MsgBox "ファイルを書き込めません。ソフトを別のフォルダに移動してください。`n`n" Type(Err) ": " Err.Message
     ExitApp
   }
 }
 
 ; 設定の読み込み、無ければ作成
+if not FileExist(ConfFileName)
+  MikeDefaultIniFile(ConfFileName)
+if not FileExist(DefaultFileName)
+  MikeDefaultIniFile(DefaultFileName)
+
 try
 {
   ; タイムスタンプの設定
@@ -125,11 +129,8 @@ try
 }
 catch as Err
 {
-  MikeDefaultIniFile(ConfFileName)
-  Reload
+  MsgBox "ファイルを読み込めません。`n`n" Type(Err) ": " Err.Message
 }
-if not FileExist(DefaultFileName)
-  MikeDefaultIniFile(DefaultFileName)
 
 OnExit ExitFunc
 ExitFunc(ExitReason, ExitCode)
@@ -240,25 +241,30 @@ SC07B & g::SearchClipbard WebsiteArray[4]
 ;======================================
 ; 指定のソフトを最前面にする
 ; もし指定したソフトが起動していなければ起動する
-ActiveSoftware(Software)
+ActiveSoftware(Software, Name)
 {
-  if WinExist("ahk_exe " Software) ; https://www.autohotkey.com/docs/v2/misc/WinTitle.htm#ahk_exe
-    WinActivate
-  else
-    Run Software
+  try
+  {
+    if WinExist("ahk_exe " Software) ; https://www.autohotkey.com/docs/v2/misc/WinTitle.htm#ahk_exe
+      WinActivate
+    else
+      Run Software
+  }
+  catch
+    MsgBox Name " ソフトウェアの設定が誤っています。`n割り当てたいソフトを最前面に出して``無変換``+``F3キー``を押してください。"
 }
 ; a : エディタ(Atom のA で覚えた)
-SC07B & a::ActiveSoftware(SoftwareArray[1])
+SC07B & a::ActiveSoftware(SoftwareArray[1], SoftwareIniKeyList[1])
 ; w : ワード
-SC07B & w::ActiveSoftware(SoftwareArray[2])
+SC07B & w::ActiveSoftware(SoftwareArray[2], SoftwareIniKeyList[2])
 ; e : E-mail
-SC07B & e::ActiveSoftware(SoftwareArray[3])
+SC07B & e::ActiveSoftware(SoftwareArray[3], SoftwareIniKeyList[3])
 ; s : スライド作成
-SC07B & s::ActiveSoftware(SoftwareArray[4])
+SC07B & s::ActiveSoftware(SoftwareArray[4], SoftwareIniKeyList[4])
 ; d : PDF Viewer
-SC07B & d::ActiveSoftware(SoftwareArray[5])
+SC07B & d::ActiveSoftware(SoftwareArray[5], SoftwareIniKeyList[5])
 ; f : ブラウザ（FireFox のF で覚えた）
-SC07B & f::ActiveSoftware(SoftwareArray[6])
+SC07B & f::ActiveSoftware(SoftwareArray[6], SoftwareIniKeyList[6])
 
 ;======================================
 ; 選択しているファイル名やフォルダ名の操作
@@ -766,4 +772,4 @@ SC07B & F5::
 ; https://www.autohotkey.com/docs/v2/KeyList.htm#IME
 ; ここも試してみたが、2回目以降からCapsLock UP が効かない状況、までは確認済み
 
-MsgBox A_ScriptFullPath "`nを起動しました。"
+; MsgBox A_ScriptFullPath "`nを起動しました。"
