@@ -357,22 +357,22 @@ SC07B & x::
 ;---------------------------------------
 ; タイムスタンプの位置を変更
 ;---------------------------------------
-; 無変換キー+ z
-SC07B & z::
-{
-  IniWrite "before file name", ConfFileName, "Timestamp", "Position"
-  Timestamp := FormatTime(, DateFormat)
-  MsgBox "タイムスタンプの位置を前にします。`n例：" Timestamp "_ファイル名"
-  Reload
-}
-; 変換キー+ b
-SC07B & b::
-{
-  IniWrite "after file name", ConfFileName, "Timestamp", "Position"
-  Timestamp := FormatTime(, DateFormat)
-  MsgBox "タイムスタンプの位置を後ろにします。`n例：ファイル名_" Timestamp
-  Reload
-}
+; ; 無変換キー+ z
+; SC07B & z::
+; {
+;   IniWrite "before file name", ConfFileName, "Timestamp", "Position"
+;   Timestamp := FormatTime(, DateFormat)
+;   MsgBox "タイムスタンプの位置を前にします。`n例：" Timestamp "_ファイル名"
+;   Reload
+; }
+; ; 変換キー+ b
+; SC07B & b::
+; {
+;   IniWrite "after file name", ConfFileName, "Timestamp", "Position"
+;   Timestamp := FormatTime(, DateFormat)
+;   MsgBox "タイムスタンプの位置を後ろにします。`n例：ファイル名_" Timestamp
+;   Reload
+; }
 
 ;======================================
 ; その他

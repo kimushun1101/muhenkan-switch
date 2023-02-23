@@ -16,13 +16,13 @@
                 <mxCell id="5" value="F&lt;br&gt;ブラウザ" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
                     <mxGeometry x="439" y="408" width="50" height="50" as="geometry"/>
                 </mxCell>
-                <mxCell id="6" value="Z&lt;br&gt;日付位置を前に" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
+                <mxCell id="6" value="Z&lt;br&gt;&lt;br&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="289" y="468" width="50" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="7" value="X&lt;br&gt;日付の&lt;br&gt;切り取り" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
                     <mxGeometry x="349" y="468" width="50" height="50" as="geometry"/>
                 </mxCell>
-                <mxCell id="8" value="C&lt;br&gt;コピーして日付" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
+                <mxCell id="8" value="C&lt;br&gt;ファイルコピー" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
                     <mxGeometry x="409" y="468" width="50" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="9" value="V&lt;br&gt;日付の&lt;br&gt;貼り付け" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
@@ -118,7 +118,7 @@
                 <mxCell id="39" value="6&lt;br&gt;&lt;br&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="499" y="288" width="50" height="50" as="geometry"/>
                 </mxCell>
-                <mxCell id="40" value="B&lt;br&gt;日付位置を後ろに" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
+                <mxCell id="40" value="B&lt;br&gt;&lt;br&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="529" y="468" width="50" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="41" value="F5&lt;br&gt;リロード" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
