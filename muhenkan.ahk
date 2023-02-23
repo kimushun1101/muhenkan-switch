@@ -295,10 +295,11 @@ SC07B & v::
         Timestamp := TimestampCandidate
     }
   }
+  DllCall("user32.dll\SendMessageA", "UInt", DllCall("imm32.dll\ImmGetDefaultIMEWnd", "Uint", WinExist("A")), "UInt", 0x0283, "Int", 0x006, "Int", 0)
   if (TimestampPosition = "before file name")
-    Send "{F2}{Left}{SC07B}" Timestamp "_{Enter}"
+    Send "{F2}{Left}" Timestamp "_{Enter}"
   else if (TimestampPosition = "after file name")
-    Send "{F2}{Right}{SC07B}_" Timestamp "{Enter}"
+    Send "{F2}{Right}_" Timestamp "{Enter}"
   else
     MsgBox "TimestampPosition が間違っています。"
 }
