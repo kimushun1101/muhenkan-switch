@@ -69,6 +69,19 @@ URLChar["|"] :=	"%5C%7C"
 URLChar["`}"] := "%7D"
 URLChar["~"] :=	"%7E"
 
+SoftwarePath(ext)
+{
+  try
+  {
+    SoftwareProgid := RegRead("HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\." ext "\UserChoice", "Progid")
+    OpenCommand := RegRead("HKEY_CLASSES_ROOT\" SoftwareProgid "\shell\open\command")
+    TestArray := StrSplit(OpenCommand, "`"")
+    return TestArray[2]
+  }
+  catch
+    return "未設定"
+}
+
 MikeDefaultIniFile(IniFileName)
 {
   try
@@ -84,12 +97,12 @@ MikeDefaultIniFile(IniFileName)
     IniWrite "C:\Users\A_UserName\Desktop", IniFileName, "Folder", "Folder3"
     IniWrite "C:\Users\A_UserName\OneDrive", IniFileName, "Folder", "Folder4"
     IniWrite "shell:RecycleBinFolder", IniFileName, "Folder", "Folder5"
-    IniWrite "C:\Users\A_UserName\AppData\Local\Programs\Microsoft VS Code\Code.exe", IniFileName, "Software", "Editor"
-    IniWrite "C:\Program Files (x86)\Microsoft Office\root\Office16\WINWORD.EXE", IniFileName, "Software", "Word"
-    IniWrite "C:\Program Files (x86)\Microsoft Office\root\Office16\OUTLOOK.EXE", IniFileName, "Software", "EMail"
-    IniWrite "C:\Program Files (x86)\Microsoft Office\root\Office16\POWERPNT.EXE", IniFileName, "Software", "Slide"
-    IniWrite "C:\Program Files\Adobe\Acrobat DC\Acrobat\Acrobat.exe", IniFileName, "Software", "PDF"
-    IniWrite "C:\Program Files\Google\Chrome\Application\chrome.exe", IniFileName, "Software", "Browser"
+    IniWrite SoftwarePath("txt"),  IniFileName, "Software", "Editor"
+    IniWrite SoftwarePath("docx"), IniFileName, "Software", "Word"
+    IniWrite SoftwarePath("eml"),  IniFileName, "Software", "EMail"
+    IniWrite SoftwarePath("pptx"), IniFileName, "Software", "Slide"
+    IniWrite SoftwarePath("pdf"),  IniFileName, "Software", "PDF"
+    IniWrite SoftwarePath("html"), IniFileName, "Software", "Browser"
   }
   catch as Err
   {
@@ -243,15 +256,15 @@ SC07B & g::SearchClipbard WebsiteArray[4]
 ; もし指定したソフトが起動していなければ起動する
 ActiveSoftware(Software, Name)
 {
-  try
+  if Software = "未設定"
+    MsgBox Name " ソフトウェアが未設定です。`n割り当てたいソフトを最前面に出して``無変換``+``F3キー``を押してください。"
+  else
   {
     if WinExist("ahk_exe " Software) ; https://www.autohotkey.com/docs/v2/misc/WinTitle.htm#ahk_exe
       WinActivate
     else
       Run Software
   }
-  catch
-    MsgBox Name " ソフトウェアの設定が誤っています。`n割り当てたいソフトを最前面に出して``無変換``+``F3キー``を押してください。"
 }
 ; a : エディタ(Atom のA で覚えた)
 SC07B & a::ActiveSoftware(SoftwareArray[1], SoftwareIniKeyList[1])
