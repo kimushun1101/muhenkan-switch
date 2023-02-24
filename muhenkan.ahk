@@ -6,8 +6,12 @@
 ConfFileName := A_ScriptDir "\conf.ini"
 
 DateFormatList := ["yyyyMMdd", "yyyyMMdd_HHmm", "yyMMdd", "yyMMdd_HHmm"]
+FolderKeys   := "1,2,3,4,5"
+SoftwareKeys := "A,W,E,S,D,F"
+
 FolderIniKeyList := ["Folder1", "Folder2", "Folder3", "Folder4", "Folder5"]
-SoftwareIniKeyList := ["Editor", "Word", "EMail", "Slide", "PDF", "Browser"]
+SoftwareIniKeyList := ["ExeA", "ExeW", "ExeE", "ExeS", "ExeD", "ExeF"]
+SoftwareLabelList := ["エディタ", "ワード", "Eメール", "スライド", "PDF", "ブラウザ"]
 
 WebsiteIniKeyList := ["EngDictionary", "Thesaurus", "Translator", "SearchEngine"]
 WebsiteOption := Map()
@@ -153,12 +157,12 @@ SaveFile(FileName)
     IniWrite 1, FileName, "Open", "Setting"
     IniWrite DateFormat, FileName, "Timestamp", "DateFormat"
     IniWrite TimestampPosition, FileName, "Timestamp", "Position"
-    for Index, Key in WebsiteIniKeyList
-      IniWrite WebsiteArray[Index], FileName, "Website", Key
-    for Index, Key in FolderIniKeyList
-      IniWrite StrReplace(FolderArray[Index], A_UserName, "A_UserName"), FileName, "Folder", Key
-    for Index, Key in SoftwareIniKeyList
-      IniWrite StrReplace(SoftwareArray[Index],  A_UserName, "A_UserName"), FileName, "Software", Key
+    for Key in WebsiteIniKeyList
+      IniWrite WebsiteArray[A_Index], FileName, "Website", Key
+    for Key in FolderIniKeyList
+      IniWrite StrReplace(FolderArray[A_Index], A_UserName, "A_UserName"), FileName, "Folder", Key
+    for Key in SoftwareIniKeyList
+      IniWrite StrReplace(SoftwareArray[A_Index],  A_UserName, "A_UserName"), FileName, "Software", Key
   }
   catch
   {
@@ -205,7 +209,7 @@ OpenSettingCheckBox := MyGui.Add("CheckBox", "xs+10 ys+40 w235 h15", "ソフト�
 MyGui.Add("GroupBox", "xs ys+70 w250 h130 section", "タイムスタンプ")
 MyGui.Add("Link", "xs+10  ys+15", 'フォーマット　（仕様は<a href="https://www.autohotkey.com/docs/v2/lib/FormatTime.htm#Date_Formats">こちら</a>）')
 DateFormatListHas := 0
-for Index, DateFormatCandidate in DateFormatList
+for DateFormatCandidate in DateFormatList
   if DateFormat = DateFormatCandidate
     DateFormatListHas := 1
 if DateFormatListHas = 0
@@ -220,36 +224,32 @@ BeforeRadio.OnEvent("Click", ChangeTimestampExample)
 AfterRadio.OnEvent("Click", ChangeTimestampExample)
 ; ウェブサイト
 MyGui.Add("GroupBox", "xs ys+130 w250 h105 section", "ウェブサイト")
-for Index, Site in ["Q 英語辞典", "R 類語辞典", "T 翻訳", "G 検索エンジン"]
-  MyGui.Add("Text", "xs+10  ys+" Index*20,  Site)
+for Site in ["Q 英語辞典", "R 類語辞典", "T 翻訳", "G 検索エンジン"]
+  MyGui.Add("Text", "xs+10  ys+" A_Index*20,  Site)
 WebsiteDDL := Array()
 for KeyIndex, Key in WebsiteIniKeyList
 {
-  for URLIndex, URL in WebsiteOption[Key]["URL"]
-  {
-    if (WebsiteArray[KeyIndex] = URL)
-    {
-      WebsiteDDL.Push(MyGui.Add("DDL", "w150 xs+90  ys+" KeyIndex*20  " Choose" URLIndex, WebsiteOption[Key]["Name"]))
-    }
-  }
+  for URL in WebsiteOption[Key]["URL"]
+    if WebsiteArray[KeyIndex] = URL
+      WebsiteDDL.Push(MyGui.Add("DDL", "w150 xs+90  ys+" KeyIndex*20  " Choose" A_Index, WebsiteOption[Key]["Name"]))
 }
 ; フォルダ
 MyGui.Add("GroupBox", "xs+260 ys-200 w510 h120 section", "フォルダ")
 FolderTextBox := Array()
 for Index in ["1", "2", "3", "4", "5"]
 {
-  MyGui.Add("Text", "xs+10  ys+" Index*20, Index)
-  FolderTextBox.Push(MyGui.Add("Text", "w480 BackgroundWhite xs+20 ys+" Index*20, FolderArray[Index]))
-  FolderTextBox[Index].OnEvent("Click", SelectFolderCallback.Bind(Index))
+  MyGui.Add("Text", "xs+10  ys+" A_Index*20, Index)
+  FolderTextBox.Push(MyGui.Add("Text", "w480 BackgroundWhite xs+20 ys+" A_Index*20, FolderArray[A_Index]))
+  FolderTextBox[A_Index].OnEvent("Click", SelectFolderCallback.Bind(A_Index))
 }
 ; ソフトウェア
 MyGui.Add("GroupBox", "xs ys+125 w510 h140 section", "ソフトウェア")
 SoftwareTextBox := Array()
-for Index, Software in ["A エディタ", "W ワード", "E Eメール", "S スライド", "D PDF", "F ブラウザ"]
+for Software in ["A エディタ", "W ワード", "E Eメール", "S スライド", "D PDF", "F ブラウザ"]
 {
-  MyGui.Add("Text", "xs+10  ys+" Index*20,  Software)
-  SoftwareTextBox.Push(MyGui.Add("Text", "w440 BackgroundWhite xs+60 ys+" Index*20, SoftwareArray[Index]))
-  SoftwareTextBox[Index].OnEvent("Click", NavigateF3)
+  MyGui.Add("Text", "xs+10  ys+" A_Index*20,  Software)
+  SoftwareTextBox.Push(MyGui.Add("Text", "w440 BackgroundWhite xs+60 ys+" A_Index*20, SoftwareArray[A_Index]))
+  SoftwareTextBox[A_Index].OnEvent("Click", NavigateF3)
 }
 
 ; 操作ボタン
@@ -331,9 +331,9 @@ UpdateContents()
   else
     AutostartCheckBox.Value := 0
   OpenSettingCheckBox.Value := OpenSetting
-  for Index, DateFormatCandidate in DateFormatList
+  for DateFormatCandidate in DateFormatList
     if DateFormat = DateFormatCandidate
-      DateFormatComboBox.Choose(Index)
+      DateFormatComboBox.Choose(A_Index)
   if (TimestampPosition = "before file name")
   {
     BeforeRadio.Value := 1
@@ -356,11 +356,11 @@ UpdateContents()
     }
   }
   ; フォルダの設定
-  for Index, Directory in FolderArray
-    FolderTextBox[Index].Text := Directory
+  for Directory in FolderArray
+    FolderTextBox[A_Index].Text := Directory
   ; ソフトウェアの設定
-  for Index, Software in SoftwareArray
-    SoftwareTextBox[Index].Text := Software
+  for Software in SoftwareArray
+    SoftwareTextBox[A_Index].Text := Software
 }
 
 ChangeTimestampExample(*)
@@ -409,10 +409,10 @@ SaveFileFromGUI(FileName, *)
           IniWrite URL, FileName, "Website", Key
       }
     }
-    for Index, Key in FolderIniKeyList
-      IniWrite StrReplace(FolderTextBox[Index].Text, A_UserName, "A_UserName"), FileName, "Folder", Key
-    for Index, Key in SoftwareIniKeyList
-      IniWrite StrReplace(SoftwareTextBox[Index].Text,  A_UserName, "A_UserName"), FileName, "Software", Key
+    for Key in FolderIniKeyList
+      IniWrite StrReplace(FolderTextBox[A_Index].Text, A_UserName, "A_UserName"), FileName, "Folder", Key
+    for Key in SoftwareIniKeyList
+      IniWrite StrReplace(SoftwareTextBox[A_Index].Text,  A_UserName, "A_UserName"), FileName, "Software", Key
     if FileName = ConfFileName
     {
       MsgBox("設定を変更しました。")
@@ -731,48 +731,35 @@ SC07B & F3::
   if (ext = "exe")       ; exe ファイルの場合
   {
     CurrentKeys := "a (Editor) :`t" SoftwareArray[1] "`nw (Word) :`t" SoftwareArray[2] "`ne (Email) :`t" SoftwareArray[3]  "`ns (Slide) :`t`t" SoftwareArray[4] "`nd (PDF) :`t`t" SoftwareArray[5] "`nf (Browser) :`t" SoftwareArray[6]
-    EnableKeys := "a, w, e, s, d, f"
+    EnableKeys := SoftwareKeys
   }
   else
   {
     CurrentKeys := "1 : " FolderArray[1] "`n2 : " FolderArray[2] "`n3 : " FolderArray[3] "`n4 : " FolderArray[4] "`n5 : " FolderArray[5]
-    EnableKeys := "1, 2, 3, 4, 5"
+    EnableKeys := FolderKeys
   }
   IB := InputBox(Path "`nに上書きしたいキー（" EnableKeys "）を入力してください`n`n設定可能なキー: 現在の設定`n" CurrentKeys, "キーの入力", "w600 h300")
   if (IB.Result = "OK" and IB.Value)
   {
-    if (EnableKeys = "1, 2, 3, 4, 5" and IB.Value = "1")
-      ConfirmSetIni("Folder", "Folder1", Path)
-    else if (EnableKeys = "1, 2, 3, 4, 5" and IB.Value = "2")
-      ConfirmSetIni("Folder", "Folder2", Path)
-    else if (EnableKeys = "1, 2, 3, 4, 5" and IB.Value = "3")
-      ConfirmSetIni("Folder", "Folder3", Path)
-    else if (EnableKeys = "1, 2, 3, 4, 5" and IB.Value = "4")
-      ConfirmSetIni("Folder", "Folder4", Path)
-    else if (EnableKeys = "1, 2, 3, 4, 5" and IB.Value = "5")
-      ConfirmSetIni("Folder", "Folder5", Path)
-    else if (EnableKeys = "a, w, e, s, d, f" and IB.Value = "a")
-      ConfirmSetIni("Software", "Editor", Path)
-    else if (EnableKeys = "a, w, e, s, d, f" and IB.Value = "w")
-      ConfirmSetIni("Software", "Word", Path)
-    else if (EnableKeys = "a, w, e, s, d, f" and IB.Value = "e")
-      ConfirmSetIni("Software", "EMail", Path)
-    else if (EnableKeys = "a, w, e, s, d, f" and IB.Value = "s")
-      ConfirmSetIni("Software", "Slide", Path)
-    else if (EnableKeys = "a, w, e, s, d, f" and IB.Value = "d")
-      ConfirmSetIni("Software", "PDF", Path)
-    else if (EnableKeys = "a, w, e, s, d, f" and IB.Value = "f")
-      ConfirmSetIni("Software", "Browser", Path)
-    else
-      MsgBox IB.Value " には設定できません。`n" EnableKeys " から選択してください．"
+    if EnableKeys = SoftwareKeys
+      ConfirmIfMatchKey(SoftwareKeys, IB.Value, "Software", "Exe", Path)
+    else if EnableKeys = FolderKeys
+      ConfirmIfMatchKey(FolderKeys, IB.Value, "Folder", "Folder", Path)
+    MsgBox IB.Value " には設定できません。`n" StrReplace(EnableKeys, ",", ", ") " から選択してください．"
   }
 }
-ConfirmSetIni(Sec, Key, Path)
+ConfirmIfMatchKey(KeysName, InputValue, Sec, Key, Path)
 {
-  if (MsgBox(Key "を以下に設定します。`n" Path, , "OKCancel") = "OK")
+  Loop parse, KeysName, ", "
   {
-    IniWrite Path, ConfFileName, Sec, Key
-    Reload
+    if (InputValue = A_LoopField)
+    {
+      if (MsgBox(SoftwareLabelList[A_Index] "を以下に設定します。`n" Path, , "OKCancel") = "OK")
+      {
+        IniWrite Path, ConfFileName, Sec, Key A_LoopField
+        Reload
+      }
+    }
   }
 }
 
