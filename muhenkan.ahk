@@ -3,17 +3,18 @@
 ;======================================
 #SingleInstance Force ; このスクリプトの再実行を許可する
 
-; conf ファイルの指定
 ConfFileName := A_ScriptDir "\conf.ini"
-BackupFileName := A_ScriptDir "\backup.ini"
-DefaultFileName := A_ScriptDir "\default.ini"
+
+DateFormatList := ["yyyyMMdd", "yyyyMMdd_HHmm", "yyMMdd", "yyMMdd_HHmm"]
+FolderIniKeyList := ["Folder1", "Folder2", "Folder3", "Folder4", "Folder5"]
+SoftwareIniKeyList := ["Editor", "Word", "EMail", "Slide", "PDF", "Browser"]
 
 WebsiteIniKeyList := ["EngDictionary", "Thesaurus", "Translator", "SearchEngine"]
 WebsiteOption := Map()
 for Website in WebsiteIniKeyList
   WebsiteOption[Website] := Map("Name", Array(), "URL", Array())
 
-WebsiteOption["EngDictionary"]["Name"] := ["Weblio英和和英辞典", "英辞郎 on the WEB", "Longman", "Oxford Learner's Dictionaries"]
+WebsiteOption["EngDictionary"]["Name"] := ["Weblio英和和英辞典", "英辞郎 on the WEB", "Longman", "Oxford"]
 WebsiteOption["EngDictionary"]["URL"] := [
   "https://ejje.weblio.jp/content/",
   "https://eow.alc.co.jp/search?q=",
@@ -82,75 +83,89 @@ SoftwarePath(ext)
     return "未設定"
 }
 
-MikeDefaultIniFile(IniFileName)
-{
-  try
-  {
-    IniWrite "yyyyMMdd", IniFileName, "Timestamp", "DateFormat"
-    IniWrite "before file name", IniFileName, "Timestamp", "Position"
-    IniWrite "https://ejje.weblio.jp/content/", IniFileName, "Website", "EngDictionary"
-    IniWrite "https://thesaurus.weblio.jp/content/", IniFileName, "Website", "Thesaurus"
-    IniWrite "https://www.deepl.com/translator#en/ja/", IniFileName, "Website", "Translator"
-    IniWrite "https://www.google.co.jp/search?q=", IniFileName, "Website", "SearchEngine"
-    IniWrite "C:\Users\A_UserName\Documents", IniFileName, "Folder", "Folder1"
-    IniWrite "C:\Users\A_UserName\Downloads", IniFileName, "Folder", "Folder2"
-    IniWrite "C:\Users\A_UserName\Desktop", IniFileName, "Folder", "Folder3"
-    IniWrite "C:\Users\A_UserName\OneDrive", IniFileName, "Folder", "Folder4"
-    IniWrite "shell:RecycleBinFolder", IniFileName, "Folder", "Folder5"
-    IniWrite SoftwarePath("txt"),  IniFileName, "Software", "Editor"
-    IniWrite SoftwarePath("docx"), IniFileName, "Software", "Word"
-    IniWrite SoftwarePath("eml"),  IniFileName, "Software", "EMail"
-    IniWrite SoftwarePath("pptx"), IniFileName, "Software", "Slide"
-    IniWrite SoftwarePath("pdf"),  IniFileName, "Software", "PDF"
-    IniWrite SoftwarePath("html"), IniFileName, "Software", "Browser"
-  }
-  catch as Err
-  {
-    MsgBox "ファイルを書き込めません。ソフトを別のフォルダに移動してください。`n`n" Type(Err) ": " Err.Message
-    ExitApp
-  }
-}
+
+; Default Setting
+OpenSetting := 1
+DateFormat := "yyyyMMdd"
+TimestampPosition := "before file name"
+WebsiteArray := Array()
+for Website in WebsiteIniKeyList
+  WebsiteArray.Push(WebsiteOption[Website]["URL"][1])
+FolderArray := Array()
+FolderArray.Push("C:\Users\A_UserName\Documents")
+FolderArray.Push("C:\Users\A_UserName\Downloads")
+FolderArray.Push("C:\Users\A_UserName\Desktop")
+FolderArray.Push("C:\Users\A_UserName\OneDrive")
+FolderArray.Push("shell:RecycleBinFolder")
+SoftwareArray := Array()
+SoftwareArray.Push(SoftwarePath("txt"))
+SoftwareArray.Push(SoftwarePath("docx"))
+SoftwareArray.Push(SoftwarePath("eml"))
+SoftwareArray.Push(SoftwarePath("pptx"))
+SoftwareArray.Push(SoftwarePath("pdf"))
+SoftwareArray.Push(SoftwarePath("html"))
 
 ; 設定の読み込み、無ければ作成
-if not FileExist(ConfFileName)
-  MikeDefaultIniFile(ConfFileName)
-if not FileExist(DefaultFileName)
-  MikeDefaultIniFile(DefaultFileName)
+if FileExist(ConfFileName)
+  LoadFile(ConfFileName)
+else
+  SaveFile(ConfFileName)
 
-try
+LoadFile(FileName)
 {
-  ; タイムスタンプの設定
-  DateFormat := StrReplace(IniRead(ConfFileName, "Timestamp", "DateFormat"), "A_UserName", A_UserName)
-  TimestampPosition := StrReplace(IniRead(ConfFileName, "Timestamp", "Position"), "A_UserName", A_UserName)
+  global ; 変数書き込みを行うためglobal を指定
+  try
+  {
+    ; 設定画面を開くか？
+    OpenSetting := IniRead(FileName, "Open", "Setting")
+    ; タイムスタンプの設定
+    DateFormat := IniRead(FileName, "Timestamp", "DateFormat")
+    TimestampPosition := IniRead(FileName, "Timestamp", "Position")
 
-  ; Web サイトの設定
-  WebsiteArray := Array()
-  for Website in WebsiteIniKeyList
-    WebsiteArray.Push(StrReplace(IniRead(ConfFileName, "Website", Website), "A_UserName", A_UserName))
+    ; Web サイトの設定
+    WebsiteArray := Array()
+    for Website in WebsiteIniKeyList
+      WebsiteArray.Push(IniRead(FileName, "Website", Website))
 
-  ; フォルダの設定
-  FolderArray := Array()
-  FolderIniKeyList := ["Folder1", "Folder2", "Folder3", "Folder4", "Folder5"]
-  for Folder in FolderIniKeyList
-    FolderArray.Push(StrReplace(IniRead(ConfFileName, "Folder", Folder), "A_UserName", A_UserName))
+    ; フォルダの設定
+    FolderArray := Array()
+    for Folder in FolderIniKeyList
+      FolderArray.Push(StrReplace(IniRead(FileName, "Folder", Folder), "A_UserName", A_UserName))
 
-  ; ソフトウェアの設定
-  SoftwareArray := Array()
-  SoftwareIniKeyList := ["Editor", "Word", "EMail", "Slide", "PDF", "Browser"]
-  for Software in SoftwareIniKeyList
-    SoftwareArray.Push(StrReplace(IniRead(ConfFileName, "Software", Software), "A_UserName", A_UserName))
+    ; ソフトウェアの設定
+    SoftwareArray := Array()
+    for Software in SoftwareIniKeyList
+      SoftwareArray.Push(StrReplace(IniRead(FileName, "Software", Software), "A_UserName", A_UserName))
+  }
+  catch
+  {
+    MsgBox FileName "`nこのファイルは読み込めません。"
+    return 0
+  }
+  return 1
 }
-catch as Err
-{
-  MsgBox "ファイルを読み込めません。`n`n" Type(Err) ": " Err.Message
-}
 
-OnExit ExitFunc
-ExitFunc(ExitReason, ExitCode)
+SaveFile(FileName)
 {
-  if ExitReason != "Reload" and ExitReason != "Logoff" and ExitReason != "Shutdown"
-    if MsgBox(A_ScriptFullPath "`nを終了します。`n" A_ScriptDir "`nを開きますか？", "終了", "YesNo") ="YES"
-      Run A_ScriptDir ; 再起動したい場合のためにこのスクリプトの場所を開いておく
+  ; global ; 変数読み込みだけのためglobal 指定は不要
+  try
+  {
+    IniWrite 1, FileName, "Open", "Setting"
+    IniWrite DateFormat, FileName, "Timestamp", "DateFormat"
+    IniWrite TimestampPosition, FileName, "Timestamp", "Position"
+    for Index, Key in WebsiteIniKeyList
+      IniWrite WebsiteArray[Index], FileName, "Website", Key
+    for Index, Key in FolderIniKeyList
+      IniWrite StrReplace(FolderArray[Index], A_UserName, "A_UserName"), FileName, "Folder", Key
+    for Index, Key in SoftwareIniKeyList
+      IniWrite StrReplace(SoftwareArray[Index],  A_UserName, "A_UserName"), FileName, "Software", Key
+  }
+  catch
+  {
+    MsgBox FileName "`nこのファイルは書き込めません。"
+    return 0
+  }
+  return 1
 }
 
 ; https://www.autohotkey.com/docs/v2/KeyList.htm#SpecialKeys
@@ -158,6 +173,260 @@ ExitFunc(ExitReason, ExitCode)
 SC07B::Send "{Blind}{SC07B}"
 ; 変換キーに同時押しを許可する
 ; SC079::Send "{Blind}{SC079}" ; このスクリプトでは使っていません
+
+;======================================
+; 設定GUI
+; 無変換キー＋F1 で開く
+;======================================
+MyGui := Gui(,"設定")
+
+FileMenu := Menu()
+FileMenu.Add("開く", MenuHandler)
+FileMenu.Add("保存", MenuHandler)
+FileMenu.Add("名前をつけて保存", MenuHandler)
+FileMenu.Add("初期設定に戻す", MenuHandler)
+FileMenu.Add
+FileMenu.Add("終了", MenuHandler)
+MyMenuBar := MenuBar()
+MyMenuBar.Add("&ファイル", FileMenu)
+
+HelpMenu := Menu()
+HelpMenu.Add("使い方", MenuHandler)
+FileMenu.Add
+HelpMenu.Add("アップデート確認", MenuHandler)
+MyMenuBar.Add("&ヘルプ", HelpMenu)
+MyGui.MenuBar := MyMenuBar
+
+; 起動時の動作
+MyGui.Add("GroupBox", "xm ym w250 h65 section", "起動時の動作")
+AutoStartCheckBox := MyGui.Add("CheckBox", "xs+10 ys+20 w235 h15", "Windows 起動時にこのソフトを自動実行する")
+OpenSettingCheckBox := MyGui.Add("CheckBox", "xs+10 ys+40 w235 h15", "ソフト起動時にこの設定ウィンドウを開く")
+; タイムスタンプ
+MyGui.Add("GroupBox", "xs ys+70 w250 h130 section", "タイムスタンプ")
+MyGui.Add("Link", "xs+10  ys+15", 'フォーマット　（仕様は<a href="https://www.autohotkey.com/docs/v2/lib/FormatTime.htm#Date_Formats">こちら</a>）')
+DateFormatListHas := 0
+for Index, DateFormatCandidate in DateFormatList
+  if DateFormat = DateFormatCandidate
+    DateFormatListHas := 1
+if DateFormatListHas = 0
+  DateFormatList.Push(DateFormat)
+DateFormatComboBox := MyGui.Add("ComboBox", "xs+10 ys+30 w150", DateFormatList)
+DateFormatComboBox.OnEvent("Change", ChangeTimestampExample)
+BeforeRadio := MyGui.Add("Radio", "xs+10  ys+60", "ファイル名の前")
+AfterRadio  := MyGui.Add("Radio", "xs+10  ys+80", "ファイル名の後")
+ExampleText := MyGui.Add("Text",  "xs+10  ys+100", "例:")
+TimestampText := MyGui.Add("Text",  "xs+30  ys+100 w200 BackgroundWhite", "_ファイル名.txt")
+BeforeRadio.OnEvent("Click", ChangeTimestampExample)
+AfterRadio.OnEvent("Click", ChangeTimestampExample)
+; ウェブサイト
+MyGui.Add("GroupBox", "xs ys+130 w250 h105 section", "ウェブサイト")
+for Index, Site in ["Q 英語辞典", "R 類語辞典", "T 翻訳", "G 検索エンジン"]
+  MyGui.Add("Text", "xs+10  ys+" Index*20,  Site)
+WebsiteDDL := Array()
+for KeyIndex, Key in WebsiteIniKeyList
+{
+  for URLIndex, URL in WebsiteOption[Key]["URL"]
+  {
+    if (WebsiteArray[KeyIndex] = URL)
+    {
+      WebsiteDDL.Push(MyGui.Add("DDL", "w150 xs+90  ys+" KeyIndex*20  " Choose" URLIndex, WebsiteOption[Key]["Name"]))
+    }
+  }
+}
+; フォルダ
+MyGui.Add("GroupBox", "xs+260 ys-200 w510 h120 section", "フォルダ")
+FolderTextBox := Array()
+for Index in ["1", "2", "3", "4", "5"]
+{
+  MyGui.Add("Text", "xs+10  ys+" Index*20, Index)
+  FolderTextBox.Push(MyGui.Add("Text", "w480 BackgroundWhite xs+20 ys+" Index*20, FolderArray[Index]))
+  FolderTextBox[Index].OnEvent("Click", SelectFolderCallback.Bind(Index))
+}
+; ソフトウェア
+MyGui.Add("GroupBox", "xs ys+125 w510 h140 section", "ソフトウェア")
+SoftwareTextBox := Array()
+for Index, Software in ["A エディタ", "W ワード", "E Eメール", "S スライド", "D PDF", "F ブラウザ"]
+{
+  MyGui.Add("Text", "xs+10  ys+" Index*20,  Software)
+  SoftwareTextBox.Push(MyGui.Add("Text", "w440 BackgroundWhite xs+60 ys+" Index*20, SoftwareArray[Index]))
+  SoftwareTextBox[Index].OnEvent("Click", NavigateF3)
+}
+
+; 操作ボタン
+SaveButton := MyGui.Add("Button", "xs+425 ys+150 w50 w80", "適用")
+SaveButton.OnEvent("Click", SaveFileFromGUI.Bind(ConfFileName))
+
+UpdateContents()
+if OpenSetting
+  MyGui.Show()
+
+;======================================
+; 設定GUI の関数
+; 無変換キー＋F1 で開く
+;======================================
+; Esc を押したら閉じる
+MyGui.OnEvent("Escape", GUIEsc)
+GUIEsc(*)
+{
+  MyGui.Hide()
+}
+; メニューバーの機能
+MenuHandler(Item, *) {
+  if Item = "開く"
+  {
+    FileName := FileSelect(, ConfFileName, "Open a file", "設定ファイル (*.ini)")
+    if LoadFile(FileName)
+    {
+      UpdateContents()
+      if FileName != ConfFileName
+        MsgBox(FileName "`nを読み込みました。`n現在の変更を反映させるには「適用」を押してください。")
+    }
+  }
+  else if Item = "保存"
+    SaveFileFromGUI(ConfFileName)
+  else if Item = "名前をつけて保存"
+  {
+    FileName := FileSelect(, ConfFileName, "Open a file", "設定ファイル (*.ini)")
+    SplitPath(FileName, , &dir, &ext, &name_no_ext)
+    if ext = "ini"
+      SaveFileFromGUI(dir "\" name_no_ext ".ini")
+    else if ext = ""
+      SaveFileFromGUI(dir "\" name_no_ext ".ini")
+    else
+      MsgBox FileName "`nこのファイルには保存できません"
+  }
+  else if Item = "初期設定に戻す"
+  {
+    if (MsgBox("初期設定に戻しますか？`n(現在の設定は失われます。)", , "OKCancel") = "OK")
+    {
+      FileDelete ConfFileName
+      reload
+    }
+  }
+  else if Item = "終了"
+  {
+    Result := MsgBox("ソフトを終了します。`nソフトがあるフォルダを開きますか？", , "YesNoCancel")
+    if Result = "Yes"
+    {
+      Run A_ScriptDir
+      ExitApp
+    }
+    else if Result = "No"
+      ExitApp
+  }
+  else if Item = "使い方"
+  {
+    if FileExist(A_ScriptDir "/README.html")
+      Run A_ScriptDir "/README.html"
+    else
+      Run "https://github.com/kimushun1101/muhenkan-switch"
+    MyGui.Hide()
+  }
+}
+
+UpdateContents()
+{
+  if FileExist(A_Startup "\muhenkan_ahk_or_exe.lnk")
+    AutostartCheckBox.Value := 1
+  else
+    AutostartCheckBox.Value := 0
+  OpenSettingCheckBox.Value := OpenSetting
+  for Index, DateFormatCandidate in DateFormatList
+    if DateFormat = DateFormatCandidate
+      DateFormatComboBox.Choose(Index)
+  if (TimestampPosition = "before file name")
+  {
+    BeforeRadio.Value := 1
+    Timestamp := FormatTime(, DateFormatComboBox.Text)
+    TimestampText.Text := Timestamp "_ファイル名.txt"
+  }
+  else if (TimestampPosition = "after file name")
+  {
+    AfterRadio.Value := 1
+    Timestamp := FormatTime(, DateFormatComboBox.Text)
+    TimestampText.Text := "ファイル名_" Timestamp ".txt"
+  }
+  ; Web サイトの設定
+  for KeyIndex, Key in WebsiteIniKeyList
+  {
+    for URLIndex, URL in WebsiteOption[Key]["URL"]
+    {
+      if (WebsiteArray[KeyIndex] = URL)
+        WebsiteDDL[KeyIndex].Value := URLIndex
+    }
+  }
+  ; フォルダの設定
+  for Index, Directory in FolderArray
+    FolderTextBox[Index].Text := Directory
+  ; ソフトウェアの設定
+  for Index, Software in SoftwareArray
+    SoftwareTextBox[Index].Text := Software
+}
+
+ChangeTimestampExample(*)
+{
+  Timestamp := FormatTime(, DateFormatComboBox.Text)
+  if (BeforeRadio.Value = 1)
+    TimestampText.Value := Timestamp "_ファイル名.txt"
+  else
+    TimestampText.Value := "ファイル名_" Timestamp ".txt"
+}
+SelectFolderCallback(Num, *)
+{
+    SelectedFolder := FileSelect("D", FolderTextBox[Num].Text, "Select a folder")
+    if SelectedFolder
+      FolderTextBox[Num].Text := SelectedFolder
+}
+NavigateF3(*)
+{
+  if MsgBox("設定画面を閉じた後、`n割り当てたいソフトを最前面に出して``無変換``+``F3キー``を押してください。`n設定画面を閉じますか？",, "YesNo") ="YES"
+    MyGui.Hide()
+}
+SaveFileFromGUI(FileName, *)
+{
+  if FileName = ConfFileName
+  {
+    if MsgBox("現在の設定を変更しますか？",, "YesNo") = "No"
+      return
+  }
+  if AutoStartCheckBox.Value and not FileExist(A_Startup "\muhenkan_ahk_or_exe.lnk")
+    FileCreateShortcut(A_ScriptFullPath, A_Startup "\muhenkan_ahk_or_exe.lnk")
+  else if not AutoStartCheckBox.Value and FileExist(A_Startup "\muhenkan_ahk_or_exe.lnk")
+    FileDelete(A_Startup "\muhenkan_ahk_or_exe.lnk")
+  try
+  {
+    IniWrite OpenSettingCheckBox.Value, FileName, "Open", "Setting"
+    IniWrite DateFormatComboBox.Text, FileName, "Timestamp", "DateFormat"
+    if (BeforeRadio.Value = 1)
+      IniWrite "before file name", FileName, "Timestamp", "Position"
+    else
+      IniWrite "after file name", FileName, "Timestamp", "Position"
+    for KeyIndex, Key in WebsiteIniKeyList
+    {
+      for URLIndex, URL in WebsiteOption[Key]["URL"]
+      {
+        if (URLIndex = WebsiteDDL[KeyIndex].Value)
+          IniWrite URL, FileName, "Website", Key
+      }
+    }
+    for Index, Key in FolderIniKeyList
+      IniWrite StrReplace(FolderTextBox[Index].Text, A_UserName, "A_UserName"), FileName, "Folder", Key
+    for Index, Key in SoftwareIniKeyList
+      IniWrite StrReplace(SoftwareTextBox[Index].Text,  A_UserName, "A_UserName"), FileName, "Software", Key
+    if FileName = ConfFileName
+    {
+      MsgBox("設定を変更しました。")
+      Reload
+    }
+    else
+      MsgBox(FileName "`nにバックアップを作成しました。`n現在の変更を反映させるには「適用」を押してください。")
+  }
+  ; catch
+  ;   MsgBox FileName "`nこのファイルは書き込めません。"
+  catch as Err
+    MsgBox FileName "`nこのファイルは書き込めません。" Err.Message
+}
+
 
 ;======================================
 ; カーソル操作
@@ -345,10 +614,13 @@ SC07B & c::
   else
     MsgBox "TimestampPosition が間違っています。"
   
-  if FileExist(NewFile)
+  While FileExist(NewFile)
   {
-    MsgBox NewFile "`nはすでに存在します。"
-    return
+    IB := InputBox(NewFile "`nはすでに存在します。`nファイル名を指定してください", "ファイル名の修正", , NewFile)
+    if (IB.Result = "OK" and IB.Value != NewFile)
+      NewFile := IB.Value
+    else if IB.Result = "Cancel"
+      return
   }
   if (ext = "") ; 拡張子がない=フォルダ
     DirCopy TergetFile, NewFile
@@ -404,299 +676,37 @@ PastePlaneText(ThisHotkey)
   Send "^v"
 }
 
+; 日付や時刻を入力
+::;date::{
+  SendInput FormatTime(, "yyyyMMdd")
+}
+::;_date::{
+  SendInput FormatTime(, "yyyy_MMdd")
+}
+::;datetime::{
+  SendInput FormatTime(, "yyyyMMdd_HHmm")
+}
+::;/date::{
+  SendInput FormatTime(, "yyyy/MM/dd")
+}
+::;.date::{
+  SendInput FormatTime(, "yyyy.MM.dd")
+}
+::;time::{
+  SendInput FormatTime(, "HHmm")
+}
+::`:time::{
+  SendInput FormatTime(, "HH:mm")
+}
+
 ;======================================
 ; 設定関連
 ; ファンクションキーに割り当てる
 ;======================================
-; F1 でキーボード画像を出す（ヘルプ）
+; F1 で設定の変更
 SC07B & F1::
 {
-  if FileExist(A_ScriptDir "/README.html")
-    Run A_ScriptDir "/README.html"
-  else
-    Run "https://github.com/kimushun1101/muhenkan-switch"
-}
-; F2 で設定の変更
-SC07B & F2::
-{
-  MyGui := Gui("AlwaysOnTop", "設定")
-  MyGui.Add("Text", "ym+10 w205 section", "現在起動しているファイル : ")
-  MyGui.Add("Text", "xs+130 ys w550 BackgroundWhite", A_ScriptFullPath)
-  if FileExist(A_Startup "\muhenkan_ahk_or_exe.lnk")
-    TextStartup := MyGui.Add("Text",  "xs+695 ys h15 w80 Background69B076", " 自動起動ON")
-  else
-    TextStartup := MyGui.Add("Text",  "xs+695 ys h15 w80 BackgroundFADBDA", " 自動起動OFF")
-  BtnStartUP := MyGui.Add("Button", "xs+770 ys-5", "切替").OnEvent("Click", ToggleStartUp)
-
-  ; タイムスタンプ
-  MyGui.Add("GroupBox", "xs ys+20 w290 h120 section", "タイムスタンプ")
-  DateFormatList := ["yyyyMMdd", "yyMMdd", "yyyyMMdd_HHmmss"]
-  if DateFormat = "yyyyMMdd"
-    ChooseDateFormat := "Choose1"
-  else if DateFormat = "yyMMdd"
-    ChooseDateFormat := "Choose2"
-  else if DateFormat = "yyyyMMdd_HHmmss"
-    ChooseDateFormat := "Choose3"
-  else
-  {
-    DateFormatList := ["yyyyMMdd", "yyMMdd", "yyyyMMdd_HHmmss" , DateFormat]
-    ChooseDateFormat := "Choose4"
-  }
-
-  DateFormatComboBox := MyGui.Add("ComboBox", "xs+10 ys+20 w150 " ChooseDateFormat, DateFormatList)
-  DateFormatComboBox.OnEvent("Change", ChangeTimestampExample)
-  MyGui.Add("Link", "xs+170  ys+25", 'フォーマットは <a href="https://www.autohotkey.com/docs/v2/lib/FormatTime.htm#Date_Formats">こちら</a>')
-  ExampleText := MyGui.Add("Text",  "xs+10  ys+100", "例:")
-  Timestamp := FormatTime(, DateFormat)
-  if (TimestampPosition = "before file name")
-  {
-    BeforeRadio := MyGui.Add("Radio", "xs+10  ys+55 checked", "ファイル名の前")
-    AfterRadio  := MyGui.Add("Radio", "xs+10  ys+75", "ファイル名の後")
-    TimestampText := MyGui.Add("Text",  "xs+30  ys+100 w250 BackgroundWhite", Timestamp "_ファイル名.txt")
-  }
-  else if (TimestampPosition = "after file name")
-  {
-    BeforeRadio := MyGui.Add("Radio", "xs+10  ys+55", "ファイル名の前")
-    AfterRadio  := MyGui.Add("Radio", "xs+10  ys+75 checked", "ファイル名の後")
-    TimestampText := MyGui.Add("Text",  "xs+30  ys+100 w250 BackgroundWhite", "ファイル名_" Timestamp ".txt")
-  }
-  BeforeRadio.OnEvent("Click", ChangeTimestampExample)
-  AfterRadio.OnEvent("Click", ChangeTimestampExample)
-
-  ; ウェブサイト
-  MyGui.Add("GroupBox", "xs ys+125 w290 h140 section", "ウェブサイト")
-  for Index, Site in ["Q 英語辞典", "R 類語辞典", "T 翻訳", "G 検索エンジン"]
-    MyGui.Add("Text", "xs+10  ys+" Index*25,  Site)
-  WebsiteDDL := Array()
-  for KeyIndex, Key in WebsiteIniKeyList
-  {
-    for URLIndex, URL in WebsiteOption[Key]["URL"]
-    {
-      if (WebsiteArray[KeyIndex] = URL)
-      {
-        WebsiteDDL.Push(MyGui.Add("DDL", "w180 xs+90  ys+" KeyIndex*25  " Choose" URLIndex, WebsiteOption[Key]["Name"]))
-      }
-    }
-  }
-
-  ; フォルダ
-  MyGui.Add("GroupBox", "xs+300 ys-125 w510 h120 section", "フォルダ")
-  FolderTextBox := Array()
-  for Index in ["1", "2", "3", "4", "5"]
-  {
-    MyGui.Add("Text", "xs+10  ys+" Index*20, Index)
-    FolderTextBox.Push(MyGui.Add("Text", "w480 BackgroundWhite xs+20 ys+" Index*20, FolderArray[Index]))
-    FolderTextBox[Index].OnEvent("Click", SelectFolderCallback.Bind(Index))
-  }
-  ; ソフトウェア
-  MyGui.Add("GroupBox", "xs ys+125 w510 h140 section", "ソフトウェア")
-  SoftwareTextBox := Array()
-  for Index, Software in ["A エディタ", "W ワード", "E Eメール", "S スライド", "D PDF", "F ブラウザ"]
-  {
-    MyGui.Add("Text", "xs+10  ys+" Index*20,  Software)
-    SoftwareTextBox.Push(MyGui.Add("Text", "w440 BackgroundWhite xs+60 ys+" Index*20, SoftwareArray[Index]))
-    SoftwareTextBox[Index].OnEvent("Click", NavigateF3)
-  }
-
-  ; 設定ファイル
-  MyGui.Add("GroupBox", "xs-300 ys+150 w810 h50 section", "設定ファイル")
-  ConfFileDDL := MyGui.Add("DDL", "xs+10 ys+20 w650 Choose1", [ConfFileName, BackupFileName, DefaultFileName, "Another File"])
-  ConfFileDDL.OnEvent("Change", ChangeSaveFileButton)
-  MyGui.Add("Button", "xs+670 ys+18 w50", "読込").OnEvent("Click", LoadFile)
-  SaveButton := MyGui.Add("Button", "xs+725 ys+18 w50 w80", "設定を適用")
-  SaveButton.OnEvent("Click", SaveFile)
-
   MyGui.Show()
-  MyGui.OnEvent("Escape", GUIEsc)
-
-  GUIEsc(*)
-  {
-   MyGui.Destroy()
-  }
-  
-  ToggleStartUp(*)
-  {
-    if not FileExist(A_Startup "\muhenkan_ahk_or_exe.lnk")
-    {
-      FileCreateShortcut(A_ScriptFullPath, A_Startup "\muhenkan_ahk_or_exe.lnk")
-      TextStartup.Value := " 自動起動ON"
-      TextStartup.Opt("Background69B076")
-      TextStartup.Redraw()
-    }
-    else
-    {
-      FileDelete(A_Startup "\muhenkan_ahk_or_exe.lnk")
-      TextStartup.Value := " 自動起動OFF"
-      TextStartup.Opt("BackgroundFADBDA")
-      TextStartup.Redraw()
-    }
-  }
-  ChangeTimestampExample(*)
-  {
-    Timestamp := FormatTime(, DateFormatComboBox.Text)
-    if (BeforeRadio.Value = 1)
-      TimestampText.Value := Timestamp "_ファイル名.txt"
-    else
-      TimestampText.Value := "ファイル名_" Timestamp ".txt"
-  }
-  ChangeSaveFileButton(*)
-  {
-    if ConfFileDDL.Text = ConfFileName
-    {
-      SaveButton.Text := "設定を適用"
-      SaveButton.Enabled := true
-    }
-    else if ConfFileDDL.Text = "Another File"
-    {
-      MyGui.Opt("-AlwaysOnTop")
-      SelectedFile := FileSelect(, ConfFileName, "Open a file", "設定ファイル (*.ini)")
-      try ConfFileDDL.Delete(5)
-      if SelectedFile
-      {
-        SplitPath(SelectedFile, , &dir, &ext, &name_no_ext)
-        if ext != "ini"
-          SelectedFile := dir "\" name_no_ext ".ini"
-        ConfFileDDL.Add([SelectedFile])
-        ConfFileDDL.Value := 5
-      }
-      else
-        ConfFileDDL.Value := 1
-      ChangeSaveFileButton()
-      MyGui.Opt("AlwaysOnTop")
-    }
-    else if ConfFileDDL.Text = DefaultFileName
-    {
-      SaveButton.Text := "書換不可"
-      SaveButton.Enabled := false
-    }
-    else
-    {
-      SaveButton.Text := "バックアップ"
-      SaveButton.Enabled := true
-    }
-  }
-
-  SelectFolderCallback(Num, *)
-  {
-      MyGui.Opt("-AlwaysOnTop")
-      SelectedFolder := FileSelect("D", FolderTextBox[Num].Text, "Select a folder")
-      if SelectedFolder
-        FolderTextBox[Num].Text := SelectedFolder
-      MyGui.Opt("AlwaysOnTop")
-  }
-  NavigateF3(*)
-  {
-    MyGui.Opt("-AlwaysOnTop")
-    if MsgBox("設定画面を閉じた後、`n割り当てたいソフトを最前面に出して``無変換``+``F3キー``を押してください。`n設定画面を閉じますか？",, "YesNo") ="YES"
-      MyGui.Destroy()
-    else
-      MyGui.Opt("AlwaysOnTop")
-  }
-  LoadFile(*)
-  {
-    if not FileExist(ConfFileDDL.Text)
-    {
-      MyGui.Opt("-AlwaysOnTop")
-      MsgBox ConfFileDDL.Text "`nは存在しません。"
-      MyGui.Opt("AlwaysOnTop")
-      return
-    }
-
-    MyGui.Opt("-AlwaysOnTop")
-    Result := MsgBox(ConfFileDDL.Text "`nを読み込みますか？",, "YesNo") ="No"
-    MyGui.Opt("AlwaysOnTop")
-    if Result
-      return
-
-    ; タイムスタンプの設定
-    DateFormatComboBox.Text := StrReplace(IniRead(ConfFileDDL.Text, "Timestamp", "DateFormat"), "A_UserName", A_UserName)
-    TimestampPosition := StrReplace(IniRead(ConfFileDDL.Text, "Timestamp", "Position"), "A_UserName", A_UserName)
-    if (TimestampPosition = "before file name")
-    {
-      BeforeRadio.Value := 1
-      Timestamp := FormatTime(, DateFormatComboBox.Text)
-      TimestampText.Text := Timestamp "_ファイル名.txt"
-    }
-    else if (TimestampPosition = "after file name")
-    {
-      AfterRadio.Value := 1
-      Timestamp := FormatTime(, DateFormatComboBox.Text)
-      TimestampText.Text := "ファイル名_" Timestamp ".txt"
-    }
-    ; Web サイトの設定
-    for KeyIndex, Key in WebsiteIniKeyList
-    {
-      WebsiteArray[KeyIndex] := StrReplace(IniRead(ConfFileDDL.Text, "Website", Key), "A_UserName", A_UserName)
-      for URLIndex, URL in WebsiteOption[Key]["URL"]
-      {
-        if (WebsiteArray[KeyIndex] = URL)
-          WebsiteDDL[KeyIndex].Value := URLIndex
-      }
-    }
-    ; フォルダの設定
-    for Index, Key in FolderIniKeyList
-      FolderTextBox[Index].Text := StrReplace(IniRead(ConfFileDDL.Text, "Folder", Key), "A_UserName", A_UserName)
-    ; ソフトウェアの設定
-    for Index, Key in SoftwareIniKeyList
-      SoftwareTextBox[Index].Text := StrReplace(IniRead(ConfFileDDL.Text, "Software", Key), "A_UserName", A_UserName)
-
-    MyGui.Opt("-AlwaysOnTop")
-    if ConfFileDDL.Text = ConfFileName
-      MsgBox "現在の設定に戻しました。"
-    else
-    {
-      ConfFileDDL.Value := 1
-      SaveButton.Text := "設定を適用"
-      SaveButton.Enabled := true
-      MsgBox "設定を読み込みました。反映させるには「設定の適用」を押してください。"
-    }
-    MyGui.Opt("AlwaysOnTop")
-  }
-  SaveFile(*)
-  {
-    MyGui.Opt("-AlwaysOnTop")
-    if ConfFileDDL.Text = ConfFileName
-    {
-      if MsgBox("現在の設定を変更しますか？",, "YesNo") = "No"
-        return
-    }
-    else
-    {
-      if MsgBox(ConfFileDDL.Text "`nにバックアップを取りますか？`n（現在の設定は変更されません。）",, "YesNo") = "No"
-        return
-    }
-    IniWrite DateFormatComboBox.Text, ConfFileDDL.Text, "Timestamp", "DateFormat"
-    if (BeforeRadio.Value = 1)
-      IniWrite "before file name", ConfFileDDL.Text, "Timestamp", "Position"
-    else
-      IniWrite "after file name", ConfFileDDL.Text, "Timestamp", "Position"
-
-    for KeyIndex, Key in WebsiteIniKeyList
-    {
-      for URLIndex, URL in WebsiteOption[Key]["URL"]
-      {
-        if (URLIndex = WebsiteDDL[KeyIndex].Value)
-          IniWrite URL, ConfFileDDL.Text, "Website", Key
-      }
-    }
-
-    for Index, Key in FolderIniKeyList
-      IniWrite StrReplace(FolderTextBox[Index].Text, A_UserName, "A_UserName"), ConfFileDDL.Text, "Folder", Key
-    for Index, Key in SoftwareIniKeyList
-      IniWrite StrReplace(SoftwareTextBox[Index].Text,  A_UserName, "A_UserName"), ConfFileDDL.Text, "Software", Key
-
-    if ConfFileDDL.Text = ConfFileName
-    {
-      MsgBox("設定を変更しました。`n設定画面を閉じます。")
-      Reload
-    }
-    else
-    {
-      MsgBox(ConfFileDDL.Text "`nにバックアップを作成しました。`n現在の変更を反映させるには「設定の適用」を押してください。")
-      ConfFileDDL.Value := 1
-      SaveButton.Text := "設定を適用"
-    }
-  }
 }
 ; F3 でキー割当の変更
 SC07B & F3::
@@ -766,17 +776,11 @@ ConfirmSetIni(Sec, Key, Path)
   }
 }
 
-; F4 でスクリプトを終了 Alt + F4 から連想
-SC07B & F4::
-{
-  if (MsgBox("スクリプトを終了しますか？`n", , "OKCancel") = "OK")
-    ExitApp
-}
 ; F5 でAutoHotKey のスクリプトをセーブ&リロード（デバッグ用）
 SC07B & F5::
 {
   Send "^s"
-  MsgBox A_ScriptFullPath "`nをセーブ&リロード"
+  ; MsgBox A_ScriptFullPath "`nをセーブ&リロード"
   Reload
 }
 ;---------------------------------------
