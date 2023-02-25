@@ -390,8 +390,8 @@ MenuHandler(Item, *) {
   }
   else if Item = "アップデート確認"
   {
-    MsgBox "現在のバージョン" CurrentVersion
-    Run "https://github.com/kimushun1101/muhenkan-switch"
+    MsgBox "現在のバージョン" CurrentVersion "`nGitHub のreleases ページを開きます。"
+    Run "https://github.com/kimushun1101/muhenkan-switch/releases"
   }
 }
 
@@ -541,35 +541,13 @@ SaveFileFromGUI(FileName, *)
   ;   MsgBox FileName "`nこのファイルは書き込めません。"
   catch as Err
     MsgBox FileName "`nこのファイルは書き込めません。" Err.Message
-}    
+}
 
-;======================================
-; カーソル操作
-; ホームポジションで使われることを想定
-; 右手で操作するキーに割り当てる
-;======================================
-; 両手がホームポジションにあるはずとして
-; 右手のアルファベットキーに割り当てる
-
-; 無変換キー+hjkl でカーソルキー移動
-SC07B & h::Send "{Blind}{Left}"
-SC07B & j::Send "{Blind}{Down}"
-SC07B & k::Send "{Blind}{Up}"
-SC07B & l::Send "{Blind}{Right}"
-
-; 無変換キー+u またはi で左右へ単語移動
-SC07B & u::Send "{Blind}^{Left}"
-SC07B & i::Send "{Blind}^{Right}"
-; 無変換キー+y またはo でHome とEnd
-SC07B & y::Send "{Blind}{Home}"
-SC07B & o::Send "{Blind}{End}"
-
-; BackSpace, Delete, Esc
-SC07B & n::Send "{BS}"
-SC07B & m::Send "{Del}"
-SC07B & `;::Send "{Esc}"
-SC07B & ,::Send "、"
-SC07B & .::Send "。"
+; F1 で設定の変更
+SC07B & F1::
+{
+  MyGui.Show()
+}
 
 ;======================================
 ; エクスプローラーの表示
@@ -757,6 +735,34 @@ SC07B & x::
 }
 
 ;======================================
+; カーソル操作
+; ホームポジションで使われることを想定
+; 右手で操作するキーに割り当てる
+;======================================
+; 両手がホームポジションにあるはずとして
+; 右手のアルファベットキーに割り当てる
+
+; 無変換キー+hjkl でカーソルキー移動
+SC07B & h::Send "{Blind}{Left}"
+SC07B & j::Send "{Blind}{Down}"
+SC07B & k::Send "{Blind}{Up}"
+SC07B & l::Send "{Blind}{Right}"
+
+; 無変換キー+u またはi で左右へ単語移動
+SC07B & u::Send "{Blind}^{Left}"
+SC07B & i::Send "{Blind}^{Right}"
+; 無変換キー+y またはo でHome とEnd
+SC07B & y::Send "{Blind}{Home}"
+SC07B & o::Send "{Blind}{End}"
+
+; BackSpace, Delete, Esc
+SC07B & n::Send "{BS}"
+SC07B & m::Send "{Del}"
+SC07B & `;::Send "{Esc}"
+SC07B & ,::Send "、"
+SC07B & .::Send "。"
+
+;======================================
 ; その他
 ; 上記の法則から外れるがよく使うもの
 ;======================================
@@ -791,78 +797,6 @@ PastePlaneText(ThisHotkey)
 }
 ::;datetime::{
   SendInput FormatTime(, "yyyyMMdd_HHmm")
-}
-
-;======================================
-; 設定関連
-; ファンクションキーに割り当てる
-;======================================
-; F1 で設定の変更
-SC07B & F1::
-{
-  MyGui.Show()
-}
-; F3 でキー割当の変更
-SC07B & F3::
-{
-  Path := StrReplace(WinGetProcessPath(WinExist("A")), A_UserName, "A_UserName")
-  if (Path = A_WinDir "\explorer.exe")
-  {
-    old_clip := ClipboardAll()
-    A_Clipboard := ""
-    Send "{Down}{Left}{Right}{Up}^c"  ; フォルダ内のファイルを何か選択してコピー
-    if not ClipWait(1)
-    {
-      MsgBox "1. ソフトまたはフォルダを最前面にしてください。`n2. フォルダの場合、フォルダ内のファイルを選択してください。`n3. このフォルダは設定ができません。", "割り当て失敗"
-      return
-    }
-    SelectedPath := StrReplace(A_Clipboard, A_UserName, "A_UserName")
-    A_Clipboard := old_clip
-    SplitPath(SelectedPath, , &dir)
-    Path := dir
-  }
-  SplitPath(Path, &name, &dir, &ext)
-  if (ext = "exe")       ; exe ファイルの場合
-  {
-    CurrentKeys := "a (Editor) :`t" SoftwareExeArray[1] "`nw (Word) :`t" SoftwareExeArray[2] "`ne (Email) :`t" SoftwareExeArray[3]  "`ns (Slide) :`t`t" SoftwareExeArray[4] "`nd (PDF) :`t`t" SoftwareExeArray[5] "`nf (Browser) :`t" SoftwareExeArray[6]
-    EnableKeys := SoftwareKeys
-  }
-  else
-  {
-    CurrentKeys := "1 : " FolderPathArray[1] "`n2 : " FolderPathArray[2] "`n3 : " FolderPathArray[3] "`n4 : " FolderPathArray[4] "`n5 : " FolderPathArray[5]
-    EnableKeys := FolderKeys
-  }
-  IB := InputBox(Path "`nに上書きしたいキー（" EnableKeys "）を入力してください`n`n設定可能なキー: 現在の設定`n" CurrentKeys, "キーの入力", "w600 h300")
-  if (IB.Result = "OK" and IB.Value)
-  {
-    if EnableKeys = SoftwareKeys
-      ConfirmIfMatchKey(SoftwareKeys, IB.Value, "Software", "Exe", Path)
-    else if EnableKeys = FolderKeys
-      ConfirmIfMatchKey(FolderKeys, IB.Value, "Folder", "Folder", Path)
-    MsgBox IB.Value " には設定できません。`n" StrReplace(EnableKeys, ",", ", ") " から選択してください．"
-  }
-}
-ConfirmIfMatchKey(KeysName, InputValue, Sec, Key, Path)
-{
-  Loop parse, KeysName, ","
-  {
-    if (InputValue = A_LoopField)
-    {
-      if (MsgBox(SoftwareLabelArray[A_Index] "を以下に設定します。`n" Path, , "OKCancel") = "OK")
-      {
-        IniWrite Path, ConfFileName, Sec, Key A_LoopField
-        Reload
-      }
-    }
-  }
-}
-
-; F5 でAutoHotKey のスクリプトをセーブ&リロード（デバッグ用）
-SC07B & F5::
-{
-  Send "^s"
-  ; MsgBox A_ScriptFullPath "`nをセーブ&リロード"
-  Reload
 }
 ;---------------------------------------
 ; CapsLock キーをCtrl キーへ変更
