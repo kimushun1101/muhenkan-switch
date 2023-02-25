@@ -3,7 +3,7 @@
 ;======================================
 #SingleInstance Force ; このスクリプトの再実行を許可する
 
-CurrentVersion := "1.0.0"
+CurrentVersion := "v.1.0.1"
 
 ConfFileName := A_ScriptDir "\conf.ini"
 
@@ -388,10 +388,10 @@ MenuHandler(Item, *) {
     else
       Run "https://github.com/kimushun1101/muhenkan-switch"
   }
-  else if Item = "アップデート確認"
+  else if Item = "バージョン情報"
   {
-    MsgBox "現在のバージョン" CurrentVersion "`nGitHub のreleases ページを開きます。"
-    Run "https://github.com/kimushun1101/muhenkan-switch/releases"
+    if MsgBox("現在のバージョン" CurrentVersion "`nGitHub のreleases ページを開きますか？",, "YesNo") = "Yes"
+      Run "https://github.com/kimushun1101/muhenkan-switch/releases"
   }
 }
 
