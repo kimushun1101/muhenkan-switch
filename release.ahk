@@ -1,9 +1,30 @@
+FileObj := FileOpen(A_ScriptDir "\muhenkan.ahk", "r")
+FileObj.Seek(0)
+FirstLine := StrSplit(FileObj.ReadLine(), "`"")
+CurrentVersion := FirstLine[2]
+FileObj.Close()
+
+IB := InputBox("書き出すバージョンを指定してください。", "バージョン入力", "w250 h100", CurrentVersion)
+if IB.Result = "Cancel"
+  return
+else
+  CurrentVersion := IB.Value
+
+; ここを書き換えて実行する
+
 OutputDir := A_ScriptDir "\muhenkan-switch"
 try DirDelete OutputDir, 1
 DirCreate OutputDir
 
-for filename in ["muhenkan", "uninstall"]
+Files := ["muhenkan", "uninstall", "update"]
+
+for filename in Files
 {
+  FileObj := FileOpen(A_ScriptDir "\" filename ".ahk", "rw")
+  FileObj.Seek(0)
+  FileObj.Write("CurrentVersion := `"" CurrentVersion "`"")
+  FileObj.Close()
+
   ahk2exe := "C:\Program Files\AutoHotkey\Compiler\Ahk2Exe.exe"
   ahk := A_ScriptDir "\" filename ".ahk"
   exe := OutputDir "\" filename ".exe"
@@ -23,11 +44,15 @@ FileNames.Push("README.html")
 for path in FileNames
   FileCopy A_ScriptDir "\" path, OutputDir "\" path
 
-for filename in ["muhenkan", "uninstall"]
+for filename in Files
 {
   exe := OutputDir "\" filename ".exe"
   while not FileExist(exe)
     Sleep 1000
 }
+
+Ver := StrReplace(CurrentVersion, ".", "_")
+FileMove OutputDir "\update.exe", OutputDir "\update_" Ver ".exe"
+
 RunWait "powershell -Command `"Compress-Archive -Path `'" OutputDir "\*`' -Destination `'"  OutputDir ".zip`'`""
 DirDelete OutputDir, 1

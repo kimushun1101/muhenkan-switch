@@ -1,6 +1,9 @@
-if A_ScriptName = "uninstall.ahk"
+CurrentVersion := "v.1.1.0"
+; release.ahk によって書き換えられる
+
+if not FileExist(A_ScriptDir "\muhenkan.exe")
 {
-  MsgBox "このファイルではアンイストールをしません。"
+  MsgBox "muhenkan.exe がありません。`nフォルダごと削除してください。"
   return
 }
 
@@ -11,8 +14,7 @@ DetectHiddenWindows True
 try WinKill A_ScriptDir "\muhenkan.exe"
 
 try FileDelete A_ScriptDir "\..\muhenkan-switch.zip"
-try DirDelete A_ScriptDir "\img", 1
-try DirDelete A_ScriptDir, 1
-try FileDelete A_ScriptFullPath
+try DirDelete  A_ScriptDir "\img", 1
+try FileDelete A_ScriptDir "\*"
 
 MsgBox "uninstall.exe は手動で削除してください。"

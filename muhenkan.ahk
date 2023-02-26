@@ -1,9 +1,14 @@
-﻿;======================================
-; 準備
-;======================================
-#SingleInstance Force ; このスクリプトの再実行を許可する
+CurrentVersion := "v.1.1.0"
+; release.ahk によって書き換えられる
+Ver := StrReplace(CurrentVersion, ".", "_")
 
-CurrentVersion := "v.1.0.1"
+Loop Files, A_ScriptDir "\update*.exe"
+{
+  if A_LoopFileFullPath != A_ScriptDir "\update_" Ver ".exe"
+    FileDelete A_LoopFileFullPath
+}
+
+#SingleInstance Force ; このスクリプトの再実行を許可する
 
 ConfFileName := A_ScriptDir "\conf.ini"
 
@@ -215,6 +220,7 @@ MyMenuBar.Add("&ファイル", FileMenu)
 
 HelpMenu := Menu()
 HelpMenu.Add("使い方", MenuHandler)
+HelpMenu.Add
 HelpMenu.Add("アップデート確認", MenuHandler)
 MyMenuBar.Add("&ヘルプ", HelpMenu)
 MyGui.MenuBar := MyMenuBar
@@ -388,10 +394,9 @@ MenuHandler(Item, *) {
     else
       Run "https://github.com/kimushun1101/muhenkan-switch"
   }
-  else if Item = "バージョン情報"
+  else if Item = "アップデート確認"
   {
-    if MsgBox("現在のバージョン" CurrentVersion "`nGitHub のreleases ページを開きますか？",, "YesNo") = "Yes"
-      Run "https://github.com/kimushun1101/muhenkan-switch/releases"
+    Run A_ScriptDir "\update_" Ver ".exe"
   }
 }
 

@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="KDNoategi7YZtb6zJ5Sa" name="keyboard">
-        <mxGraphModel dx="1451" dy="962" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+        <mxGraphModel dx="1378" dy="914" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -266,15 +266,32 @@
         </mxGraphModel>
     </diagram>
     <diagram id="QcDv05DSNZi4pvjdqsMP" name="muhenkan.icon">
-        <mxGraphModel dx="1148" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+        <mxGraphModel dx="1378" dy="914" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
-                <mxCell id="cir7mgRERzWUox8Nm5Tj-1" value="" style="shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;fixedSize=1;size=50;fillColor=#008a00;strokeColor=#005700;fontColor=#ffffff;" vertex="1" parent="1">
+                <mxCell id="cir7mgRERzWUox8Nm5Tj-1" value="" style="shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;fixedSize=1;size=50;fillColor=#008a00;strokeColor=#005700;fontColor=#ffffff;" parent="1" vertex="1">
                     <mxGeometry x="450" y="250" width="300" height="300" as="geometry"/>
                 </mxCell>
-                <mxCell id="cir7mgRERzWUox8Nm5Tj-3" value="無" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontFamily=Meirio;fontSize=240;fontStyle=1;labelBorderColor=none;whiteSpace=wrap;fontColor=#fffafa;" vertex="1" parent="1">
+                <mxCell id="cir7mgRERzWUox8Nm5Tj-3" value="無" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontFamily=Meirio;fontSize=240;fontStyle=1;labelBorderColor=none;whiteSpace=wrap;fontColor=#fffafa;" parent="1" vertex="1">
                     <mxGeometry x="472.5" y="339" width="255" height="150" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+    <diagram name="update.ico" id="Uscm6bKYTGQIxYjz0baG">
+        <mxGraphModel dx="1378" dy="914" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+            <root>
+                <mxCell id="vEPC8lKlD4OpeI4CdOo7-0"/>
+                <mxCell id="vEPC8lKlD4OpeI4CdOo7-1" parent="vEPC8lKlD4OpeI4CdOo7-0"/>
+                <mxCell id="vEPC8lKlD4OpeI4CdOo7-2" value="" style="shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;fixedSize=1;size=50;fillColor=#008a00;strokeColor=#005700;fontColor=#ffffff;" vertex="1" parent="vEPC8lKlD4OpeI4CdOo7-1">
+                    <mxGeometry x="450" y="250" width="300" height="300" as="geometry"/>
+                </mxCell>
+                <mxCell id="vEPC8lKlD4OpeI4CdOo7-3" value="無" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontFamily=Meirio;fontSize=240;fontStyle=1;labelBorderColor=none;whiteSpace=wrap;fontColor=#fffafa;" vertex="1" parent="vEPC8lKlD4OpeI4CdOo7-1">
+                    <mxGeometry x="472.5" y="339" width="255" height="150" as="geometry"/>
+                </mxCell>
+                <mxCell id="nidpcqFUVM_14rwFrnCG-0" value="" style="html=1;shadow=0;dashed=0;align=center;verticalAlign=middle;shape=mxgraph.arrows2.jumpInArrow;dy=38.45;dx=113.44;arrowHead=185.76;fillColor=#0050ef;strokeColor=#001DBC;rotation=0;fontColor=#ffffff;" vertex="1" parent="vEPC8lKlD4OpeI4CdOo7-1">
+                    <mxGeometry x="450" y="250" width="300" height="300" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>
@@ -284,13 +301,13 @@
             <root>
                 <mxCell id="VKrCo2FgM22Z0ik8m9qZ-0"/>
                 <mxCell id="VKrCo2FgM22Z0ik8m9qZ-1" parent="VKrCo2FgM22Z0ik8m9qZ-0"/>
-                <mxCell id="VKrCo2FgM22Z0ik8m9qZ-2" value="" style="shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;fixedSize=1;size=50;fillColor=#008a00;strokeColor=#005700;fontColor=#ffffff;" vertex="1" parent="VKrCo2FgM22Z0ik8m9qZ-1">
+                <mxCell id="VKrCo2FgM22Z0ik8m9qZ-2" value="" style="shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;fixedSize=1;size=50;fillColor=#008a00;strokeColor=#005700;fontColor=#ffffff;" parent="VKrCo2FgM22Z0ik8m9qZ-1" vertex="1">
                     <mxGeometry x="450" y="250" width="300" height="300" as="geometry"/>
                 </mxCell>
-                <mxCell id="VKrCo2FgM22Z0ik8m9qZ-3" value="無" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontFamily=Meirio;fontSize=240;fontStyle=1;labelBorderColor=none;whiteSpace=wrap;fontColor=#fffafa;" vertex="1" parent="VKrCo2FgM22Z0ik8m9qZ-1">
+                <mxCell id="VKrCo2FgM22Z0ik8m9qZ-3" value="無" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontFamily=Meirio;fontSize=240;fontStyle=1;labelBorderColor=none;whiteSpace=wrap;fontColor=#fffafa;" parent="VKrCo2FgM22Z0ik8m9qZ-1" vertex="1">
                     <mxGeometry x="472.5" y="339" width="255" height="150" as="geometry"/>
                 </mxCell>
-                <mxCell id="dppGU5KXI-rNk2v48Ruf-0" value="" style="verticalLabelPosition=bottom;verticalAlign=top;html=1;shape=mxgraph.basic.x;labelBorderColor=none;fontFamily=Meirio;fontSize=240;fontColor=#ffffff;fillColor=#e51400;strokeColor=#B20000;" vertex="1" parent="VKrCo2FgM22Z0ik8m9qZ-1">
+                <mxCell id="dppGU5KXI-rNk2v48Ruf-0" value="" style="verticalLabelPosition=bottom;verticalAlign=top;html=1;shape=mxgraph.basic.x;labelBorderColor=none;fontFamily=Meirio;fontSize=240;fontColor=#ffffff;fillColor=#e51400;strokeColor=#B20000;" parent="VKrCo2FgM22Z0ik8m9qZ-1" vertex="1">
                     <mxGeometry x="450" y="260" width="300" height="290" as="geometry"/>
                 </mxCell>
             </root>
