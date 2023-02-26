@@ -5,12 +5,12 @@
 現状の機能を消すことなく、覚えやすさを重視してキーボードショートカットを配置しました。
 
 ## インストール
-1. [GitHub のリリース](https://github.com/kimushun1101/muhenkan-switch/releases)からzip ファイルをダウンロード。
+1. [GitHub のリリース](https://github.com/kimushun1101/muhenkan-switch/releases)からLatest の`muhenkan-switch.zip` をダウンロード。
 2. ユーザの書き込み権限があるところに展開。  
 (例えばC:\Users\ユーザ名以下であればお好みのフォルダの中に入れられます。入れては行けない場所としてはC:\Program Files など。)
-3. muhenkan.exe を実行。これはインストーラではなくソフト本体です。
+3. muhenkan.exe を実行。
 
-## できること
+## 使い方
 ![キーボードショートカット](img/keyboard.png) 
 
 - `無変換キー`+`左手`（右手はマウスを操作していることを想定）
