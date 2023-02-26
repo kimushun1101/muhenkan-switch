@@ -1,4 +1,4 @@
-CurrentVersion := "v.1.1.0"
+CurrentVersion := "v.1.1.1"
 ; release.ahk によって書き換えられる
 if not FileExist(A_ScriptDir "\muhenkan.exe")
 {

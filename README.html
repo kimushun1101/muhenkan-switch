@@ -365,33 +365,25 @@ code {
           : 'default'
     });
   </script>
-<h1 id="muhenkan-switch">muhenkan-switch</h1>
+<h1 id="%E7%84%A1%E5%A4%89%E6%8F%9B%E3%82%B9%E3%82%A4%E3%83%83%E3%83%81">無変換スイッチ</h1>
 <p><code>無変換キー</code>と他のキーを同時押しすることで様々な動作ができるようになります。
 <code>無変換キー</code>単体は<code>無変換キー</code>として効きます。
 現状の機能を消すことなく、覚えやすさを重視してキーボードショートカットを配置しました。</p>
 <h2 id="%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB">インストール</h2>
 <ol>
-<li>GitHub のリリースからzip ファイルをダウンロード</li>
-<li>ユーザの書き込み権限があるところに展開<br>
-(例えばC:\Users\ユーザ名以下であればお好みのフォルダの中に入れられます。入れては行けない場所としてはC:\Program Files など。)</li>
-<li>muhenkan.exe を実行</li>
+<li><a href="https://github.com/kimushun1101/muhenkan-switch/releases">GitHub のリリース</a>から<code>muhenkan-switch.zip</code> をダウンロード。</li>
+<li>ユーザの書き込み権限があるところに展開。<br>
+(例えば<code>C:\Users\ユーザ名</code> 以下であればお好みのフォルダの中に入れられます。入れては行けない場所としては<code>C:\Program Files</code> 以下など。)</li>
+<li><code>muhenkan.exe</code> を実行。設定画面を閉じた後もソフトバックグラウンドで実行され続けます。終了は<a href="#%E8%A8%AD%E5%AE%9A%E5%A4%89%E6%9B%B4">設定画面</a>から可能です。</li>
 </ol>
-<h2 id="%E3%81%A7%E3%81%8D%E3%82%8B%E3%81%93%E3%81%A8">できること</h2>
+<h2 id="%E4%BD%BF%E3%81%84%E6%96%B9">使い方</h2>
+<p>初期設定は以下の通りです。</p>
 <p><img src="img/keyboard.png" alt="キーボードショートカット"></p>
 <ul>
-<li>(緑)<code>無変換キー</code>+<code>F1キー</code> : <a href="#%E8%A8%AD%E5%AE%9A%E5%A4%89%E6%9B%B4">設定の変更</a> を行うウィンドウを表示</li>
-<li>(青)<code>無変換キー</code>+<code>右手</code>（両手がホームポジションにあることを想定）
-<ul>
-<li><code>H</code>, <code>J</code>, <code>K</code>, <code>L</code>: 1文字カーソル移動</li>
-<li><code>U</code>, <code>I</code>: 単語で左右カーソル移動</li>
-<li><code>Y</code>, <code>O</code>: Home、End カーソル移動</li>
-<li><code>N</code>, <code>M</code>, <code>;</code> BackSpace, Delete, Esc</li>
-<li><code>,</code>, <code>.</code> カンマピリオドで句読点(、, 。) を入力（IMEで<code>．</code>と<code>，</code>にセットしている人は助かるかも）</li>
-</ul>
-</li>
 <li><code>無変換キー</code>+<code>左手</code>（右手はマウスを操作していることを想定）
 <ul>
-<li>(黄)数字キー→エクスプローラーでフォルダを開く <em><strong><a href="#%E8%A8%AD%E5%AE%9A%E5%A4%89%E6%9B%B4">【設定変更可能】</a></strong></em>
+<li>(緑) <code>F1</code>: <a href="#%E8%A8%AD%E5%AE%9A%E5%A4%89%E6%9B%B4">設定の変更</a> を行うウィンドウを表示</li>
+<li>(黄) 数字キー→エクスプローラーでフォルダを開く
 <ul>
 <li><code>1</code>: ドキュメント</li>
 <li><code>2</code>: ダウンロード</li>
@@ -400,7 +392,7 @@ code {
 <li><code>5</code>: ごみ箱</li>
 </ul>
 </li>
-<li>(橙)左手上段→選択文字列を検索 <em><strong><a href="#%E8%A8%AD%E5%AE%9A%E5%A4%89%E6%9B%B4">【サイトは変更可能】</a></strong></em>
+<li>(橙) 左手上段→選択文字列を検索
 <ul>
 <li><code>Q</code>: 英単語検索</li>
 <li><code>R</code>: 類語辞典</li>
@@ -408,7 +400,7 @@ code {
 <li><code>G</code>: Web 検索</li>
 </ul>
 </li>
-<li>(赤)左手中段→ソフトを最前面に出す <em><strong><a href="#%E8%A8%AD%E5%AE%9A%E5%A4%89%E6%9B%B4">【設定変更可能】</a></strong></em>
+<li>(赤) 左手中段→ソフトを最前面に出す
 <ul>
 <li><code>A</code>: エディタ</li>
 <li><code>W</code>: ワード</li>
@@ -418,7 +410,7 @@ code {
 <li><code>F</code>: ブラウザ</li>
 </ul>
 </li>
-<li>(紫)左手下段→ファイルの操作
+<li>(紫) 左手下段→ファイルの操作
 <ul>
 <li><code>V</code>: ファイル名に最後に編集した日付のタイムスタンプを貼り付け</li>
 <li><code>C</code>: コピーして、新しくできたファイルの名前に最後に編集した日付のタイムスタンプ貼り付け</li>
@@ -427,17 +419,26 @@ code {
 </li>
 </ul>
 </li>
+<li>(青) <code>無変換キー</code>+<code>右手</code>（両手がホームポジションにあることを想定）
+<ul>
+<li><code>H</code>, <code>J</code>, <code>K</code>, <code>L</code>: 1文字カーソル移動</li>
+<li><code>U</code>, <code>I</code>: 単語で左右カーソル移動</li>
+<li><code>Y</code>, <code>O</code>: Home、End カーソル移動</li>
+<li><code>N</code>, <code>M</code>, <code>;</code> BackSpace, Delete, Esc</li>
+<li><code>,</code>, <code>.</code> カンマピリオドで句読点(、, 。) を入力（IMEで<code>．</code>と<code>，</code>にセットしている人は助かるかも）</li>
+</ul>
+</li>
 <li>上記のルールから外れるもの
 <ul>
 <li><code>Ctrl</code> + <code>Shift</code> + <code>V</code> : 書式なしで貼り付け（エディタソフトは除く）</li>
-<li>下表に示すタイピング後にEnter やSpace キーを押すとその文字が置換される</li>
+<li>下表に示す文字列入力後にEnter やSpace キーなどを押すとその文字が置換されます。</li>
 </ul>
 </li>
 </ul>
 <table>
 <thead>
 <tr>
-<th>タイピング</th>
+<th>入力文字列</th>
 <th>置換入力例</th>
 </tr>
 </thead>
@@ -478,9 +479,6 @@ code {
 <p><img src="img/activeapp.gif" alt="ソフトの切り替え"></p>
 <h2 id="%E3%82%AD%E3%83%BC%E3%81%AE%E8%A6%9A%E3%81%88%E6%96%B9">キーの覚え方</h2>
 <ul>
-<li>カーソル移動=<code>HJKL</code> はVim 準拠</li>
-<li>カーソル移動=<code>YUIO</code> はキーの位置と横移動の大きさを関連付けています。</li>
-<li>文字消去=<code>NM</code> は両方とも人差し指で操作する。位置関係はカーソルが動く方向に対応しています。</li>
 <li>Web サイトやソフトはおおよそ推測できる割当になっているかと思います。例外としては以下のとおりです。
 <ul>
 <li>英単語=<code>Q</code> はQuestion から連想します。</li>
@@ -489,13 +487,13 @@ code {
 </ul>
 </li>
 <li>タイムスタンプの操作=<code>XCV</code> は、切り取り、コピー、ペーストなどを連想して覚えてください。</li>
+<li>カーソル移動=<code>HJKL</code> はVim 準拠</li>
+<li>カーソル移動=<code>YUIO</code> はキーの位置と横移動の大きさを関連付けています。</li>
+<li>文字消去=<code>NM</code> は両方とも人差し指で操作する。位置関係はカーソルが動く方向に対応しています。</li>
 </ul>
 <h2 id="%E8%A8%AD%E5%AE%9A%E5%A4%89%E6%9B%B4">設定変更</h2>
 <p><img src="img/config.png" alt="設定画面"></p>
-<ol>
-<li><code>muhenkan.exe</code> を実行する。</li>
-<li><code>無変換キー</code>+<code>F1</code> で設定画面が開き、設定の確認と変更ができる。</li>
-</ol>
+<p><code>無変換キー</code>+<code>F1</code> で設定画面が開き、設定の確認と変更ができる。</p>
 <ul>
 <li>起動時の動作：チェックボックスにチェックを入れていると有効になります。</li>
 <li>タイムスタンプ：フォーマットと位置を編集できます。</li>
@@ -504,21 +502,18 @@ code {
 <li>ソフトウェア：テキストボックスは好みに合わせて変更可能です。ソフトをクリックすると、現在起動中のソフトの一覧がでて、そこから変更したいソフトを選ぶことができます。</li>
 <li>適用：現在表示している内容に設定を変更します。上記を変更しただけでは設定の反映はされません。</li>
 <li>現在の設定に戻す：設定画面上の変更をリセットして現在の設定項目に直します。</li>
-<li>メニューバーのファイル：バックアップの作成と読み込み、初期設定へ戻すことができます。またこのソフトの終了もここから行えます。設定画面を閉じただけでは、ソフトは終了されません。</li>
+<li>メニューバーのファイル：バックアップの作成と読み込み、初期設定へ戻すことができます。また、このソフトの終了もここから行えます。</li>
 <li>メニューバーのヘルプ：この説明を見ることができます。また、このソフトの最新版がリリースされているか確認できます。</li>
 </ul>
 <h2 id="%E3%82%A2%E3%83%B3%E3%82%A4%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB">アンイストール</h2>
 <ol>
-<li><code>無変換キー</code>+<code>F1 キー</code> から「Windows 起動時にこのソフトを自動実行する」のチェックを外す。</li>
-<li><code>無変換キー</code>+<code>F1 キー</code> のツールバーのファイル、終了からソフトを終了する。</li>
-<li>ダウンロードしたzip ファイルとそれを展開したフォルダを削除。</li>
+<li><code>無変換キー</code>+<code>F1</code> の設定画面からファイル→終了。ソフトがあるファイルを開くか聞かれるのではい（Yes）を選択。</li>
+<li>開いた場所をフォルダごと削除。</li>
 </ol>
 <hr>
 <h2 id="%E3%83%A9%E3%82%A4%E3%82%BB%E3%83%B3%E3%82%B9">ライセンス</h2>
-<p>公式のサンプルを参考にしているため、GNU GPLv2 とします。</p>
-<ul>
-<li>AutoHotKey : <a href="https://www.autohotkey.com/docs/v2/license.htm">https://www.autohotkey.com/docs/v2/license.htm</a></li>
-</ul>
+<p>公式のサンプルを参考にしているため、GNU GPLv2 とします。<br>
+AutoHotKey : <a href="https://www.autohotkey.com/docs/v2/license.htm">https://www.autohotkey.com/docs/v2/license.htm</a></p>
 
 </body>
 </html>

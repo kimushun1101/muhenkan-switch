@@ -1,15 +1,32 @@
-CurrentVersion := "v.1.1.0"
+CurrentVersion := "v.1.1.1"
 ; release.ahk によって書き換えられる
 Ver := StrReplace(CurrentVersion, ".", "_")
 
+; バージョン違いのupdate.exe を削除
 Loop Files, A_ScriptDir "\update*.exe"
 {
   if A_LoopFileFullPath != A_ScriptDir "\update_" Ver ".exe"
     FileDelete A_LoopFileFullPath
 }
 
-#SingleInstance Force ; このスクリプトの再実行を許可する
+; スタートアップにリンクを作成
+LinkFile := A_Startup "\muhenkan_ahk_or_exe.lnk"
+if FileExist(LinkFile)
+{
+  FileGetShortcut LinkFile, &OutTarget
+  if OutTarget != A_ScriptFullPath
+  {
+    FileDelete LinkFile
+    FileCreateShortcut A_ScriptFullPath, LinkFile
+  }
+}
+else
+  FileCreateShortcut A_ScriptFullPath, LinkFile
 
+; このスクリプトの再実行を許可する
+#SingleInstance Force
+
+; 変数の準備
 ConfFileName := A_ScriptDir "\conf.ini"
 
 DateFormatList := ["yyyyMMdd", "yyyyMMdd_HHmm", "yyMMdd", "yyMMdd_HHmm"]
@@ -77,7 +94,7 @@ URLChar["|"] :=	"%5C%7C"
 URLChar["`}"] := "%7D"
 URLChar["~"] :=	"%7E"
 
-; Default Setting
+; 初期設定
 OpenSetting := 1
 DateFormat := "yyyyMMdd"
 TimestampPosition := "before file name"
@@ -227,9 +244,7 @@ MyGui.MenuBar := MyMenuBar
 
 ; 起動時の動作
 MyGui.Add("GroupBox", "xm ym w250 h70 section", "起動時の動作")
-AutoStartCheckBox := MyGui.Add("CheckBox", "xs+10 ys+20 w235 h15", "Windows 起動時にこのソフトを自動実行する")
-AutoStartCheckBox.OnEvent("Click", EnableButtons)
-OpenSettingCheckBox := MyGui.Add("CheckBox", "xs+10 ys+35 w235 h30", "ソフト起動時にこの設定ウィンドウを開く`n（ソフト起動中に無変換+F1キーで開けます）")
+OpenSettingCheckBox := MyGui.Add("CheckBox", "xs+10 ys+23 w235 h30", "ソフト起動時にこの設定ウィンドウを開く`n（ソフト起動中に無変換+F1キーで開けます）")
 OpenSettingCheckBox.OnEvent("Click", EnableButtons)
 ; タイムスタンプ
 MyGui.Add("GroupBox", "xs ys+75 w250 h125 section", "タイムスタンプ")
@@ -402,10 +417,6 @@ MenuHandler(Item, *) {
 
 UpdateContents(*)
 {
-  if FileExist(A_Startup "\muhenkan_ahk_or_exe.lnk")
-    AutostartCheckBox.Value := 1
-  else
-    AutostartCheckBox.Value := 0
   OpenSettingCheckBox.Value := OpenSetting
   for DateFormatCandidate in DateFormatList
     if DateFormat = DateFormatCandidate
@@ -504,10 +515,6 @@ SaveFileFromGUI(FileName, *)
     if MsgBox("現在の設定を変更しますか？",, "OKCancel") = "Cancel"
       return
   }
-  if AutoStartCheckBox.Value and not FileExist(A_Startup "\muhenkan_ahk_or_exe.lnk")
-    FileCreateShortcut(A_ScriptFullPath, A_Startup "\muhenkan_ahk_or_exe.lnk")
-  else if not AutoStartCheckBox.Value and FileExist(A_Startup "\muhenkan_ahk_or_exe.lnk")
-    FileDelete(A_Startup "\muhenkan_ahk_or_exe.lnk")
   try
   {
     IniWrite OpenSettingCheckBox.Value, FileName, "Open", "Setting"
@@ -542,10 +549,8 @@ SaveFileFromGUI(FileName, *)
     else
       MsgBox(FileName "`nにバックアップを作成しました。`n現在の変更を反映させるには「適用」を押してください。")
   }
-  ; catch
-  ;   MsgBox FileName "`nこのファイルは書き込めません。"
-  catch as Err
-    MsgBox FileName "`nこのファイルは書き込めません。" Err.Message
+  catch
+    MsgBox FileName "`nこのファイルは書き込めません。"
 }
 
 ; F1 で設定の変更
