@@ -1,3 +1,5 @@
+#Requires AutoHotkey v2.0
+
 FileObj := FileOpen(A_ScriptDir "\muhenkan.ahk", "r")
 FileObj.Seek(0)
 FirstLine := StrSplit(FileObj.ReadLine(), "`"")
@@ -10,9 +12,8 @@ if IB.Result = "Cancel"
 else
   CurrentVersion := IB.Value
 
-; ここを書き換えて実行する
-
 OutputDir := A_ScriptDir "\muhenkan-switch"
+try FileDelete OutputDir ".zip"
 try DirDelete OutputDir, 1
 DirCreate OutputDir
 

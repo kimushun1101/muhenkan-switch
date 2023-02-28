@@ -1,5 +1,8 @@
-CurrentVersion := "v.1.1.1"
+CurrentVersion := "v1.1.2"
 ; release.ahk によって書き換えられる
+
+#Requires AutoHotkey v2.0
+
 if not FileExist(A_ScriptDir "\muhenkan.exe")
 {
   MsgBox "muhenkan.exe がありません。`nアップデートを中止します。"
@@ -40,7 +43,7 @@ DirCreate LatestDir
 while not FileExist(LatestZip)
   Sleep 1000
 
-RunWait("powershell -Command `"Expand-Archive -Path " LatestZip " -Destination "  LatestDir "`"")
+RunWait("powershell -Command `"Expand-Archive -Path `'" LatestZip "`' -Destination `'"  LatestDir "`'`"")
 
 ; ini ファイルを退避
 FileMove A_ScriptDir "\*.ini", LatestDir "\*.ini"

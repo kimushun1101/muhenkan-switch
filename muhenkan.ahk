@@ -1,6 +1,8 @@
-CurrentVersion := "v.1.1.1"
+CurrentVersion := "v1.1.2"
 ; release.ahk によって書き換えられる
 Ver := StrReplace(CurrentVersion, ".", "_")
+
+#Requires AutoHotkey v2.0
 
 ; バージョン違いのupdate.exe を削除
 Loop Files, A_ScriptDir "\update*.exe"
