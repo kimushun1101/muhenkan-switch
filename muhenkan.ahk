@@ -1,4 +1,4 @@
-CurrentVersion := "v1.1.2"
+CurrentVersion := "v1.3.0"
 ; release.ahk によって書き換えられる
 Ver := StrReplace(CurrentVersion, ".", "_")
 
@@ -657,41 +657,11 @@ SC07B & f::ActiveSoftware(SoftwareExeArray[6], SoftwareLabelArray[6])
 
 ;======================================
 ; 選択しているファイル名やフォルダ名の操作
-; 左手下段Z X C V キーに割り当てる
+; 左手下段Z X C キーに割り当てる
 ;======================================
 ;---------------------------------------
 ; 無変換キー+xcv で名前の先頭にタイムスタンプ
 ;---------------------------------------
-; ファイルに最終編集日のタイムスタンプを貼り付け Ctrl + v 的なノリで
-SC07B & v::
-{
-  old_clip := ClipboardAll()
-  A_Clipboard := ""
-  Send "^c"
-  ClipWait(1)
-  TergetFile := A_Clipboard
-  A_Clipboard := old_clip
-  SplitPath(TergetFile, &name, &dir, &ext, &name_no_ext)
-  if (dir = "") ; 選択されているのがフォルダやファイルではない場合
-    return
-  Timestamp := FormatTime(FileGetTime(TergetFile, "M"), DateFormat)
-  if (ext = "") ; フォルダの場合
-  {
-    Loop Files, TergetFile "\*", "R"  ; Recurse into subfolders.
-    {
-      TimestampCandidate := FormatTime(FileGetTime(A_LoopFilePath, "M"), DateFormat)
-      if TimestampCandidate > Timestamp
-        Timestamp := TimestampCandidate
-    }
-  }
-  DllCall("user32.dll\SendMessageA", "UInt", DllCall("imm32.dll\ImmGetDefaultIMEWnd", "Uint", WinExist("A")), "UInt", 0x0283, "Int", 0x006, "Int", 0)
-  if (TimestampPosition = "before file name")
-    Send "{F2}{Left}" Timestamp "_{Enter}"
-  else if (TimestampPosition = "after file name")
-    Send "{F2}{Right}_" Timestamp "{Enter}"
-  else
-    MsgBox "TimestampPosition が間違っています。"
-}
 ; ファイルやフォルダをコピーしてファイル最終編集日のタイムスタンプをつける
 SC07B & c::
 {
@@ -778,14 +748,18 @@ SC07B & .::Send "。"
 ; その他
 ; 上記の法則から外れるがよく使うもの
 ;======================================
-; Ctrl＋Shift＋v : 書式なし貼り付け
-; エディタ（VS Code）ではCtrl＋Shift＋v を他の機能で使うので無効化しておく
-HotIfWinNotActive "ahk_exe " SoftwareExeArray[1]
-Hotkey "^+v", PastePlaneText  ; Creates a hotkey that works only in Notepad.
-PastePlaneText(ThisHotkey)
+; 無変換キー＋v : 書式なし貼り付け
+SC07B & v::
 {
   A_Clipboard := A_Clipboard
   Send "^v"
+}
+
+; 無変換キー＋p : プリントスクリーンを撮ってそのフォルダを開く
+SC07B & p::
+{
+  Send "!#{PrintScreen}"
+  Run "C:\Users\" A_UserName "\Videos\Captures"
 }
 
 ; 日付や時刻を入力

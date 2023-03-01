@@ -25,7 +25,7 @@
                 <mxCell id="8" value="C&lt;br&gt;ファイルコピー" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
                     <mxGeometry x="409" y="468" width="50" height="50" as="geometry"/>
                 </mxCell>
-                <mxCell id="9" value="V&lt;br&gt;日付の&lt;br&gt;貼り付け" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
+                <mxCell id="9" value="V&lt;br&gt;書式なし&lt;br&gt;貼り付け" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
                     <mxGeometry x="469" y="468" width="50" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="10" value="G&lt;br&gt;ウェブ&lt;br&gt;検索" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
@@ -88,7 +88,7 @@
                 <mxCell id="29" value=";&lt;br&gt;&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;Esc" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
                     <mxGeometry x="799" y="408" width="50" height="50" as="geometry"/>
                 </mxCell>
-                <mxCell id="30" value="P&lt;br&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                <mxCell id="30" value="P&lt;br&gt;スクショ&lt;br&gt;保存" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
                     <mxGeometry x="769" y="348" width="50" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="31" value="O&lt;br&gt;End&lt;br&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
