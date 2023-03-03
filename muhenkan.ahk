@@ -481,22 +481,24 @@ SetSoftwareKey(Item, *)
   SetSoftwareKeyGui := Gui(, Item.Name " キーに割り当て")
   SetSoftwareKeyGui.Add("Text", "section", Item.Name " キーに割り当てたいソフトウェアを選択してください。`n現在起動しているソフトは以下のとおりです。更新する場合には一度閉じてから開き直してください。")
   SetSoftwareKeyGui.OnEvent("Escape", GUIEsc)
-  SoftwarePaths := Map()
+  SoftwarePaths := Array()
+  PathCount := 1
 
   for this_id in WinGetList(,, "Program Manager")
   {
     Title := WinGetTitle(this_id)
     Path := StrReplace(WinGetProcessPath(this_id), A_UserName, "A_UserName")
-    if (Title != "設定 - 無変換スイッチ" and Path != A_WinDir "\explorer.exe")
+    if (Title != "設定 - 無変換スイッチ" and Title != "" and  Path != A_WinDir "\explorer.exe" and not isExistInArray(SoftwarePaths, Path))
     {
       word_array := StrSplit(Title, "-", A_Space)
       if word_array.Length != 0
         SoftName := word_array[word_array.Length]
       else
         SoftName := Title
-      SetSoftwareKeyGui.Add("Button", "xs vid" this_id, SoftName).OnEvent("Click", ProcessUserInput)
+      SetSoftwareKeyGui.Add("Button", "xs v" PathCount, SoftName).OnEvent("Click", ProcessUserInput)
       SetSoftwareKeyGui.Add("Text", "xs+20", Path)
-      SoftwarePaths["id" this_id] := Path
+      SoftwarePaths.Push(Path)
+      PathCount += 1
     }
   }
   ProcessUserInput(SetSoftwareKeyItem, *)
@@ -509,6 +511,13 @@ SetSoftwareKey(Item, *)
     }
   }
   SetSoftwareKeyGui.Show()
+}
+isExistInArray(InputArray, InputText)
+{
+  JoinedString := ""
+  for value in InputArray
+    JoinedString .= value ","
+  return InStr(JoinedString, InputText)
 }
 SaveFileFromGUI(FileName, *)
 {
