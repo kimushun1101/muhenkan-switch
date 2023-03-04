@@ -1,4 +1,4 @@
-CurrentVersion := "v1.3.0"
+CurrentVersion := "v1.3.1"
 ; release.ahk によって書き換えられる
 Ver := StrReplace(CurrentVersion, ".", "_")
 
@@ -781,19 +781,22 @@ SC07B & o::Send "{Blind}{End}"
 SC07B & n::Send "{BS}"
 SC07B & m::Send "{Del}"
 SC07B & `;::Send "{Esc}"
-SC07B & ,::Send "、"
-SC07B & .::Send "。"
-
+SC07B & ,::
+{
+  Send "、"
+  DllCall("user32.dll\SendMessageA", "UInt", DllCall("imm32.dll\ImmGetDefaultIMEWnd", "Uint", WinExist("A")), "UInt", 0x0283, "Int", 0x006, "Int", 1)
+}
+SC07B & .::
+{
+  Send "。"
+  DllCall("user32.dll\SendMessageA", "UInt", DllCall("imm32.dll\ImmGetDefaultIMEWnd", "Uint", WinExist("A")), "UInt", 0x0283, "Int", 0x006, "Int", 1)
+}
 ;======================================
 ; その他
 ; 上記の法則から外れるがよく使うもの
 ;======================================
 ; Ctrl+Win＋v : 書式なし貼り付け
-^#v::
-{
-  A_Clipboard := A_Clipboard
-  Send "^v"
-}
+^#v::Send A_Clipboard
 
 ; 無変換キー＋p : プリントスクリーンを撮ってそのフォルダを開く
 SC07B & p::
