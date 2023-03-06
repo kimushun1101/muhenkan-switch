@@ -1,4 +1,4 @@
-CurrentVersion := "v1.3.1"
+CurrentVersion := "v1.3.2"
 ; release.ahk によって書き換えられる
 Ver := StrReplace(CurrentVersion, ".", "_")
 
@@ -796,8 +796,14 @@ SC07B & .::
 ; 上記の法則から外れるがよく使うもの
 ;======================================
 ; Ctrl+Win＋v : 書式なし貼り付け
-^#v::Send A_Clipboard
-
+^#v::
+{
+  old_clip := ClipboardAll()
+  A_Clipboard := A_Clipboard
+  Send "^v"
+  Sleep 300
+  A_Clipboard := old_clip
+}
 ; 無変換キー＋p : プリントスクリーンを撮ってそのフォルダを開く
 SC07B & p::
 {
