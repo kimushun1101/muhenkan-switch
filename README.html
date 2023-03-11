@@ -431,7 +431,7 @@ code {
 <li>上記のルールから外れるもの
 <ul>
 <li><code>Ctrl</code>+<code>Win</code>+<code>V</code>: 書式なしで貼り付け</li>
-<li><code>無変換キー</code>+<code>P</code>: ウィンドウをプリントスクリーンして，そのファイルを保存，そのフォルダを開く</li>
+<li><code>無変換キー</code>+<code>P</code>: ウィンドウをプリントスクリーンして，そのファイルを保存，そのフォルダを開く(Xbox Game Bar を使用します)</li>
 <li>下表に示す文字列入力後にEnter やSpace キーなどを押すとその文字が置換されます。</li>
 </ul>
 </li>
@@ -441,36 +441,64 @@ code {
 <tr>
 <th>入力文字列</th>
 <th>置換入力例</th>
+<th>意味</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>;date</td>
+<td>;yd</td>
 <td>20230225</td>
+<td>year date</td>
 </tr>
 <tr>
-<td>;dateu</td>
+<td>;yyd</td>
+<td>230225</td>
+<td>year2 date</td>
+</tr>
+<tr>
+<td>;ydu</td>
 <td>2023_0225</td>
+<td>yaer date underscore</td>
 </tr>
 <tr>
-<td>;dates</td>
+<td>;yds</td>
 <td>2023/02/25</td>
+<td>yaer date slash</td>
 </tr>
 <tr>
-<td>;dated</td>
+<td>;ydd</td>
 <td>2023.02.25</td>
+<td>year date dot</td>
+</tr>
+<tr>
+<td>;date</td>
+<td>0225</td>
+<td>date</td>
+</tr>
+<tr>
+<td>;ds</td>
+<td>02/25</td>
+<td>date slash</td>
 </tr>
 <tr>
 <td>;time</td>
 <td>1605</td>
+<td>time</td>
 </tr>
 <tr>
-<td>;timec</td>
+<td>;tc</td>
 <td>16:06</td>
+<td>time colon</td>
 </tr>
 <tr>
-<td>;datetime</td>
-<td>20230225_1602</td>
+<td>;ydt</td>
+<td>202302251602</td>
+<td>yaer date time</td>
+</tr>
+<tr>
+<td>;ydtu</td>
+<td>2023_0225_1602</td>
+<td>yaer date time underscore</td>
 </tr>
 </tbody>
 </table>

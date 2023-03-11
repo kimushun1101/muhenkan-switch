@@ -49,15 +49,19 @@
   - `無変換キー`+`P`: ウィンドウをプリントスクリーンして，そのファイルを保存，そのフォルダを開く(Xbox Game Bar を使用します)
   - 下表に示す文字列入力後にEnter やSpace キーなどを押すとその文字が置換されます。
 
-| 入力文字列  | 置換入力例      | 
-| ---------- | -------------- | 
-| ;date      | 20230225       | 
-| ;dateu     | 2023_0225      | 
-| ;dates     | 2023/02/25     | 
-| ;dated     | 2023.02.25     | 
-| ;time      | 1605           | 
-| ;timec     | 16:06          | 
-| ;datetime  | 20230225_1602  | 
+| 入力文字列 | 置換入力例      | 意味                      | 
+| --------- | -------------- | ------------------------- | 
+| ;yd       | 20230225       | year date                 | 
+| ;yyd      | 230225         | year2 date                |
+| ;ydu      | 2023_0225      | yaer date underscore      |
+| ;yds      | 2023/02/25     | yaer date slash           |
+| ;ydd      | 2023.02.25     | year date dot             |
+| ;date     | 0225           | date                      |
+| ;ds       | 02/25          | date slash                |
+| ;time     | 1605           | time                      |
+| ;tc       | 16:06          | time colon                |
+| ;ydt      | 202302251602   | yaer date time            |
+| ;ydtu     | 2023_0225_1602 | yaer date time underscore |
 
 ### 選択文字列を検索
 ![選択文字列を検索](img/text2web.gif)
