@@ -1,4 +1,4 @@
-CurrentVersion := "v1.3.3"
+CurrentVersion := "v1.3.4"
 ; release.ahk によって書き換えられる
 Ver := StrReplace(CurrentVersion, ".", "_")
 
@@ -823,26 +823,38 @@ FileCount(FilePattern)
 }
 
 ; 日付や時刻を入力
-::;date::{
+::;yd::{
   SendInput FormatTime(, "yyyyMMdd")
 }
-::;dateu::{
+::;yyd::{
+  SendInput FormatTime(, "yyMMdd")
+}
+::;ydu::{
   SendInput FormatTime(, "yyyy_MMdd")
 }
-::;dates::{
+::;yds::{
   SendInput FormatTime(, "yyyy/MM/dd")
 }
-::;dated::{
+::;ydd::{
   SendInput FormatTime(, "yyyy.MM.dd")
+}
+::;date::{
+  SendInput FormatTime(, "MMdd")
+}
+::;ds::{
+  SendInput FormatTime(, "MM/dd")
 }
 ::;time::{
   SendInput FormatTime(, "HHmm")
 }
-::;timec::{
+::;tc::{
   SendInput FormatTime(, "HH:mm")
 }
-::;datetime::{
-  SendInput FormatTime(, "yyyyMMdd_HHmm")
+::;ydt::{
+  SendInput FormatTime(, "yyyyMMddHHmm")
+}
+::;ydtu::{
+  SendInput FormatTime(, "yyyy_MMdd_HHmm")
 }
 ;---------------------------------------
 ; CapsLock キーをCtrl キーへ変更

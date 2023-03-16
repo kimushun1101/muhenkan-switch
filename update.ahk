@@ -1,4 +1,4 @@
-CurrentVersion := "v1.3.3"
+CurrentVersion := "v1.3.4"
 ; release.ahk によって書き換えられる
 
 #Requires AutoHotkey v2.0
