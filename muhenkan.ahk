@@ -1,4 +1,4 @@
-﻿CurrentVersion := "v1.3.2"
+CurrentVersion := "v1.3.3"
 ; release.ahk によって書き換えられる
 Ver := StrReplace(CurrentVersion, ".", "_")
 
@@ -555,7 +555,7 @@ SaveFileFromGUI(FileName, *)
     if FileName = ConfFileName
     {
       MsgBox("設定を変更しました。")
-      reload
+      Reload
     }
     else
       MsgBox(FileName "`nにバックアップを作成しました。`n現在の変更を反映させるには「適用」を押してください。")
@@ -568,12 +568,6 @@ SaveFileFromGUI(FileName, *)
 SC07B & F1::
 {
   MyGui.Show()
-}
-
-; F1 で設定の変更
-SC07B & F5::
-{
-  reload
 }
 
 ;======================================
@@ -829,40 +823,27 @@ FileCount(FilePattern)
 }
 
 ; 日付や時刻を入力
-::;yd::{  ; year date
+::;date::{
   SendInput FormatTime(, "yyyyMMdd")
 }
-::;yyd::{  ; year date
-  SendInput FormatTime(, "yyMMdd")
-}
-::;ydu::{ ; year date underscore
+::;dateu::{
   SendInput FormatTime(, "yyyy_MMdd")
 }
-::;yds::{ ; year date slash
+::;dates::{
   SendInput FormatTime(, "yyyy/MM/dd")
 }
-::;ydd::{ ; year date dot
+::;dated::{
   SendInput FormatTime(, "yyyy.MM.dd")
-}
-::;date::{
-  SendInput FormatTime(, "MMdd")
-}
-::;ds::{ ; date slash
-  SendInput FormatTime(, "MM/dd")
 }
 ::;time::{
   SendInput FormatTime(, "HHmm")
 }
-::;tc::{ ; time colon
+::;timec::{
   SendInput FormatTime(, "HH:mm")
 }
-::;ydt::{ ; year date time
-  SendInput FormatTime(, "yyyyMMddHHmm")
+::;datetime::{
+  SendInput FormatTime(, "yyyyMMdd_HHmm")
 }
-::;ydtu::{ ; year date time underscore
-  SendInput FormatTime(, "yyyy_MMdd_HHmm")
-}
-
 ;---------------------------------------
 ; CapsLock キーをCtrl キーへ変更
 ; 日本語キーボードではうまく動作しないのでCtrl2Cap に任せている
