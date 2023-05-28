@@ -668,7 +668,7 @@ SC07B & f::ActiveSoftware(SoftwareExeArray[6], SoftwareLabelArray[6])
 ; 選択しているファイル名やフォルダ名の操作
 ; 左手下段Z X C キーに割り当てる
 ;======================================
-getTimestamp(FileName)
+getNewFileNameWithTimestamp(FileName)
 {
   SplitPath(FileName, &name, &dir, &ext, &name_no_ext)
   if (dir = "") ; 選択されているのがフォルダやファイルではない場合
@@ -683,57 +683,39 @@ getTimestamp(FileName)
         Timestamp := TimestampCandidate
     }
   }
-  return Timestamp
-}
-addTimestamp(FileName)
-{
-  Timestamp := getTimestamp(FileName)
-  SplitPath(FileName, &name, &dir, &ext, &name_no_ext)
   if (TimestampPosition = "before file name")
     NewFile := dir "\" Timestamp "_" name
   else if (TimestampPosition = "after file name")
     NewFile := dir "\" name_no_ext "_" Timestamp "." ext
   else
     MsgBox "TimestampPosition が間違っています。"
-  
   While FileExist(NewFile)
   {
     IB := InputBox(NewFile "`nはすでに存在します。`nファイル名を指定してください", "ファイル名の修正", , NewFile)
     if (IB.Result = "OK" and IB.Value != NewFile)
       NewFile := IB.Value
     else if IB.Result = "Cancel"
-      return
+      return "Cancel"
   }
+  return NewFile
+}
+addTimestamp(FileName)
+{
+  NewFile := getNewFileNameWithTimestamp(FileName)
+  if(NewFile = "Cancel")
+    return
+  SplitPath(FileName, , , &ext)
   if (ext = "") ; 拡張子がない=フォルダ
     DirMove FileName, NewFile
   else          ; 拡張子がある=ファイル
     FileMove FileName, NewFile
-  ; if (TimestampPosition = "before file name")
-  ;   Send "{F2}{Left}" Timestamp "_{Enter}"
-  ; else if (TimestampPosition = "after file name")
-  ;   Send "{F2}{Right}_" Timestamp "{Enter}"
-  ; else
-  ;   MsgBox "TimestampPosition が間違っています。"
 }
 copyWithTimestamp(FileName)
 {
-  Timestamp := getTimestamp(FileName)
-  SplitPath(FileName, &name, &dir, &ext, &name_no_ext)
-  if (TimestampPosition = "before file name")
-    NewFile := dir "\" Timestamp "_" name
-  else if (TimestampPosition = "after file name")
-    NewFile := dir "\" name_no_ext "_" Timestamp "." ext
-  else
-    MsgBox "TimestampPosition が間違っています。"
-  
-  While FileExist(NewFile)
-  {
-    IB := InputBox(NewFile "`nはすでに存在します。`nファイル名を指定してください", "ファイル名の修正", , NewFile)
-    if (IB.Result = "OK" and IB.Value != NewFile)
-      NewFile := IB.Value
-    else if IB.Result = "Cancel"
-      return
-  }
+  NewFile := getNewFileNameWithTimestamp(FileName)
+  if(NewFile = "Cancel")
+    return
+  SplitPath(FileName, , , &ext)
   if (ext = "") ; 拡張子がない=フォルダ
     DirCopy FileName, NewFile
   else          ; 拡張子がある=ファイル
