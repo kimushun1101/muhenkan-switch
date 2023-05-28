@@ -688,12 +688,32 @@ getTimestamp(FileName)
 addTimestamp(FileName)
 {
   Timestamp := getTimestamp(FileName)
+  SplitPath(FileName, &name, &dir, &ext, &name_no_ext)
   if (TimestampPosition = "before file name")
-    Send "{F2}{Left}" Timestamp "_{Enter}"
+    NewFile := dir "\" Timestamp "_" name
   else if (TimestampPosition = "after file name")
-    Send "{F2}{Right}_" Timestamp "{Enter}"
+    NewFile := dir "\" name_no_ext "_" Timestamp "." ext
   else
     MsgBox "TimestampPosition が間違っています。"
+  
+  While FileExist(NewFile)
+  {
+    IB := InputBox(NewFile "`nはすでに存在します。`nファイル名を指定してください", "ファイル名の修正", , NewFile)
+    if (IB.Result = "OK" and IB.Value != NewFile)
+      NewFile := IB.Value
+    else if IB.Result = "Cancel"
+      return
+  }
+  if (ext = "") ; 拡張子がない=フォルダ
+    DirMove FileName, NewFile
+  else          ; 拡張子がある=ファイル
+    FileMove FileName, NewFile
+  ; if (TimestampPosition = "before file name")
+  ;   Send "{F2}{Left}" Timestamp "_{Enter}"
+  ; else if (TimestampPosition = "after file name")
+  ;   Send "{F2}{Right}_" Timestamp "{Enter}"
+  ; else
+  ;   MsgBox "TimestampPosition が間違っています。"
 }
 copyWithTimestamp(FileName)
 {
@@ -729,10 +749,11 @@ SC07B & v::
   A_Clipboard := ""
   Send "^c"
   ClipWait(1)
-  TergetFile := A_Clipboard
+  TergetFiles := A_Clipboard
   A_Clipboard := old_clip
   DllCall("user32.dll\SendMessageA", "UInt", DllCall("imm32.dll\ImmGetDefaultIMEWnd", "Uint", WinExist("A")), "UInt", 0x0283, "Int", 0x006, "Int", 0)
-  addTimestamp(TergetFile)
+  Loop Parse, TergetFiles, "`n", "`r"
+    addTimestamp(A_LoopField)
 }
 
 ; ファイルやフォルダをコピーしてファイル最終編集日のタイムスタンプをつける
@@ -742,9 +763,10 @@ SC07B & c::
   A_Clipboard := ""
   Send "^c"
   ClipWait(1)
-  TergetFile := A_Clipboard
+  TergetFiles := A_Clipboard
   A_Clipboard := old_clip
-  copyWithTimestamp(TergetFile)
+  Loop Parse, TergetFiles, "`n", "`r"
+    copyWithTimestamp(A_LoopField)
 }
 ; タイムスタンプ切り取り
 SC07B & x::
