@@ -685,20 +685,9 @@ getTimestamp(FileName)
   }
   return Timestamp
 }
-;---------------------------------------
-; 無変換キー+xcv で名前の先頭にタイムスタンプ
-;---------------------------------------
-; ファイルに最終編集日のタイムスタンプを貼り付け Ctrl + v 的なノリで
-SC07B & v::
+addTimestamp(FileName)
 {
-  old_clip := ClipboardAll()
-  A_Clipboard := ""
-  Send "^c"
-  ClipWait(1)
-  TergetFile := A_Clipboard
-  A_Clipboard := old_clip
-  Timestamp := getTimestamp(TergetFile)
-  DllCall("user32.dll\SendMessageA", "UInt", DllCall("imm32.dll\ImmGetDefaultIMEWnd", "Uint", WinExist("A")), "UInt", 0x0283, "Int", 0x006, "Int", 0)
+  Timestamp := getTimestamp(FileName)
   if (TimestampPosition = "before file name")
     Send "{F2}{Left}" Timestamp "_{Enter}"
   else if (TimestampPosition = "after file name")
@@ -706,18 +695,10 @@ SC07B & v::
   else
     MsgBox "TimestampPosition が間違っています。"
 }
-
-; ファイルやフォルダをコピーしてファイル最終編集日のタイムスタンプをつける
-SC07B & c::
+copyWithTimestamp(FileName)
 {
-  old_clip := ClipboardAll()
-  A_Clipboard := ""
-  Send "^c"
-  ClipWait(1)
-  TergetFile := A_Clipboard
-  A_Clipboard := old_clip
-  SplitPath(TergetFile, &name, &dir, &ext, &name_no_ext)
-  Timestamp := getTimestamp(TergetFile)
+  Timestamp := getTimestamp(FileName)
+  SplitPath(FileName, &name, &dir, &ext, &name_no_ext)
   if (TimestampPosition = "before file name")
     NewFile := dir "\" Timestamp "_" name
   else if (TimestampPosition = "after file name")
@@ -734,9 +715,36 @@ SC07B & c::
       return
   }
   if (ext = "") ; 拡張子がない=フォルダ
-    DirCopy TergetFile, NewFile
+    DirCopy FileName, NewFile
   else          ; 拡張子がある=ファイル
-    FileCopy TergetFile, NewFile
+    FileCopy FileName, NewFile
+}
+;---------------------------------------
+; 無変換キー+xcv で名前の先頭にタイムスタンプ
+;---------------------------------------
+; ファイルに最終編集日のタイムスタンプを貼り付け Ctrl + v 的なノリで
+SC07B & v::
+{
+  old_clip := ClipboardAll()
+  A_Clipboard := ""
+  Send "^c"
+  ClipWait(1)
+  TergetFile := A_Clipboard
+  A_Clipboard := old_clip
+  DllCall("user32.dll\SendMessageA", "UInt", DllCall("imm32.dll\ImmGetDefaultIMEWnd", "Uint", WinExist("A")), "UInt", 0x0283, "Int", 0x006, "Int", 0)
+  addTimestamp(TergetFile)
+}
+
+; ファイルやフォルダをコピーしてファイル最終編集日のタイムスタンプをつける
+SC07B & c::
+{
+  old_clip := ClipboardAll()
+  A_Clipboard := ""
+  Send "^c"
+  ClipWait(1)
+  TergetFile := A_Clipboard
+  A_Clipboard := old_clip
+  copyWithTimestamp(TergetFile)
 }
 ; タイムスタンプ切り取り
 SC07B & x::
