@@ -668,6 +668,23 @@ SC07B & f::ActiveSoftware(SoftwareExeArray[6], SoftwareLabelArray[6])
 ; 選択しているファイル名やフォルダ名の操作
 ; 左手下段Z X C キーに割り当てる
 ;======================================
+getTimestamp(FileName)
+{
+  SplitPath(FileName, &name, &dir, &ext, &name_no_ext)
+  if (dir = "") ; 選択されているのがフォルダやファイルではない場合
+    return
+  Timestamp := FormatTime(FileGetTime(FileName, "M"), DateFormat)
+  if (ext = "") ; フォルダの場合
+  {
+    Loop Files, FileName "\*", "R"  ; Recurse into subfolders.
+    {
+      TimestampCandidate := FormatTime(FileGetTime(A_LoopFilePath, "M"), DateFormat)
+      if TimestampCandidate > Timestamp
+        Timestamp := TimestampCandidate
+    }
+  }
+  return Timestamp
+}
 ;---------------------------------------
 ; 無変換キー+xcv で名前の先頭にタイムスタンプ
 ;---------------------------------------
@@ -680,19 +697,7 @@ SC07B & v::
   ClipWait(1)
   TergetFile := A_Clipboard
   A_Clipboard := old_clip
-  SplitPath(TergetFile, &name, &dir, &ext, &name_no_ext)
-  if (dir = "") ; 選択されているのがフォルダやファイルではない場合
-    return
-  Timestamp := FormatTime(FileGetTime(TergetFile, "M"), DateFormat)
-  if (ext = "") ; フォルダの場合
-  {
-    Loop Files, TergetFile "\*", "R"  ; Recurse into subfolders.
-    {
-      TimestampCandidate := FormatTime(FileGetTime(A_LoopFilePath, "M"), DateFormat)
-      if TimestampCandidate > Timestamp
-        Timestamp := TimestampCandidate
-    }
-  }
+  Timestamp := getTimestamp(TergetFile)
   DllCall("user32.dll\SendMessageA", "UInt", DllCall("imm32.dll\ImmGetDefaultIMEWnd", "Uint", WinExist("A")), "UInt", 0x0283, "Int", 0x006, "Int", 0)
   if (TimestampPosition = "before file name")
     Send "{F2}{Left}" Timestamp "_{Enter}"
@@ -712,18 +717,7 @@ SC07B & c::
   TergetFile := A_Clipboard
   A_Clipboard := old_clip
   SplitPath(TergetFile, &name, &dir, &ext, &name_no_ext)
-  if (dir = "")       ; 選択されているのがフォルダやファイルではない場合
-    return
-  Timestamp := FormatTime(FileGetTime(TergetFile, "M"), DateFormat)
-  if (ext = "") ; フォルダの場合
-  {
-    Loop Files, TergetFile "\*", "R"  ; Recurse into subfolders.
-    {
-      TimestampCandidate := FormatTime(FileGetTime(A_LoopFilePath, "M"), DateFormat)
-      if TimestampCandidate > Timestamp
-        Timestamp := TimestampCandidate
-    }
-  }
+  Timestamp := getTimestamp(TergetFile)
   if (TimestampPosition = "before file name")
     NewFile := dir "\" Timestamp "_" name
   else if (TimestampPosition = "after file name")
