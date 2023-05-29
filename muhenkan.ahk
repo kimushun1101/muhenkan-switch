@@ -1,4 +1,4 @@
-CurrentVersion := "v1.3.4"
+CurrentVersion := "v1.4.0"
 ; release.ahk によって書き換えられる
 Ver := StrReplace(CurrentVersion, ".", "_")
 
@@ -668,6 +668,18 @@ SC07B & f::ActiveSoftware(SoftwareExeArray[6], SoftwareLabelArray[6])
 ; 選択しているファイル名やフォルダ名の操作
 ; 左手下段Z X C キーに割り当てる
 ;======================================
+getSelectedFiles()
+{
+  if(WinGetProcessName(WinExist("A")) != "explorer.exe")
+    return
+  old_clip := ClipboardAll()
+  A_Clipboard := ""
+  Send "^c"
+  ClipWait(1)
+  TergetFiles := A_Clipboard
+  A_Clipboard := old_clip
+  return TergetFiles
+}
 getNewFileNameWithTimestamp(FileName)
 {
   SplitPath(FileName, &name, &dir, &ext, &name_no_ext)
@@ -726,11 +738,11 @@ deleteTimestamp(FileName)
   SplitPath(FileName, &name, &dir, &ext, &name_no_ext)
   if (dir = "") ; 選択されているのがフォルダやファイルではない場合
     return
-  CharCount := StrLen(DateFormat)+1
+  CharCount := StrLen(DateFormat)
   if (TimestampPosition = "before file name")
     NewFile := (dir "\" SubStr(name, CharCount+2))
   else if (TimestampPosition = "after file name")
-    NewFile := (dir "\" SubStr(name_no_ext, 1, -CharCount) "." ext)
+    NewFile := (dir "\" SubStr(name_no_ext, 1, -CharCount-1) "." ext)
   else
     MsgBox "TimestampPosition が間違っています。"
   While FileExist(NewFile)
@@ -752,39 +764,20 @@ deleteTimestamp(FileName)
 ; ファイルに最終編集日のタイムスタンプを貼り付け Ctrl + v 的なノリで
 SC07B & v::
 {
-  old_clip := ClipboardAll()
-  A_Clipboard := ""
-  Send "^c"
-  ClipWait(1)
-  TergetFiles := A_Clipboard
-  A_Clipboard := old_clip
-  DllCall("user32.dll\SendMessageA", "UInt", DllCall("imm32.dll\ImmGetDefaultIMEWnd", "Uint", WinExist("A")), "UInt", 0x0283, "Int", 0x006, "Int", 0)
-  Loop Parse, TergetFiles, "`n", "`r"
+  Loop Parse, getSelectedFiles(), "`n", "`r"
     addTimestamp(A_LoopField)
 }
 
 ; ファイルやフォルダをコピーしてファイル最終編集日のタイムスタンプをつける
 SC07B & c::
 {
-  old_clip := ClipboardAll()
-  A_Clipboard := ""
-  Send "^c"
-  ClipWait(1)
-  TergetFiles := A_Clipboard
-  A_Clipboard := old_clip
-  Loop Parse, TergetFiles, "`n", "`r"
+  Loop Parse, getSelectedFiles(), "`n", "`r"
     copyWithTimestamp(A_LoopField)
 }
 ; タイムスタンプ切り取り
 SC07B & x::
 {
-  old_clip := ClipboardAll()
-  A_Clipboard := ""
-  Send "^c"
-  ClipWait(1)
-  TergetFiles := A_Clipboard
-  A_Clipboard := old_clip
-  Loop Parse, TergetFiles, "`n", "`r"
+  Loop Parse, getSelectedFiles(), "`n", "`r"
     deleteTimestamp(A_LoopField)
 }
 
