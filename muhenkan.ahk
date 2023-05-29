@@ -721,6 +721,31 @@ copyWithTimestamp(FileName)
   else          ; 拡張子がある=ファイル
     FileCopy FileName, NewFile
 }
+deleteTimestamp(FileName)
+{
+  SplitPath(FileName, &name, &dir, &ext, &name_no_ext)
+  if (dir = "") ; 選択されているのがフォルダやファイルではない場合
+    return
+  CharCount := StrLen(DateFormat)+1
+  if (TimestampPosition = "before file name")
+    NewFile := (dir "\" SubStr(name, CharCount+2))
+  else if (TimestampPosition = "after file name")
+    NewFile := (dir "\" SubStr(name_no_ext, 1, -CharCount) "." ext)
+  else
+    MsgBox "TimestampPosition が間違っています。"
+  While FileExist(NewFile)
+  {
+    IB := InputBox(NewFile "`nはすでに存在します。`nファイル名を指定してください", "ファイル名の修正", , NewFile)
+    if (IB.Result = "OK" and IB.Value != NewFile)
+      NewFile := IB.Value
+    else if IB.Result = "Cancel"
+      return
+  }
+  if (ext = "") ; 拡張子がない=フォルダ
+    DirMove FileName, NewFile
+  else          ; 拡張子がある=ファイル
+    FileMove FileName, NewFile
+}
 ;---------------------------------------
 ; 無変換キー+xcv で名前の先頭にタイムスタンプ
 ;---------------------------------------
@@ -753,13 +778,14 @@ SC07B & c::
 ; タイムスタンプ切り取り
 SC07B & x::
 {
-  CharCount := StrLen(DateFormat)+1
-  if (TimestampPosition = "before file name")
-    Send "{F2}{Left}{DEL " CharCount "}{Enter}"
-  else if (TimestampPosition = "after file name")
-    Send "{F2}{Right}{BS " CharCount "}{Enter}"
-  else
-    MsgBox "TimestampPosition が間違っています。"
+  old_clip := ClipboardAll()
+  A_Clipboard := ""
+  Send "^c"
+  ClipWait(1)
+  TergetFiles := A_Clipboard
+  A_Clipboard := old_clip
+  Loop Parse, TergetFiles, "`n", "`r"
+    deleteTimestamp(A_LoopField)
 }
 
 ;======================================
