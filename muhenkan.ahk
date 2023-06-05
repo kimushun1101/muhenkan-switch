@@ -8,7 +8,8 @@ Ver := StrReplace(CurrentVersion, ".", "_")
 Loop Files, A_ScriptDir "\update*.exe"
 {
   if A_LoopFileFullPath != A_ScriptDir "\update_" Ver ".exe"
-    FileDelete A_LoopFileFullPath
+    try
+      FileDelete A_LoopFileFullPath
 }
 
 ; スタートアップにリンクを作成
