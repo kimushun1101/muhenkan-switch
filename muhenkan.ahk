@@ -1,4 +1,4 @@
-CurrentVersion := "v1.4.0"
+CurrentVersion := "v1.4.1"
 ; release.ahk によって書き換えられる
 Ver := StrReplace(CurrentVersion, ".", "_")
 
