@@ -1,13 +1,22 @@
-CurrentVersion := "v1.4.3"
-; release.ahk によって書き換えられる
-Ver := StrReplace(CurrentVersion, ".", "_")
-
 #Requires AutoHotkey v2.0
+
+; 一番新しいファイルを見つける
+newestUpdateExe := ""
+newestModTime := 0
+Loop Files,  A_ScriptDir "\update*.exe"
+{
+  currentModTime := FileGetTime(A_LoopFileFullPath, "M")
+  if (currentModTime > newestModTime)
+  {
+    newestModTime := currentModTime
+    newestUpdateExe := A_LoopFileFullPath
+  }
+}
 
 ; バージョン違いのupdate.exe を削除
 Loop Files, A_ScriptDir "\update*.exe"
 {
-  if A_LoopFileFullPath != A_ScriptDir "\update_" Ver ".exe"
+  if A_LoopFileFullPath != newestUpdateExe
     try
       FileDelete A_LoopFileFullPath
 }
@@ -414,7 +423,7 @@ MenuHandler(Item, *) {
   }
   else if Item = "アップデート確認"
   {
-    Run A_ScriptDir "\update_" Ver ".exe"
+    Run newestUpdateExe
   }
 }
 
