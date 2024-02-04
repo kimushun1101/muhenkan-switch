@@ -1,0 +1,89 @@
+name: Release muhenkan-switch.zip
+
+on:
+ create:
+    tags:
+      - 'v*'
+
+jobs:
+ Example2:
+    name: release zip
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install AutoHotkey
+        shell: pwsh
+        run: |
+          $cwd = (Get-Item .).FullName;
+          Invoke-WebRequest "https://www.autohotkey.com/download/ahk-v2.zip" -OutFile "$cwd\autohotkey.zip";
+          Expand-Archive -Path "$cwd\autohotkey.zip" -DestinationPath "$cwd\_autohotkey\" -Force;
+          Remove-Item -Path "$cwd\autohotkey.zip" -Force
+          Move-Item -Path "$cwd\_autohotkey\AutoHotkey64.exe" -Destination $cwd;
+
+      - name: Install Ahk2Exe
+        shell: pwsh
+        run: |
+          $cwd = (Get-Item .).FullName;
+          Invoke-WebRequest "https://github.com/AutoHotkey/Ahk2Exe/releases/download/Ahk2Exe1.1.37.01c/Ahk2Exe1.1.37.01c.zip" -OutFile "$cwd\Ahk2Exe.zip";
+          Expand-Archive -Path "$cwd\Ahk2Exe.zip" -DestinationPath "$cwd\_Ahk2Exe\" -Force;
+          Remove-Item -Path "$cwd\Ahk2Exe.zip" -Force
+          Move-Item -Path "$cwd\_Ahk2Exe\ahk2exe.exe" -Destination $cwd;
+
+      - name: Install MPRESS
+        shell: pwsh
+        run: |
+          $cwd = (Get-Item .).FullName;
+          Invoke-WebRequest "https://www.autohotkey.com/mpress/mpress.219.zip" -OutFile "$cwd\mpress.zip";
+          Expand-Archive -Path "$cwd\mpress.zip" -DestinationPath "$cwd\_mpress\" -Force;
+          Remove-Item -Path "$cwd\mpress.zip" -Force
+          Move-Item -Path "$cwd\_mpress\mpress.exe" -Destination $cwd;
+
+      - name: Run Ahk2Exe
+        shell: pwsh
+        run: | 
+          $tag = "${{ github.ref }}".Replace("refs/tags/", "")
+          $updateExe = "update_" + $tag.Replace(".", "_") + ".exe"
+          .\ahk2exe.exe /silent verbose /in "muhenkan.ahk" /out "muhenkan.exe" /icon "img/muhenkan.ico" /base .\AutoHotkey64.exe | Write-Output;
+          .\ahk2exe.exe /silent verbose /in "update_version.ahk" /out $updateExe /icon "img/update.ico" /base .\AutoHotkey64.exe | Write-Output;
+          .\ahk2exe.exe /silent verbose /in "uninstall.ahk" /out "uninstall.exe" /icon "img/uninstall.ico" /base .\AutoHotkey64.exe | Write-Output;
+          echo "UPDATE_EXE=$updateExe" | Out-File -Append -FilePath $env:GITHUB_ENV
+
+      - name: Convert README.md to README.html
+        shell: pwsh
+        run: |
+          choco install pandoc -y
+          pandoc README.md -o README.html
+
+      - name: Clean up img folder
+        shell: pwsh
+        run: |
+          Get-ChildItem -Path "img" -Recurse -File | Where-Object { $_.Extension -ne '.png' -and $_.Extension -ne '.gif' } | Remove-Item
+
+      - name: Make zip file for release
+        shell: pwsh
+        run: |
+          Compress-Archive -Path "muhenkan.exe", "${{ env.UPDATE_EXE }}", "uninstall.exe", "README.html", "LICENSE", "img" -DestinationPath "muhenkan-switch.zip"
+      - name: Create GitHub release
+        uses: actions/create-release@v1
+        id: create_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            - GitHub Actions から生成されています．
+          draft: false
+          prerelease: false
+
+      - name: Upload release asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./muhenkan-switch.zip
+          asset_name: muhenkan-switch.zip
+          asset_content_type: application/zip

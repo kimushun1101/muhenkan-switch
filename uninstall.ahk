@@ -1,6 +1,3 @@
-CurrentVersion := "v1.4.3"
-; release.ahk によって書き換えられる
-
 #Requires AutoHotkey v2.0
 
 if not FileExist(A_ScriptDir "\muhenkan.exe")
