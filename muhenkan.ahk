@@ -1,19 +1,31 @@
 #Requires AutoHotkey v2.0
 
 ; 一番新しいファイルを見つける
-newestUpdateExe := ""
-newestModTime := 0
+newestUpdateExe := A_ScriptDir "\update_v0_0_0.exe"
 Loop Files,  A_ScriptDir "\update*.exe"
 {
-  currentModTime := FileGetTime(A_LoopFileFullPath, "M")
-  if (currentModTime > newestModTime)
-  {
-    newestModTime := currentModTime
+  if (VersionCompare(A_LoopFileFullPath, newestUpdateExe) > 0)
     newestUpdateExe := A_LoopFileFullPath
-  }
 }
 
-; バージョン違いのupdate.exe を削除
+; バージョン情報を比較する関数
+VersionCompare(exe1, exe2)
+{
+  v1 := StrReplace(StrReplace(exe1, A_ScriptDir "\update_v", ""), ".exe", "")
+  v2 := StrReplace(StrReplace(exe2, A_ScriptDir "\update_v", ""), ".exe", "")
+  v1Array := StrSplit(v1, "_")
+  v2Array := StrSplit(v2, "_")
+  Loop 3
+  {
+    if (v1Array[A_Index] > v2Array[A_Index])
+        return 1
+    else if (v1Array[A_Index] < v2Array[A_Index])
+        return -1
+  }
+  return 0
+}
+
+; 古いバージョンの update.exe を削除
 Loop Files, A_ScriptDir "\update*.exe"
 {
   if A_LoopFileFullPath != newestUpdateExe
