@@ -117,10 +117,10 @@ for Website in WebsiteIniKeyList
 
 FolderLabelArray := ["ドキュメント", "ダウンロード", "デスクトップ", "OneDrive", "ごみ箱"]
 FolderPathArray := Array()
-FolderPathArray.Push("C:\Users\A_UserName\Documents")
-FolderPathArray.Push("C:\Users\A_UserName\Downloads")
-FolderPathArray.Push("C:\Users\A_UserName\Desktop")
-FolderPathArray.Push("C:\Users\A_UserName\OneDrive")
+FolderPathArray.Push("C:\Users\" A_UserName "\Documents")
+FolderPathArray.Push("C:\Users\" A_UserName "\Downloads")
+FolderPathArray.Push("C:\Users\" A_UserName "\Desktop")
+FolderPathArray.Push("C:\Users\" A_UserName "\OneDrive")
 FolderPathArray.Push("shell:RecycleBinFolder")
 
 SoftwareLabelArray := ["エディタ", "ワード", "Eメール", "スライド", "PDFビューア", "ブラウザ"]
