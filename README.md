@@ -1,3 +1,5 @@
+![release workflow](https://github.com/kimushun1101/muhenkan-switch/actions/workflows/release.yml/badge.svg)
+
 # 無変換スイッチ
 
 `無変換キー`と他のキーを同時押しすることで様々な動作ができるようになります。

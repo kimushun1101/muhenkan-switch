@@ -74,7 +74,7 @@ jobs:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
           body: |
-            - GitHub Actions から生成されています．
+            GitHub Actions から自動生成されています．
           draft: false
           prerelease: false
 
