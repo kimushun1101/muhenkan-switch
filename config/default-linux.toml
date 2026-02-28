@@ -31,9 +31,12 @@ trash     = {key = "5", path = ""}
 browser  = {key = "f", process = "firefox",          command = "firefox"}
 editor   = {key = "a", process = "code",             command = "code"}
 terminal = {key = "t", process = "gnome-terminal",   command = "gnome-terminal"}
-slack    = {key = "s", process = "Slack",             command = "slack"}
+slack    = {key = "s", process = "Slack",              command = "slack"}
 nautilus = {key = "e", process = "org.gnome.Nautilus", command = "nautilus"}
-obsidian = {key = "d", process = "obsidian",          command = "obsidian"}
+# ↓ `d` キーはお好みのアプリを設定してください（Document 系がおすすめ）
+# obsidian    = {key = "d", process = "obsidian",      command = "obsidian"}                             # ノート（Obsidian）
+# notion      = {key = "d", process = "Notion",        command = "notion-app"}                           # ノート（Notion、要インストール）
+# libreoffice = {key = "d", process = "soffice",       command = "libreoffice --writer"}                 # 文書（LibreOffice Writer）
 
 # ── タイムスタンプ ──
 [timestamp]

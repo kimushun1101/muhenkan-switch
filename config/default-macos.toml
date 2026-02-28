@@ -33,7 +33,10 @@ editor   = {key = "a", process = "Visual Studio Code", command = "code"}
 terminal = {key = "t", process = "Terminal",            command = "open -a Terminal"}
 slack    = {key = "s", process = "Slack",               command = "open -a Slack"}
 finder   = {key = "e", process = "Finder",              command = "open -a Finder"}
-obsidian = {key = "d", process = "Obsidian",            command = "open -a Obsidian"}
+# ↓ `d` キーはお好みのアプリを設定してください（Document 系がおすすめ）
+# obsidian = {key = "d", process = "Obsidian",          command = "open -a Obsidian"}              # ノート（Obsidian）
+# notion   = {key = "d", process = "Notion",            command = "open -a Notion"}                # ノート（Notion）
+# word     = {key = "d", process = "Microsoft Word",    command = "open -a 'Microsoft Word'"}      # 文書（Word）
 
 # ── タイムスタンプ ──
 [timestamp]
