@@ -9,6 +9,7 @@ let guiSettings = {};    // GUI-only settings
 const DISPATCH_KEYS = [
   "1", "2", "3", "4", "5",
   "q", "r", "t", "g",
+  "b",
   "a", "w", "e", "s", "d", "f",
 ];
 
