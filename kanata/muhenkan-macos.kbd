@@ -28,7 +28,7 @@
   u  i  y  o
   n  m  ;
   ,  .
-  f1  p
+  f1
 )
 
 (defalias
@@ -57,7 +57,9 @@
   ts-c (cmd muhenkan-switch-core timestamp --action copy)
   ts-x (cmd muhenkan-switch-core timestamp --action cut)
 
-  prtsc (cmd muhenkan-switch-core screenshot)
+  ;; インデント操作
+  indent (macro spc spc spc spc)
+  dedent (macro home del del del del)
 )
 
 (deflayer default
@@ -71,7 +73,7 @@
   u  i  y  o
   n  m  ;
   ,  .
-  f1  p
+  f1
 )
 
 (deflayer mh-layer
@@ -84,6 +86,6 @@
   left  down  up  right
   C-left  C-right  home  end
   bspc  del  esc
-  (unicode 、)  (unicode 。)
-  f1  @prtsc
+  @dedent  @indent
+  f1
 )

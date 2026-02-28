@@ -32,7 +32,7 @@
   ;; 句読点
   ,  .
   ;; その他
-  f1  p
+  f1
 )
 
 ;; ── エイリアス ──
@@ -65,8 +65,9 @@
   ts-c (cmd muhenkan-switch-core timestamp --action copy)
   ts-x (cmd muhenkan-switch-core timestamp --action cut)
 
-  ;; スクリーンショット
-  prtsc (cmd muhenkan-switch-core screenshot)
+  ;; インデント操作
+  indent (macro spc spc spc spc)
+  dedent (macro home del del del del)
 )
 
 ;; ── デフォルトレイヤー ──
@@ -82,7 +83,7 @@
   u  i  y  o
   n  m  ;
   ,  .
-  f1  p
+  f1
 )
 
 ;; ── 無変換キー押下中レイヤー ──
@@ -104,8 +105,8 @@
   C-left  C-right  home  end
   ;; 削除
   bspc  del  esc
-  ;; 句読点
-  (unicode 、)  (unicode 。)
-  ;; F1 → 設定（将来実装）/ P → スクリーンショット
-  f1  @prtsc
+  ;; インデント操作（IMEオフ時のインデント/逆インデント）
+  @dedent  @indent
+  ;; F1 → 設定（将来実装）
+  f1
 )
