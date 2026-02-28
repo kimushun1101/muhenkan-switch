@@ -213,13 +213,24 @@ tags:
 | t | ターミナル | Windows Terminal (`WindowsTerminal`) | Terminal | GNOME Terminal (`gnome-terminal`) | **T**erminal |
 | s | チャット | Slack (`slack`) | Slack (`Slack`) | Slack (`Slack`) | **S**lack |
 | e | ファイラー | Explorer (`explorer`) | Finder (`Finder`) | Nautilus (`org.gnome.Nautilus`) | **E**xplorer |
-| d | メモ | Obsidian (`Obsidian`) | Obsidian (`Obsidian`) | Obsidian (`obsidian`) | **D**ocument |
+| **d** | **（空き）** | **ユーザーカスタマイズ推奨** | **ユーザーカスタマイズ推奨** | **ユーザーカスタマイズ推奨** | **D**ocument |
+
+**`d` キーのカスタマイズ例（Document 系）:**
+
+| アプリ | Windows | macOS | Linux |
+|--------|---------|-------|-------|
+| Obsidian | `process = "Obsidian", command = "obsidian"` | `process = "Obsidian", command = "open -a Obsidian"` | `process = "obsidian", command = "obsidian"` |
+| Notion | `process = "Notion", command = "notion"` | `process = "Notion", command = "open -a Notion"` | `process = "Notion", command = "notion-app"` |
+| Word | `process = "WINWORD", command = "winword"` | `process = "Microsoft Word", command = "open -a 'Microsoft Word'"` | — |
+
+`d = Document` のニーモニックを活かしつつ、ユーザー自身がよく使うアプリを設定できる枠として意図的に空けている。各 OS 別設定ファイルのコメントに上記の例を記載済み。
 
 ### 空きキー
 
 | キー | 状態 | 備考 |
 |------|------|------|
-| z | 未使用（kbd 追加で利用可能） | ユーザーカスタマイズ用 |
+| **d** | **意図的に未割り当て** | **Document 系アプリを自分で設定する枠（上記参照）** |
+| z | 未使用（kbd 追加で利用可能） | 将来の拡張用 |
 
 ---
 
@@ -243,12 +254,13 @@ tags:
 - **OS 依存の排除**: OneDrive / iCloud のような特定クラウドサービスをデフォルトにしない
 - **頻度順**: Downloads（最頻）を1番に配置
 
-### 実装方針
+### 実装方針（実装済み）
 
-1. **kbd ファイルに `b` キーを追加**: `defsrc` と `mh-layer` に `dsp-b` を追加
-2. **OS 別デフォルト設定ファイルの分離**: ビルド時または初回起動時に OS 判定して適切なデフォルトを生成
-3. **単一 `default.toml` + コメント方式の廃止**: コメントでの代替案提示は見落とされやすい
-4. **GUI スキーマの更新**: `desktop-schema.json`, `windows-schema.json` も連動して更新
+1. **kbd ファイルに `b` キーを追加**: `defsrc` と `mh-layer` に `dsp-b` を追加 ✅
+2. **OS 別デフォルト設定ファイルの分離**: `config/default-windows.toml` / `default-macos.toml` / `default-linux.toml` を新設 ✅
+3. **単一 `default.toml` + コメント方式の廃止**: `default.toml` は共通フォールバックとして残し、OS 別ファイルを優先 ✅
+4. **`d` キーを意図的に空き枠に**: Obsidian をデフォルトから外し、Document 系のカスタマイズ例をコメントで案内 ✅
+5. **`config_path()` / `default_config()` の OS 判定ロジック追加**: `default-{os}.toml` → `default.toml` の優先順で読み込み ✅
 
 ---
 

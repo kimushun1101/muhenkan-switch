@@ -1,5 +1,5 @@
-# muhenkan-switch-rs 設定ファイル（共通フォールバック）
-# OS 別の設定は default-windows.toml / default-macos.toml / default-linux.toml を参照してください。
+# muhenkan-switch-rs 設定ファイル (Linux)
+# muhenkan-switch バイナリと同じディレクトリに config.toml としてコピーして使用してください。
 
 # ── 検索エンジン ──
 # key: ディスパッチキー（無変換+key で発動）
@@ -20,22 +20,23 @@ desktop   = {key = "2", path = "~/Desktop"}
 documents = {key = "3", path = "~/Documents"}
 # ↓ よく使うプロジェクトフォルダに変更してお使いください
 project   = {key = "4", path = "~/repos"}
-# trash は OS によりパスが異なります。空欄の場合はデフォルト動作
+# trash は OS によりパスが異なります。空欄の場合はデフォルト動作（~/.local/share/Trash/files）
 trash     = {key = "5", path = ""}
 
 # ── アプリ切り替え ──
-# OS 別設定ファイル（default-windows.toml 等）を config.toml としてコピーしてお使いください。
 # key: ディスパッチキー（無変換+key で発動）
 # process: プロセス名。ウィンドウ検索に使用
 # command: 実行コマンド。アプリ未起動時の起動に使用（省略時は process 名で起動）
 [apps]
-browser  = {key = "f", process = "firefox",  command = "firefox"}
-editor   = {key = "a", process = "Code",     command = "code"}
-terminal = {key = "t", process = "terminal", command = "terminal"}
+browser  = {key = "f", process = "firefox",          command = "firefox"}
+editor   = {key = "a", process = "code",             command = "code"}
+terminal = {key = "t", process = "gnome-terminal",   command = "gnome-terminal"}
+slack    = {key = "s", process = "Slack",              command = "slack"}
+nautilus = {key = "e", process = "org.gnome.Nautilus", command = "nautilus"}
 # ↓ `d` キーはお好みのアプリを設定してください（Document 系がおすすめ）
-# obsidian = {key = "d", process = "obsidian", command = "obsidian"}   # ノート（Obsidian）
-# notion   = {key = "d", process = "Notion",   command = "notion"}     # ノート（Notion）
-# word     = {key = "d", process = "WINWORD",  command = "winword"}    # 文書（Word）
+# obsidian    = {key = "d", process = "obsidian",      command = "obsidian"}                             # ノート（Obsidian）
+# notion      = {key = "d", process = "Notion",        command = "notion-app"}                           # ノート（Notion、要インストール）
+# libreoffice = {key = "d", process = "soffice",       command = "libreoffice --writer"}                 # 文書（LibreOffice Writer）
 
 # ── タイムスタンプ ──
 [timestamp]
