@@ -22,6 +22,7 @@
   1  2  3  4  5
   q  r  t  g
   a  w  e  s  d  f
+  b
   v  c  x
   h  j  k  l
   u  i  y  o
@@ -49,6 +50,7 @@
   dsp-s (cmd muhenkan-switch-core dispatch s)
   dsp-d (cmd muhenkan-switch-core dispatch d)
   dsp-f (cmd muhenkan-switch-core dispatch f)
+  dsp-b (cmd muhenkan-switch-core dispatch b)
 
   ;; 固定アクション
   ts-v (cmd muhenkan-switch-core timestamp --action paste)
@@ -63,6 +65,7 @@
   1  2  3  4  5
   q  r  t  g
   a  w  e  s  d  f
+  b
   v  c  x
   h  j  k  l
   u  i  y  o
@@ -76,6 +79,7 @@
   @dsp-1  @dsp-2  @dsp-3  @dsp-4  @dsp-5
   @dsp-q  @dsp-r  @dsp-t  @dsp-g
   @dsp-a  @dsp-w  @dsp-e  @dsp-s  @dsp-d  @dsp-f
+  @dsp-b
   @ts-v  @ts-c  @ts-x
   left  down  up  right
   C-left  C-right  home  end

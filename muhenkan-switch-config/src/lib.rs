@@ -9,6 +9,7 @@ use std::path::PathBuf;
 pub const DISPATCH_KEYS: &[&str] = &[
     "1", "2", "3", "4", "5",
     "q", "r", "t", "g",
+    "b",
     "a", "w", "e", "s", "d", "f",
 ];
 
@@ -153,12 +154,22 @@ fn default_delimiter() -> String {
 
 // ── Config path resolution ──
 
+/// 実行中の OS に対応するデフォルト設定ファイル名を返す。
+fn os_default_config_name() -> &'static str {
+    match std::env::consts::OS {
+        "windows" => "default-windows.toml",
+        "macos" => "default-macos.toml",
+        _ => "default-linux.toml",
+    }
+}
+
 /// config.toml のパスを決定する。
 /// 優先順位:
 /// 1. 実行ファイルと同じディレクトリの config.toml（インストール環境）
 /// 2. カレントディレクトリの config.toml
-/// 3. ワークスペースルートの config/default.toml（開発環境）
-/// 4. 見つからなければ None
+/// 3. ワークスペースルートの config/default-{os}.toml（開発環境、OS別）
+/// 4. ワークスペースルートの config/default.toml（開発環境、フォールバック）
+/// 5. 見つからなければ None
 pub fn config_path() -> Option<PathBuf> {
     // 1. 実行ファイルと同じディレクトリ
     if let Ok(exe_path) = std::env::current_exe() {
@@ -176,11 +187,17 @@ pub fn config_path() -> Option<PathBuf> {
         return Some(path);
     }
 
-    // 3. ワークスペースルートの config/default.toml（開発環境）
+    // 3 & 4. ワークスペースルートの config/（開発環境）
     let workspace_root = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .parent()
         .map(|p| p.to_path_buf());
     if let Some(ref root) = workspace_root {
+        // OS 別ファイルを優先
+        let os_path = root.join("config").join(os_default_config_name());
+        if os_path.exists() {
+            return Some(os_path);
+        }
+        // 共通フォールバック
         let path = root.join("config").join("default.toml");
         if path.exists() {
             return Some(path);
@@ -211,13 +228,18 @@ pub fn load() -> Result<Config> {
 }
 
 /// デフォルト設定を返す。
-/// config/default.toml が存在すればそれを使い、なければ最小限のフォールバック。
+/// config/default-{os}.toml → config/default.toml → 最小限のフォールバックの順で試みる。
 pub fn default_config() -> Config {
-    // ワークスペースルートの config/default.toml を試す
     let workspace_root = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .parent()
         .map(|p| p.to_path_buf());
     if let Some(ref root) = workspace_root {
+        // OS 別ファイルを優先
+        let os_path = root.join("config").join(os_default_config_name());
+        if let Ok(config) = load_from(&os_path) {
+            return config;
+        }
+        // 共通フォールバック
         let path = root.join("config").join("default.toml");
         if let Ok(config) = load_from(&path) {
             return config;
