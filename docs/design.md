@@ -41,7 +41,7 @@ summary: muhenkan-switchをkanata＋Rust製muhenkan-switchバイナリ構成でW
 | HJKL → カーソル移動 | レイヤー内で `left` `down` `up` `right` |
 | YUIO → 単語移動/行頭行末 | レイヤー内マクロ |
 | NM → BackSpace/Delete | レイヤー内で `bspc` `del` |
-| カンマ・ピリオド → 句読点 | unicode 出力 |
+| カンマ・ピリオド → インデント操作 | dedent / indent マクロ |
 
 ### Layer 2: OS連携 → muhenkan-switch バイナリ（Rust）
 
@@ -139,7 +139,7 @@ Commands:
   switch-app   --target <NAME>    指定アプリを最前面に
   open-folder  --target <NAME>    指定フォルダを開く
   timestamp    --action <ACTION>  タイムスタンプ操作 (paste|copy|cut)
-  screenshot                      ウィンドウキャプチャ
+  open-gui                        GUI 設定ウィンドウを前面に出す
 ```
 
 設定は実行ファイルと同じディレクトリの `config.toml` から読み込む。
@@ -218,5 +218,6 @@ GUI (Tauri) から kanata プロセスの開始・停止・再起動を行う。
 - config crate テスト 24 件整備
 
 ### Phase 5: 機能拡充（継続）
-- ビルド自動化 + GitHub Actions クロスコンパイル
-- ホットストリング、スクリーンショット
+- ビルド自動化 + GitHub Actions クロスコンパイル ✅
+- アプリアイコンのデザイン・適用 ✅
+- ホットストリング

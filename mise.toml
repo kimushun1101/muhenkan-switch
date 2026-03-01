@@ -10,10 +10,12 @@
 #   mise run test        ユニットテスト
 #   mise run test-install ローカルでインストールスクリプトをテスト
 #   mise run reset-uinput uinput 設定をリセット（再テスト用）
+#   mise run gen-icons   img/icon.svg からアイコン全サイズを生成
 
 [tools]
 rust = "1.93"
 python = "3"
+node = "lts"
 
 [tasks.setup]
 description = "Install build & runtime dependencies for Linux + show uinput setup guide"
@@ -209,6 +211,11 @@ run = """
 echo "[dev] Starting GUI..."
 cargo run -p muhenkan-switch
 """
+
+[tasks.gen-icons]
+description = "Generate app icons from img/icon.svg using @tauri-apps/cli (requires Node.js)"
+shell = "bash -c"
+run = "cd muhenkan-switch && npx --yes @tauri-apps/cli@2 icon ../img/icon.svg"
 
 [tasks.test]
 description = "Run all tests"
