@@ -46,6 +46,16 @@ jobs:
       - name: Build muhenkan-switch-core
         run: cargo build --release --target ${{ matrix.target }} -p muhenkan-switch-core
 
+      # tauri-build がビルド時に externalBin の実在を確認するため、
+      # Linux/macOS でもダミーの sidecar ファイルを用意する（バンドルはしない）
+      - name: Prepare sidecar placeholders
+        shell: bash
+        run: |
+          mkdir -p muhenkan-switch/binaries
+          cp "target/${{ matrix.target }}/release/${{ matrix.core_artifact }}" \
+             "muhenkan-switch/binaries/muhenkan-switch-core-${{ matrix.target }}"
+          touch "muhenkan-switch/binaries/kanata_cmd_allowed-${{ matrix.target }}"
+
       - name: Build muhenkan-switch (GUI)
         run: cargo build --release --target ${{ matrix.target }} -p muhenkan-switch
 
@@ -123,13 +133,19 @@ jobs:
              muhenkan-switch/binaries/muhenkan-switch-core-x86_64-pc-windows-msvc.exe
 
       # 3. kanata をダウンロードして sidecar 配置
+      #    kanata は zip 形式で配布されているため展開して取り出す
       - name: Download kanata and prepare sidecar
         shell: pwsh
         run: |
           $version = (Get-Content kanata-version.txt).Trim()
-          $url = "https://github.com/jtroo/kanata/releases/download/${version}/kanata_cmd_allowed.exe"
-          Write-Host "Downloading kanata ${version} from ${url}"
-          Invoke-WebRequest -Uri $url -OutFile "muhenkan-switch/binaries/kanata_cmd_allowed-x86_64-pc-windows-msvc.exe"
+          $zipUrl = "https://github.com/jtroo/kanata/releases/download/${version}/windows-binaries-x64.zip"
+          $binaryName = "kanata_windows_gui_winIOv2_cmd_allowed_x64.exe"
+          Write-Host "Downloading kanata ${version} from ${zipUrl}"
+          Invoke-WebRequest -Uri $zipUrl -OutFile "kanata.zip"
+          Expand-Archive -Path "kanata.zip" -DestinationPath "kanata-extract"
+          $binaryFile = Get-ChildItem -Path "kanata-extract" -Recurse -Filter $binaryName | Select-Object -First 1
+          if (-not $binaryFile) { Write-Error "kanata binary not found: $binaryName"; exit 1 }
+          Copy-Item $binaryFile.FullName "muhenkan-switch/binaries/kanata_cmd_allowed-x86_64-pc-windows-msvc.exe"
 
       # 4. cargo tauri build で .msi / NSIS .exe を生成
       - name: Build Windows installer (.msi and NSIS)
