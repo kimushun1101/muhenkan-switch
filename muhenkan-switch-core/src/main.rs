@@ -46,10 +46,18 @@ enum Commands {
         /// ディスパッチキー (config.toml の key フィールドに対応)
         key: String,
     },
+    /// GUI 設定ウィンドウを前面に出す（未起動なら起動する）
+    OpenGui,
 }
 
 fn main() -> Result<()> {
     let cli = Cli::parse();
+
+    // config 不要なコマンドは先に処理
+    if let Commands::OpenGui = cli.command {
+        return commands::open_gui::run();
+    }
+
     let config = config::load()?;
 
     match cli.command {
@@ -58,5 +66,6 @@ fn main() -> Result<()> {
         Commands::OpenFolder { target } => commands::open_folder::run(&target, &config),
         Commands::Timestamp { action } => commands::timestamp::run(&action, &config),
         Commands::Dispatch { key } => commands::dispatch::run(&key, &config),
+        Commands::OpenGui => unreachable!(),
     }
 }

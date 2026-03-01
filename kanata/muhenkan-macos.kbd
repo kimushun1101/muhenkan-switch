@@ -60,6 +60,9 @@
   ;; インデント操作
   indent (macro spc spc spc spc)
   dedent (macro home del del del del)
+
+  ;; GUI 設定ウィンドウを前面に出す
+  open-gui (cmd muhenkan-switch-core open-gui)
 )
 
 (deflayer default
@@ -87,5 +90,5 @@
   C-left  C-right  home  end
   bspc  del  esc
   @dedent  @indent
-  f1
+  @open-gui
 )
