@@ -18,6 +18,7 @@ Thumbs.db
 *.dll
 /kanata_cmd_allowed
 /muhenkan-switch-core
+!/muhenkan-switch-core/
 /muhenkan-switch
 !/muhenkan-switch/
 /bin/

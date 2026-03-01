@@ -68,6 +68,9 @@
   ;; インデント操作
   indent (macro spc spc spc spc)
   dedent (macro home del del del del)
+
+  ;; GUI 設定ウィンドウを前面に出す
+  open-gui (cmd muhenkan-switch-core open-gui)
 )
 
 ;; ── デフォルトレイヤー ──
@@ -107,6 +110,6 @@
   bspc  del  esc
   ;; インデント操作（IMEオフ時のインデント/逆インデント）
   @dedent  @indent
-  ;; F1 → 設定（将来実装）
-  f1
+  ;; F1 → GUI 設定ウィンドウを前面に出す
+  @open-gui
 )
