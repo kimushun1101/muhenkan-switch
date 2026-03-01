@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300">
+  <path d="M 0 300 L 50 0 L 250 0 L 300 300 Z" fill="#008a00" stroke="#005700" stroke-width="1" stroke-miterlimit="10"/>
+  <text x="150" y="236" fill="#fffafa" font-family="Meiryo, sans-serif" font-size="240" text-anchor="middle" font-weight="bold">無</text>
+</svg>
