@@ -135,12 +135,25 @@ sudo udevadm control --reload-rules && sudo udevadm trigger
 
 ### アンインストール
 
-インストール先にあるアンインストールスクリプトを実行してください:
+#### Windows（.msi でインストールした場合）
 
-```bash
+**設定 → アプリ → muhenkan-switch → アンインストール** で削除できます。
+.msi インストーラーは Windows の標準的な仕組みに従って登録されているため、
+スクリプト不要でコントロールパネルからアンインストールできます。
+
+<details>
+<summary>zip 版（上級者向け）でインストールした場合</summary>
+
+```powershell
 # Windows（PowerShell）
 & "$env:LOCALAPPDATA\muhenkan-switch-rs\uninstall.ps1"
+```
 
+</details>
+
+#### Linux / macOS
+
+```bash
 # Linux
 ~/.local/share/muhenkan-switch-rs/uninstall.sh
 
@@ -148,31 +161,37 @@ sudo udevadm control --reload-rules && sudo udevadm trigger
 ~/Library/Application\ Support/muhenkan-switch-rs/uninstall-macos.sh
 ```
 
-手動で削除する場合は、以下を削除してください:
-- インストールディレクトリ（上記表を参照）
-- スタートメニューショートカット（Windows）/ PATH のシンボリックリンク（Linux/macOS）
-- 自動起動設定（Windows: スタートアップショートカット、Linux: XDG autostart、macOS: launchd エージェント）
-
 ### 更新
 
-インストール先にある更新スクリプトを実行すると、最新版に更新できます。
+#### Windows（.msi でインストールした場合）
 
-```
+[最新リリース](https://github.com/kimushun1101/muhenkan-switch-rs/releases/latest) から
+新しい `.msi` をダウンロードしてダブルクリックするだけで上書き更新されます。
+
+<details>
+<summary>zip 版（上級者向け）でインストールした場合</summary>
+
+```powershell
 # Windows（PowerShell）
 & "$env:LOCALAPPDATA\muhenkan-switch-rs\update.ps1"
+```
 
+更新スクリプトは以下を自動で行います:
+- GitHub Releases から最新バージョンの確認
+- 現在のバージョンとの比較（既に最新の場合は終了）
+- 最新版のダウンロード・展開・インストール
+
+</details>
+
+#### Linux / macOS
+
+```bash
 # Linux
 ~/.local/share/muhenkan-switch-rs/update.sh
 
 # macOS
 ~/Library/Application\ Support/muhenkan-switch-rs/update-macos.sh
 ```
-
-更新スクリプトは以下を自動で行います:
-- GitHub Releases から最新バージョンの確認
-- 現在のバージョンとの比較（既に最新の場合は終了）
-- 最新版のダウンロード・展開
-- インストールスクリプトの実行（既存インストールを上書き更新）
 
 ## macOS をお使いの方へ
 
