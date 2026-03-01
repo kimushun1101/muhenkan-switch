@@ -41,8 +41,6 @@ enum Commands {
         #[arg(long)]
         action: String,
     },
-    /// スクリーンショット
-    Screenshot,
     /// ディスパッチキーに対応するアクションを実行
     Dispatch {
         /// ディスパッチキー (config.toml の key フィールドに対応)
@@ -59,7 +57,6 @@ fn main() -> Result<()> {
         Commands::SwitchApp { target } => commands::switch_app::run(&target, &config),
         Commands::OpenFolder { target } => commands::open_folder::run(&target, &config),
         Commands::Timestamp { action } => commands::timestamp::run(&action, &config),
-        Commands::Screenshot => commands::screenshot::run(&config),
         Commands::Dispatch { key } => commands::dispatch::run(&key, &config),
     }
 }
