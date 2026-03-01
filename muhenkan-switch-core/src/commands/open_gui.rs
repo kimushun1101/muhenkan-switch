@@ -10,6 +10,12 @@ const fn gui_binary_name() -> &'static str {
     }
 }
 
+/// GUI 起動要求のシグナルファイルパス。
+/// open-gui が書き込み、GUI プロセス側の監視スレッドが検出して削除する。
+pub fn signal_file_path() -> PathBuf {
+    std::env::temp_dir().join("muhenkan-switch-show.signal")
+}
+
 /// GUI バイナリのフルパスを取得する。
 ///
 /// 探索順序:
@@ -70,25 +76,24 @@ mod imp {
     use super::*;
     use std::ffi::OsString;
     use std::os::windows::ffi::OsStringExt;
-    use windows::Win32::Foundation::{HWND, LPARAM};
     use windows::Win32::System::Diagnostics::ToolHelp::{
         CreateToolhelp32Snapshot, Process32FirstW, Process32NextW, PROCESSENTRY32W,
         TH32CS_SNAPPROCESS,
     };
-    use windows::Win32::System::Threading::{AttachThreadInput, GetCurrentThreadId};
-    use windows::Win32::UI::Input::KeyboardAndMouse::{
-        SendInput, INPUT, INPUT_0, INPUT_KEYBOARD, KEYBDINPUT, KEYEVENTF_KEYUP, VK_MENU,
-    };
-    use windows::Win32::UI::WindowsAndMessaging::{
-        EnumWindows, GetForegroundWindow, GetWindowThreadProcessId, IsIconic, SetForegroundWindow,
-        ShowWindow, SW_RESTORE, SW_SHOW,
-    };
-    use windows::core::BOOL;
 
     pub(super) fn open_gui() -> Result<()> {
-        // --- Step 1: Find PIDs matching "muhenkan-switch" ---
+        if is_gui_running()? {
+            // GUI が起動済み → シグナルファイルを書いて表示を依頼
+            std::fs::write(super::signal_file_path(), b"")?;
+        } else {
+            // GUI が未起動 → バイナリを起動
+            launch_gui()?;
+        }
+        Ok(())
+    }
+
+    fn is_gui_running() -> Result<bool> {
         let app_lower = "muhenkan-switch";
-        let mut pids = Vec::new();
 
         unsafe {
             let snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0)?;
@@ -97,6 +102,7 @@ mod imp {
                 ..Default::default()
             };
 
+            let mut found = false;
             if Process32FirstW(snapshot, &mut entry).is_ok() {
                 loop {
                     let exe_len = entry
@@ -108,7 +114,8 @@ mod imp {
                         .to_string_lossy()
                         .to_ascii_lowercase();
                     if exe_name == app_lower || exe_name == format!("{}.exe", app_lower) {
-                        pids.push(entry.th32ProcessID);
+                        found = true;
+                        break;
                     }
                     if Process32NextW(snapshot, &mut entry).is_err() {
                         break;
@@ -116,91 +123,8 @@ mod imp {
                 }
             }
             let _ = windows::Win32::Foundation::CloseHandle(snapshot);
+            Ok(found)
         }
-
-        if pids.is_empty() {
-            return launch_gui();
-        }
-
-        // --- Step 2: Find a top-level window belonging to the GUI process ---
-        // IsWindowVisible チェックを外すことで、トレイ格納中（非表示）の
-        // ウィンドウも対象にする。
-        struct CallbackData {
-            pids: Vec<u32>,
-            hwnd: Option<HWND>,
-        }
-
-        unsafe extern "system" fn enum_callback(hwnd: HWND, lparam: LPARAM) -> BOOL {
-            let data = &mut *(lparam.0 as *mut CallbackData);
-            let mut pid: u32 = 0;
-            GetWindowThreadProcessId(hwnd, Some(&mut pid));
-            if data.pids.contains(&pid) {
-                data.hwnd = Some(hwnd);
-                return BOOL(0); // stop enumeration
-            }
-            BOOL(1) // continue
-        }
-
-        let mut data = CallbackData { pids, hwnd: None };
-        unsafe {
-            let _ = EnumWindows(
-                Some(enum_callback),
-                LPARAM(&mut data as *mut CallbackData as isize),
-            );
-        }
-
-        let hwnd = match data.hwnd {
-            Some(h) => h,
-            None => return Ok(()),
-        };
-
-        // --- Step 3: Show and activate the window ---
-        unsafe {
-            let fg_hwnd = GetForegroundWindow();
-            let fg_thread = GetWindowThreadProcessId(fg_hwnd, None);
-            let cur_thread = GetCurrentThreadId();
-
-            let attached = if fg_thread != cur_thread {
-                AttachThreadInput(cur_thread, fg_thread, true).as_bool()
-            } else {
-                false
-            };
-
-            // Alt press/release でフォアグラウンド権限を取得
-            let alt_down = INPUT {
-                r#type: INPUT_KEYBOARD,
-                Anonymous: INPUT_0 {
-                    ki: KEYBDINPUT {
-                        wVk: VK_MENU,
-                        ..Default::default()
-                    },
-                },
-            };
-            let alt_up = INPUT {
-                r#type: INPUT_KEYBOARD,
-                Anonymous: INPUT_0 {
-                    ki: KEYBDINPUT {
-                        wVk: VK_MENU,
-                        dwFlags: KEYEVENTF_KEYUP,
-                        ..Default::default()
-                    },
-                },
-            };
-            SendInput(&[alt_down, alt_up], size_of::<INPUT>() as i32);
-
-            // トレイ格納中（非表示）のウィンドウも表示する
-            let _ = ShowWindow(hwnd, SW_SHOW);
-            if IsIconic(hwnd).as_bool() {
-                let _ = ShowWindow(hwnd, SW_RESTORE);
-            }
-            let _ = SetForegroundWindow(hwnd);
-
-            if attached {
-                let _ = AttachThreadInput(cur_thread, fg_thread, false);
-            }
-        }
-
-        Ok(())
     }
 
     fn launch_gui() -> Result<()> {
@@ -226,44 +150,20 @@ mod imp {
     use std::process::Command;
 
     pub(super) fn open_gui() -> Result<()> {
-        let activated = try_wmctrl("muhenkan-switch")
-            || try_xdotool("muhenkan-switch", "--class")
-            || try_xdotool("muhenkan-switch", "--name");
-
-        if !activated {
+        if is_gui_running() {
+            std::fs::write(super::signal_file_path(), b"")?;
+        } else {
             launch_gui()?;
         }
-
         Ok(())
     }
 
-    fn try_wmctrl(app: &str) -> bool {
-        Command::new("wmctrl")
-            .args(["-x", "-a", app])
+    fn is_gui_running() -> bool {
+        Command::new("pgrep")
+            .args(["-x", "muhenkan-switch"])
             .output()
             .map(|o| o.status.success())
             .unwrap_or(false)
-    }
-
-    fn try_xdotool(app: &str, search_flag: &str) -> bool {
-        let result = Command::new("xdotool")
-            .args(["search", "--onlyvisible", search_flag, app])
-            .output();
-        match result {
-            Ok(output) if output.status.success() => {
-                let stdout = String::from_utf8_lossy(&output.stdout);
-                if let Some(wid) = stdout.lines().next() {
-                    Command::new("xdotool")
-                        .args(["windowactivate", "--sync", wid])
-                        .output()
-                        .map(|o| o.status.success())
-                        .unwrap_or(false)
-                } else {
-                    false
-                }
-            }
-            _ => false,
-        }
     }
 
     fn launch_gui() -> Result<()> {
@@ -282,7 +182,9 @@ mod imp {
     use std::process::Command;
 
     pub(super) fn open_gui() -> Result<()> {
-        // osascript の activate は未起動なら起動、起動済みなら前面化する
+        // osascript の activate は未起動なら起動、起動済みなら前面化する。
+        // macOS は Tauri の WebviewWindow が osascript で正しく制御できるため
+        // シグナルファイル方式は不要。
         let ok = Command::new("osascript")
             .args(["-e", r#"tell application "muhenkan-switch" to activate"#])
             .output()
@@ -290,7 +192,6 @@ mod imp {
             .unwrap_or(false);
 
         if !ok {
-            // アプリ未登録など osascript が失敗した場合はバイナリを直接起動
             if let Some(path) = super::gui_binary_path() {
                 Command::new(path).spawn()?;
             }

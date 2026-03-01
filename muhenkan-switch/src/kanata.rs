@@ -511,5 +511,24 @@ pub fn setup(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
         }
     });
 
+    // シグナルファイル監視スレッド
+    // open-gui コマンドがシグナルファイルを書き込んだとき、
+    // GUI 自身の Tauri API 経由でウィンドウを表示・前面化する。
+    // （外部プロセスから直接 Win32 API を呼ぶと Tauri の内部状態とデシンクするため）
+    let signal_app = app.handle().clone();
+    std::thread::spawn(move || {
+        let signal_path = std::env::temp_dir().join("muhenkan-switch-show.signal");
+        loop {
+            std::thread::sleep(Duration::from_millis(200));
+            if signal_path.exists() {
+                let _ = std::fs::remove_file(&signal_path);
+                if let Some(window) = signal_app.get_webview_window("main") {
+                    let _ = window.show();
+                    let _ = window.set_focus();
+                }
+            }
+        }
+    });
+
     Ok(())
 }
