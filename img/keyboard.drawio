@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="KDNoategi7YZtb6zJ5Sa" name="keyboard">
-        <mxGraphModel dx="1112" dy="771" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+        <mxGraphModel dx="927" dy="643" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -190,7 +190,7 @@
                 <mxCell id="65" value="" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="440" y="528" width="230" height="50" as="geometry"/>
                 </mxCell>
-                <mxCell id="66" value="&lt;b&gt;無変換&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#60a917;fontColor=#ffffff;strokeColor=#2D7600;" parent="1" vertex="1">
+                <mxCell id="66" value="&lt;b&gt;&lt;font style=&quot;color: rgb(255, 255, 255);&quot;&gt;無変換&lt;/font&gt;&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0F766E;fontColor=#FFFFFF;strokeColor=#2D7600;" parent="1" vertex="1">
                     <mxGeometry x="379" y="528" width="50" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="67" value="変換" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
@@ -270,7 +270,7 @@
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
-                <mxCell id="cir7mgRERzWUox8Nm5Tj-1" value="" style="shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;fixedSize=1;size=50;fillColor=#008a00;strokeColor=#005700;fontColor=#ffffff;" parent="1" vertex="1">
+                <mxCell id="cir7mgRERzWUox8Nm5Tj-1" value="" style="shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;fixedSize=1;size=50;fillColor=#0F766E;strokeColor=#0C5C56;fontColor=#ffffff;" parent="1" vertex="1">
                     <mxGeometry x="450" y="250" width="300" height="300" as="geometry"/>
                 </mxCell>
                 <mxCell id="cir7mgRERzWUox8Nm5Tj-3" value="無" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontFamily=Meirio;fontSize=240;fontStyle=1;labelBorderColor=none;whiteSpace=wrap;fontColor=#fffafa;" parent="1" vertex="1">
@@ -279,12 +279,12 @@
             </root>
         </mxGraphModel>
     </diagram>
-    <diagram name="update.ico" id="Uscm6bKYTGQIxYjz0baG">
-        <mxGraphModel dx="1378" dy="914" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+    <diagram name="update.icon" id="Uscm6bKYTGQIxYjz0baG">
+        <mxGraphModel dx="1112" dy="771" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
             <root>
                 <mxCell id="vEPC8lKlD4OpeI4CdOo7-0"/>
                 <mxCell id="vEPC8lKlD4OpeI4CdOo7-1" parent="vEPC8lKlD4OpeI4CdOo7-0"/>
-                <mxCell id="vEPC8lKlD4OpeI4CdOo7-2" value="" style="shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;fixedSize=1;size=50;fillColor=#008a00;strokeColor=#005700;fontColor=#ffffff;" parent="vEPC8lKlD4OpeI4CdOo7-1" vertex="1">
+                <mxCell id="vEPC8lKlD4OpeI4CdOo7-2" value="" style="shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;fixedSize=1;size=50;fillColor=#0F766E;strokeColor=#0C5C56;fontColor=#ffffff;" parent="vEPC8lKlD4OpeI4CdOo7-1" vertex="1">
                     <mxGeometry x="450" y="250" width="300" height="300" as="geometry"/>
                 </mxCell>
                 <mxCell id="vEPC8lKlD4OpeI4CdOo7-3" value="無" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontFamily=Meirio;fontSize=240;fontStyle=1;labelBorderColor=none;whiteSpace=wrap;fontColor=#fffafa;" parent="vEPC8lKlD4OpeI4CdOo7-1" vertex="1">
@@ -301,7 +301,7 @@
             <root>
                 <mxCell id="VKrCo2FgM22Z0ik8m9qZ-0"/>
                 <mxCell id="VKrCo2FgM22Z0ik8m9qZ-1" parent="VKrCo2FgM22Z0ik8m9qZ-0"/>
-                <mxCell id="VKrCo2FgM22Z0ik8m9qZ-2" value="" style="shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;fixedSize=1;size=50;fillColor=#008a00;strokeColor=#005700;fontColor=#ffffff;" parent="VKrCo2FgM22Z0ik8m9qZ-1" vertex="1">
+                <mxCell id="VKrCo2FgM22Z0ik8m9qZ-2" value="" style="shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;fixedSize=1;size=50;fillColor=#0F766E;strokeColor=#0C5C56;fontColor=#ffffff;" parent="VKrCo2FgM22Z0ik8m9qZ-1" vertex="1">
                     <mxGeometry x="450" y="250" width="300" height="300" as="geometry"/>
                 </mxCell>
                 <mxCell id="VKrCo2FgM22Z0ik8m9qZ-3" value="無" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontFamily=Meirio;fontSize=240;fontStyle=1;labelBorderColor=none;whiteSpace=wrap;fontColor=#fffafa;" parent="VKrCo2FgM22Z0ik8m9qZ-1" vertex="1">
