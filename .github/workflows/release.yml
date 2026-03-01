@@ -207,8 +207,8 @@ jobs:
           files: |
             muhenkan-switch-rs-*.tar.gz
             muhenkan-switch-rs-*.zip
-            *.msi
-            *-setup.exe
+            msi/*.msi
+            nsis/*-setup.exe
           body: |
             ## muhenkan-switch-rs
 
