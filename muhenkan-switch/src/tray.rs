@@ -56,6 +56,7 @@ fn build_tray(handle: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
         .build()?;
 
     let _tray = TrayIconBuilder::new()
+        .icon(handle.default_window_icon().cloned().ok_or("no app icon")?)
         .menu(&menu)
         .tooltip("muhenkan-switch")
         .on_menu_event(move |app, event| {
