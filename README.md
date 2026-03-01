@@ -34,30 +34,31 @@
 
 ### 1. インストール
 
+#### Windows
+
+1. [最新リリース](https://github.com/kimushun1101/muhenkan-switch-rs/releases/latest) から
+   `muhenkan-switch_x64.msi`（または `muhenkan-switch_x64-setup.exe`）をダウンロード
+2. ダブルクリックしてインストール
+3. スタートメニューから `muhenkan-switch` を起動
+
+> **PowerShell ワンライナーでのインストール（上級者向け）:**
+> ```powershell
+> irm https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/main/scripts/get.ps1 | iex
+> ```
+
+#### Linux / macOS
+
 以下のコマンドをターミナルに貼り付けて実行するだけで、最新版のダウンロードからインストールまで自動で行われます。
 
-**Linux / macOS:**
 ```bash
 curl -fsSL https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/main/scripts/get.sh | sh
 ```
 
-**Windows (PowerShell):**
-```powershell
-irm https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/main/scripts/get.ps1 | iex
-```
-
 > **セキュリティについて**: スクリプトの内容を事前に確認したい場合は、先にダウンロードしてから実行できます。
 > ```bash
-> # Linux / macOS
 > curl -fsSL https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/main/scripts/get.sh -o get.sh
 > less get.sh    # 内容を確認
 > bash get.sh    # 実行
-> ```
-> ```powershell
-> # Windows
-> irm https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/main/scripts/get.ps1 -OutFile get.ps1
-> Get-Content get.ps1   # 内容を確認
-> .\get.ps1             # 実行
 > ```
 
 <details>
@@ -278,7 +279,13 @@ mise run test       # ユニットテスト
 
 ## ライセンス
 
-GPL-2.0 — [muhenkan-switch](https://github.com/kimushun1101/muhenkan-switch) を継承。
+LGPL-3.0-only
+
+本プロジェクト（muhenkan-switch-rs）は Rust によるフルスクラッチ実装です。
+旧版（[muhenkan-switch](https://github.com/kimushun1101/muhenkan-switch) AutoHotkey 版）の仕様を継承していますが、
+コードの流用はないため LGPL-3.0 で提供します。
+
+同梱する kanata も LGPL-3.0 です（`LICENSE` 参照）。
 
 ## 旧版（AutoHotkey版）
 

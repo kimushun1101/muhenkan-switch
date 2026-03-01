@@ -20,7 +20,7 @@ summary: muhenkan-switchをkanata＋Rust製muhenkan-switchバイナリ構成でW
 - 対象OS: Windows / macOS / Linux
 - macOS は設定ファイルを提供するが、**開発者の検証環境がないため未検証**
 - **JIS配列キーボード前提**。US配列は考慮しない
-- ライセンス: GPL-2.0（現行を継承）
+- ライセンス: LGPL-3.0-only
 
 **設計方針:**
 - kanata を外部バイナリとして利用（クレート組み込みはしない）
