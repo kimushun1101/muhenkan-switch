@@ -227,36 +227,32 @@ pub fn load() -> Result<Config> {
     }
 }
 
+// デフォルト設定ファイルをコンパイル時にバイナリへ埋め込む。
+// インストール済み環境でも env!("CARGO_MANIFEST_DIR") に依存せず参照できる。
+const DEFAULT_WINDOWS_CONFIG: &str = include_str!("../../config/default-windows.toml");
+const DEFAULT_LINUX_CONFIG: &str = include_str!("../../config/default-linux.toml");
+const DEFAULT_MACOS_CONFIG: &str = include_str!("../../config/default-macos.toml");
+const DEFAULT_CONFIG: &str = include_str!("../../config/default.toml");
+
 /// デフォルト設定を返す。
-/// config/default-{os}.toml → config/default.toml → 最小限のフォールバックの順で試みる。
+/// バイナリに埋め込まれた OS 別デフォルト設定 → 共通デフォルト → 最小限フォールバックの順で試みる。
 pub fn default_config() -> Config {
-    let workspace_root = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .parent()
-        .map(|p| p.to_path_buf());
-    if let Some(ref root) = workspace_root {
-        // OS 別ファイルを優先
-        let os_path = root.join("config").join(os_default_config_name());
-        if let Ok(config) = load_from(&os_path) {
-            return config;
-        }
-        // 共通フォールバック
-        let path = root.join("config").join("default.toml");
-        if let Ok(config) = load_from(&path) {
-            return config;
-        }
+    // 1. OS 別埋め込みデフォルト設定（コンパイル時にバイナリに組み込み済み）
+    let os_default = match std::env::consts::OS {
+        "windows" => DEFAULT_WINDOWS_CONFIG,
+        "macos" => DEFAULT_MACOS_CONFIG,
+        _ => DEFAULT_LINUX_CONFIG,
+    };
+    if let Ok(config) = toml::from_str(os_default) {
+        return config;
     }
 
-    // exe と同じディレクトリの config.toml（インストール環境の初期値）
-    if let Ok(exe_path) = std::env::current_exe() {
-        if let Some(dir) = exe_path.parent() {
-            let path = dir.join("config.toml");
-            if let Ok(config) = load_from(&path) {
-                return config;
-            }
-        }
+    // 2. 共通フォールバック（埋め込み）
+    if let Ok(config) = toml::from_str(DEFAULT_CONFIG) {
+        return config;
     }
 
-    // フォールバック: 最小限のデフォルト
+    // 3. 最小限のフォールバック（通常はここに到達しない）
     Config {
         search: default_search_engines(),
         folders: IndexMap::new(),
