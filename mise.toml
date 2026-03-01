@@ -103,7 +103,8 @@ import os, sys, platform, zipfile, urllib.request, shutil
 
 VERSION = "v1.11.0"
 ext = ".exe" if os.name == "nt" else ""
-dest = f"./kanata_cmd_allowed{ext}"
+os.makedirs("./bin", exist_ok=True)
+dest = f"./bin/kanata_cmd_allowed{ext}"
 
 if os.path.exists(dest):
     print("[fetch-kanata] kanata_cmd_allowed already exists -- skipping.")
@@ -180,10 +181,27 @@ EXT=""; [ "$OS" = "Windows_NT" ] && EXT=".exe"
 # Linux ではバイナリ名と crate ディレクトリ名が衝突するため bin/ にコピー
 mkdir -p ./bin
 cp "target/debug/muhenkan-switch-core${EXT}" "./bin/muhenkan-switch-core${EXT}"
-echo "[dev] Copied -> ./bin/muhenkan-switch-core${EXT}"
+echo "[build] Copied -> ./bin/muhenkan-switch-core${EXT}"
 if [ -f "target/debug/muhenkan-switch${EXT}" ]; then
   cp "target/debug/muhenkan-switch${EXT}" "./bin/muhenkan-switch${EXT}"
-  echo "[dev] Copied -> ./bin/muhenkan-switch${EXT}"
+  echo "[build] Copied -> ./bin/muhenkan-switch${EXT}"
+fi
+
+# muhenkan.kbd を bin/ にコピー（常に最新を反映）
+cp kanata/muhenkan.kbd ./bin/muhenkan.kbd
+echo "[build] Copied -> ./bin/muhenkan.kbd"
+
+# config.toml が bin/ になければ OS 別デフォルトからコピー
+# （ユーザーが bin/config.toml を編集している場合は上書きしない）
+if [ ! -f "./bin/config.toml" ]; then
+  if [ "$OS" = "Windows_NT" ]; then
+    cp config/default-windows.toml ./bin/config.toml
+  elif [ "$(uname)" = "Darwin" ]; then
+    cp config/default-macos.toml ./bin/config.toml
+  else
+    cp config/default-linux.toml ./bin/config.toml
+  fi
+  echo "[build] Created ./bin/config.toml from default"
 fi
 """
 
@@ -208,8 +226,9 @@ description = "Build and start GUI"
 depends = ["build", "fetch-kanata"]
 shell = "bash -c"
 run = """
-echo "[dev] Starting GUI..."
-cargo run -p muhenkan-switch
+EXT=""; [ "$OS" = "Windows_NT" ] && EXT=".exe"
+echo "[dev] Starting GUI from ./bin/ ..."
+./bin/muhenkan-switch${EXT}
 """
 
 [tasks.gen-icons]

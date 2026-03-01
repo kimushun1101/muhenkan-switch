@@ -164,9 +164,8 @@ impl KanataManager {
     /// kanata バイナリのパスを取得
     ///
     /// 探索順序:
-    /// 1. exe と同じディレクトリ（インストール環境）
-    /// 2. カレントディレクトリ（開発環境: mise run gui 時）
-    /// 3. ワークスペースルート（開発環境: CARGO_MANIFEST_DIR の親）
+    /// 1. exe と同じディレクトリ（インストール環境 / dev: ./bin/ 実行時）
+    /// 2. CARGO_MANIFEST_DIR/../bin/（開発環境: cargo run 互換）
     fn kanata_path() -> Result<PathBuf> {
         let name = kanata_binary_name();
 
@@ -178,20 +177,12 @@ impl KanataManager {
             }
         }
 
-        // 2. カレントディレクトリ
-        let cwd_path = PathBuf::from(name);
-        if cwd_path.exists() {
-            return Ok(std::env::current_dir()
-                .unwrap_or_default()
-                .join(name));
-        }
-
-        // 3. ワークスペースルート（開発環境）
-        let workspace_root = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        // 2. ワークスペースルートの bin/（開発環境）
+        let bin_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
             .parent()
-            .map(|p| p.to_path_buf());
-        if let Some(ref root) = workspace_root {
-            let path = root.join(name);
+            .map(|p| p.join("bin"));
+        if let Some(ref dir) = bin_dir {
+            let path = dir.join(name);
             if path.exists() {
                 return Ok(path);
             }
@@ -206,9 +197,8 @@ impl KanataManager {
     /// kanata 設定ファイルのパスを取得
     ///
     /// 探索順序:
-    /// 1. exe と同じディレクトリの muhenkan.kbd（インストール環境）
-    /// 2. cwd の kanata/muhenkan.kbd（開発環境）
-    /// 3. ワークスペースルートの kanata/muhenkan.kbd（開発環境）
+    /// 1. exe と同じディレクトリの muhenkan.kbd（インストール環境 / dev: ./bin/ 実行時）
+    /// 2. CARGO_MANIFEST_DIR/../bin/muhenkan.kbd（開発環境: cargo run 互換）
     fn kbd_path() -> Result<PathBuf> {
         // 1. exe と同じディレクトリ
         if let Ok(exe_dir) = std::env::current_exe().map(|p| p.parent().unwrap().to_path_buf()) {
@@ -218,21 +208,12 @@ impl KanataManager {
             }
         }
 
-        // 2. カレントディレクトリの kanata/ サブディレクトリ
-        let cwd_path = PathBuf::from("kanata").join("muhenkan.kbd");
-        if cwd_path.exists() {
-            return Ok(std::env::current_dir()
-                .unwrap_or_default()
-                .join("kanata")
-                .join("muhenkan.kbd"));
-        }
-
-        // 3. ワークスペースルート（開発環境）
-        let workspace_root = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        // 2. ワークスペースルートの bin/（開発環境）
+        let bin_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
             .parent()
-            .map(|p| p.to_path_buf());
-        if let Some(ref root) = workspace_root {
-            let path = root.join("kanata").join("muhenkan.kbd");
+            .map(|p| p.join("bin"));
+        if let Some(ref dir) = bin_dir {
+            let path = dir.join("muhenkan.kbd");
             if path.exists() {
                 return Ok(path);
             }
@@ -247,10 +228,8 @@ impl KanataManager {
     /// muhenkan-switch-core バイナリが存在するディレクトリを取得
     ///
     /// 探索順序:
-    /// 1. exe と同じディレクトリ（インストール環境）
-    /// 2. カレントディレクトリの bin/（開発環境: mise run build 後）
-    /// 3. ワークスペースルートの bin/（開発環境）
-    /// 4. target/debug/（開発環境: cargo build 直後）
+    /// 1. exe と同じディレクトリ（インストール環境 / dev: ./bin/ 実行時）
+    /// 2. CARGO_MANIFEST_DIR/../bin/（開発環境: cargo run 互換）
     fn core_binary_dir() -> Result<PathBuf> {
         let name = core_binary_name();
 
@@ -261,30 +240,13 @@ impl KanataManager {
             }
         }
 
-        // 2. カレントディレクトリの bin/
-        if let Ok(cwd) = std::env::current_dir() {
-            let bin_dir = cwd.join("bin");
-            if bin_dir.join(name).exists() {
-                return Ok(bin_dir);
-            }
-        }
-
-        // 3. ワークスペースルートの bin/
-        let workspace_root = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        // 2. ワークスペースルートの bin/（開発環境）
+        let bin_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
             .parent()
-            .map(|p| p.to_path_buf());
-        if let Some(ref root) = workspace_root {
-            let bin_dir = root.join("bin");
-            if bin_dir.join(name).exists() {
-                return Ok(bin_dir);
-            }
-        }
-
-        // 4. target/debug/（開発環境）
-        if let Some(ref root) = workspace_root {
-            let debug_dir = root.join("target").join("debug");
-            if debug_dir.join(name).exists() {
-                return Ok(debug_dir);
+            .map(|p| p.join("bin"));
+        if let Some(ref dir) = bin_dir {
+            if dir.join(name).exists() {
+                return Ok(dir.clone());
             }
         }
 
