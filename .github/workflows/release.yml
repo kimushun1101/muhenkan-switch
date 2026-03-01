@@ -153,13 +153,14 @@ jobs:
         working-directory: muhenkan-switch
 
       # 5. 生成されたインストーラーを artifacts にアップロード
+      #    Cargo ワークスペースの target/ はルートに置かれるため muhenkan-switch/ プレフィックスは不要
       - name: Upload MSI artifact
         uses: actions/upload-artifact@v4
         with:
           name: release-windows-msi
           path: |
-            muhenkan-switch/target/x86_64-pc-windows-msvc/release/bundle/msi/*.msi
-            muhenkan-switch/target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
+            target/x86_64-pc-windows-msvc/release/bundle/msi/*.msi
+            target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
 
       # 6. Power User 向け zip もビルド・パッケージ
       - name: Package zip release (Power User)
