@@ -36,6 +36,18 @@ fn main() {
             commands::validate_timestamp_format,
         ])
         .setup(|app| {
+            // 初回起動時: exe 同梱ディレクトリに config.toml がなければデフォルト設定を生成
+            if let Ok(exe_path) = std::env::current_exe() {
+                if let Some(exe_dir) = exe_path.parent() {
+                    let config_path = exe_dir.join("config.toml");
+                    if !config_path.exists() {
+                        let default = muhenkan_switch_config::default_config();
+                        if let Err(e) = muhenkan_switch_config::save(&config_path, &default) {
+                            eprintln!("[setup] config.toml の生成に失敗: {:#}", e);
+                        }
+                    }
+                }
+            }
             tray::setup(app)?;
             kanata::setup(app)?;
             Ok(())

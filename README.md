@@ -34,30 +34,31 @@
 
 ### 1. インストール
 
+#### Windows
+
+1. [最新リリース](https://github.com/kimushun1101/muhenkan-switch-rs/releases/latest) から
+   `muhenkan-switch_x64.msi`（または `muhenkan-switch_x64-setup.exe`）をダウンロード
+2. ダブルクリックしてインストール
+3. スタートメニューから `muhenkan-switch` を起動
+
+> **PowerShell ワンライナーでのインストール（上級者向け）:**
+> ```powershell
+> irm https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/main/scripts/get.ps1 | iex
+> ```
+
+#### Linux / macOS
+
 以下のコマンドをターミナルに貼り付けて実行するだけで、最新版のダウンロードからインストールまで自動で行われます。
 
-**Linux / macOS:**
 ```bash
 curl -fsSL https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/main/scripts/get.sh | sh
 ```
 
-**Windows (PowerShell):**
-```powershell
-irm https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/main/scripts/get.ps1 | iex
-```
-
 > **セキュリティについて**: スクリプトの内容を事前に確認したい場合は、先にダウンロードしてから実行できます。
 > ```bash
-> # Linux / macOS
 > curl -fsSL https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/main/scripts/get.sh -o get.sh
 > less get.sh    # 内容を確認
 > bash get.sh    # 実行
-> ```
-> ```powershell
-> # Windows
-> irm https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/main/scripts/get.ps1 -OutFile get.ps1
-> Get-Content get.ps1   # 内容を確認
-> .\get.ps1             # 実行
 > ```
 
 <details>
@@ -134,12 +135,25 @@ sudo udevadm control --reload-rules && sudo udevadm trigger
 
 ### アンインストール
 
-インストール先にあるアンインストールスクリプトを実行してください:
+#### Windows（.msi でインストールした場合）
 
-```bash
+**設定 → アプリ → muhenkan-switch → アンインストール** で削除できます。
+.msi インストーラーは Windows の標準的な仕組みに従って登録されているため、
+スクリプト不要でコントロールパネルからアンインストールできます。
+
+<details>
+<summary>zip 版（上級者向け）でインストールした場合</summary>
+
+```powershell
 # Windows（PowerShell）
 & "$env:LOCALAPPDATA\muhenkan-switch-rs\uninstall.ps1"
+```
 
+</details>
+
+#### Linux / macOS
+
+```bash
 # Linux
 ~/.local/share/muhenkan-switch-rs/uninstall.sh
 
@@ -147,31 +161,37 @@ sudo udevadm control --reload-rules && sudo udevadm trigger
 ~/Library/Application\ Support/muhenkan-switch-rs/uninstall-macos.sh
 ```
 
-手動で削除する場合は、以下を削除してください:
-- インストールディレクトリ（上記表を参照）
-- スタートメニューショートカット（Windows）/ PATH のシンボリックリンク（Linux/macOS）
-- 自動起動設定（Windows: スタートアップショートカット、Linux: XDG autostart、macOS: launchd エージェント）
-
 ### 更新
 
-インストール先にある更新スクリプトを実行すると、最新版に更新できます。
+#### Windows（.msi でインストールした場合）
 
-```
+[最新リリース](https://github.com/kimushun1101/muhenkan-switch-rs/releases/latest) から
+新しい `.msi` をダウンロードしてダブルクリックするだけで上書き更新されます。
+
+<details>
+<summary>zip 版（上級者向け）でインストールした場合</summary>
+
+```powershell
 # Windows（PowerShell）
 & "$env:LOCALAPPDATA\muhenkan-switch-rs\update.ps1"
+```
 
+更新スクリプトは以下を自動で行います:
+- GitHub Releases から最新バージョンの確認
+- 現在のバージョンとの比較（既に最新の場合は終了）
+- 最新版のダウンロード・展開・インストール
+
+</details>
+
+#### Linux / macOS
+
+```bash
 # Linux
 ~/.local/share/muhenkan-switch-rs/update.sh
 
 # macOS
 ~/Library/Application\ Support/muhenkan-switch-rs/update-macos.sh
 ```
-
-更新スクリプトは以下を自動で行います:
-- GitHub Releases から最新バージョンの確認
-- 現在のバージョンとの比較（既に最新の場合は終了）
-- 最新版のダウンロード・展開
-- インストールスクリプトの実行（既存インストールを上書き更新）
 
 ## macOS をお使いの方へ
 
@@ -278,7 +298,13 @@ mise run test       # ユニットテスト
 
 ## ライセンス
 
-GPL-2.0 — [muhenkan-switch](https://github.com/kimushun1101/muhenkan-switch) を継承。
+LGPL-3.0-only
+
+本プロジェクト（muhenkan-switch-rs）は Rust によるフルスクラッチ実装です。
+旧版（[muhenkan-switch](https://github.com/kimushun1101/muhenkan-switch) AutoHotkey 版）の仕様を継承していますが、
+コードの流用はないため LGPL-3.0 で提供します。
+
+同梱する kanata も LGPL-3.0 です（`LICENSE` 参照）。
 
 ## 旧版（AutoHotkey版）
 

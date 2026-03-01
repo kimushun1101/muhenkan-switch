@@ -17,11 +17,6 @@ jobs:
             core_artifact: muhenkan-switch-core
             gui_artifact: muhenkan-switch
             asset_suffix: linux-x64
-          - os: windows-latest
-            target: x86_64-pc-windows-msvc
-            core_artifact: muhenkan-switch-core.exe
-            gui_artifact: muhenkan-switch.exe
-            asset_suffix: windows-x64
           - os: macos-latest
             target: x86_64-apple-darwin
             core_artifact: muhenkan-switch-core
@@ -80,14 +75,6 @@ jobs:
 
           # インストール/アンインストールスクリプト
           case "${{ matrix.asset_suffix }}" in
-            windows-x64)
-              cp scripts/install.ps1 "$RELEASE_DIR/"
-              cp scripts/uninstall.ps1 "$RELEASE_DIR/"
-              cp scripts/update.ps1 "$RELEASE_DIR/"
-              cp scripts/install.bat "$RELEASE_DIR/"
-              cp scripts/uninstall.bat "$RELEASE_DIR/"
-              cp scripts/update.bat "$RELEASE_DIR/"
-              ;;
             linux-x64)
               cp scripts/install.sh "$RELEASE_DIR/"
               cp scripts/uninstall.sh "$RELEASE_DIR/"
@@ -108,20 +95,89 @@ jobs:
           tar czf "muhenkan-switch-rs-${{ matrix.asset_suffix }}.tar.gz" \
             "muhenkan-switch-rs-${{ matrix.asset_suffix }}/"
 
-      - name: Create archive (Windows)
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          Compress-Archive -Path "muhenkan-switch-rs-${{ matrix.asset_suffix }}" `
-            -DestinationPath "muhenkan-switch-rs-${{ matrix.asset_suffix }}.zip"
-
       - uses: actions/upload-artifact@v4
         with:
           name: release-${{ matrix.asset_suffix }}
           path: muhenkan-switch-rs-${{ matrix.asset_suffix }}.*
 
+  build-windows-msi:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      # 1. muhenkan-switch-core をビルド
+      - name: Build muhenkan-switch-core
+        run: cargo build --release --target x86_64-pc-windows-msvc -p muhenkan-switch-core
+
+      # 2. sidecar 用ディレクトリに target-triple 付きでコピー
+      - name: Prepare muhenkan-switch-core sidecar
+        shell: bash
+        run: |
+          mkdir -p muhenkan-switch/binaries
+          cp target/x86_64-pc-windows-msvc/release/muhenkan-switch-core.exe \
+             muhenkan-switch/binaries/muhenkan-switch-core-x86_64-pc-windows-msvc.exe
+
+      # 3. kanata をダウンロードして sidecar 配置
+      - name: Download kanata and prepare sidecar
+        shell: pwsh
+        run: |
+          $version = (Get-Content kanata-version.txt).Trim()
+          $url = "https://github.com/jtroo/kanata/releases/download/${version}/kanata_cmd_allowed.exe"
+          Write-Host "Downloading kanata ${version} from ${url}"
+          Invoke-WebRequest -Uri $url -OutFile "muhenkan-switch/binaries/kanata_cmd_allowed-x86_64-pc-windows-msvc.exe"
+
+      # 4. cargo tauri build で .msi / NSIS .exe を生成
+      - name: Build Windows installer (.msi and NSIS)
+        run: npx --yes @tauri-apps/cli@2 build --target x86_64-pc-windows-msvc --bundle msi,nsis
+        working-directory: muhenkan-switch
+
+      # 5. 生成されたインストーラーを artifacts にアップロード
+      - name: Upload MSI artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-windows-msi
+          path: |
+            muhenkan-switch/target/x86_64-pc-windows-msvc/release/bundle/msi/*.msi
+            muhenkan-switch/target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
+
+      # 6. Power User 向け zip もビルド・パッケージ
+      - name: Package zip release (Power User)
+        shell: bash
+        run: |
+          RELEASE_DIR="muhenkan-switch-rs-windows-x64"
+          mkdir -p "$RELEASE_DIR"
+
+          cp target/x86_64-pc-windows-msvc/release/muhenkan-switch-core.exe "$RELEASE_DIR/"
+          cp target/x86_64-pc-windows-msvc/release/muhenkan-switch.exe "$RELEASE_DIR/" 2>/dev/null || true
+          cp config/default.toml "$RELEASE_DIR/config.toml"
+          cp kanata/muhenkan.kbd "$RELEASE_DIR/"
+          cp kanata/muhenkan-macos.kbd "$RELEASE_DIR/"
+          cp README.md "$RELEASE_DIR/"
+          cp scripts/install.ps1 "$RELEASE_DIR/"
+          cp scripts/uninstall.ps1 "$RELEASE_DIR/"
+          cp scripts/update.ps1 "$RELEASE_DIR/"
+          cp scripts/install.bat "$RELEASE_DIR/"
+          cp scripts/uninstall.bat "$RELEASE_DIR/"
+          cp scripts/update.bat "$RELEASE_DIR/"
+
+      - name: Create zip archive (Windows)
+        shell: pwsh
+        run: |
+          Compress-Archive -Path "muhenkan-switch-rs-windows-x64" `
+            -DestinationPath "muhenkan-switch-rs-windows-x64.zip"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-windows-x64
+          path: muhenkan-switch-rs-windows-x64.*
+
   release:
-    needs: build
+    needs: [build, build-windows-msi]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
@@ -134,30 +190,32 @@ jobs:
           files: |
             muhenkan-switch-rs-*.tar.gz
             muhenkan-switch-rs-*.zip
+            *.msi
+            *-setup.exe
           body: |
             ## muhenkan-switch-rs
 
-            ### ワンライナーインストール（推奨）
+            ### Windows インストール（推奨）
+
+            1. 下記から `muhenkan-switch_x64.msi`（または `_x64-setup.exe`）をダウンロード
+            2. ダブルクリックしてインストール
+            3. スタートメニューから muhenkan-switch を起動
+
+            ### Linux / macOS インストール
 
             **Linux / macOS:**
             ```bash
             curl -fsSL https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/main/scripts/get.sh | sh
             ```
 
-            **Windows (PowerShell):**
+            **Windows（上級者向け PowerShell ワンライナー）:**
             ```powershell
             irm https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/main/scripts/get.ps1 | iex
             ```
 
-            ### 手動インストール
-            1. アーカイブをダウンロード・展開
-            2. インストールスクリプトを実行
-               - **Windows**: `install.bat` をダブルクリック、または `install.ps1` を右クリック →「PowerShell で実行」
-               - **Linux**: `./install.sh`
-               - **macOS**: `./install-macos.sh`
-
             ### ダウンロード
-            - **Windows (x64)**: `muhenkan-switch-rs-windows-x64.zip`
+            - **Windows (x64) インストーラー**: `muhenkan-switch_x64.msi` / `muhenkan-switch_x64-setup.exe`
+            - **Windows (x64) zip（上級者向け）**: `muhenkan-switch-rs-windows-x64.zip`
             - **Linux (x64)**: `muhenkan-switch-rs-linux-x64.tar.gz`
             - **macOS (x64)**: `muhenkan-switch-rs-macos-x64.tar.gz` ⚠️ 未検証
             - **macOS (ARM)**: `muhenkan-switch-rs-macos-arm64.tar.gz` ⚠️ 未検証

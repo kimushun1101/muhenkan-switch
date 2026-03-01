@@ -31,6 +31,18 @@
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ]
+    ],
+    "externalBin": [
+      "binaries/kanata_cmd_allowed",
+      "binaries/muhenkan-switch-core"
+    ],
+    "resources": {
+      "../kanata/muhenkan.kbd": "./"
+    },
+    "licenseFile": "../LICENSE",
+    "windows": {
+      "wix": {},
+      "nsis": {}
+    }
   }
 }
