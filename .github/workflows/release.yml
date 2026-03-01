@@ -149,7 +149,7 @@ jobs:
 
       # 4. cargo tauri build で .msi / NSIS .exe を生成
       - name: Build Windows installer (.msi and NSIS)
-        run: npx --yes @tauri-apps/cli@2 build --target x86_64-pc-windows-msvc --bundle msi,nsis
+        run: npx --yes @tauri-apps/cli@2 build --target x86_64-pc-windows-msvc --bundles msi,nsis
         working-directory: muhenkan-switch
 
       # 5. 生成されたインストーラーを artifacts にアップロード
