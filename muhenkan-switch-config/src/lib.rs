@@ -154,22 +154,11 @@ fn default_delimiter() -> String {
 
 // ── Config path resolution ──
 
-/// 実行中の OS に対応するデフォルト設定ファイル名を返す。
-fn os_default_config_name() -> &'static str {
-    match std::env::consts::OS {
-        "windows" => "default-windows.toml",
-        "macos" => "default-macos.toml",
-        _ => "default-linux.toml",
-    }
-}
-
 /// config.toml のパスを決定する。
 /// 優先順位:
-/// 1. 実行ファイルと同じディレクトリの config.toml（インストール環境）
-/// 2. カレントディレクトリの config.toml
-/// 3. ワークスペースルートの config/default-{os}.toml（開発環境、OS別）
-/// 4. ワークスペースルートの config/default.toml（開発環境、フォールバック）
-/// 5. 見つからなければ None
+/// 1. 実行ファイルと同じディレクトリの config.toml（インストール環境 / dev: ./bin/ 実行時）
+/// 2. CARGO_MANIFEST_DIR/../bin/config.toml（開発環境: cargo run 互換）
+/// 3. 見つからなければ None（default_config() の embedded config で補完）
 pub fn config_path() -> Option<PathBuf> {
     // 1. 実行ファイルと同じディレクトリ
     if let Ok(exe_path) = std::env::current_exe() {
@@ -181,24 +170,12 @@ pub fn config_path() -> Option<PathBuf> {
         }
     }
 
-    // 2. カレントディレクトリ
-    let path = PathBuf::from("config.toml");
-    if path.exists() {
-        return Some(path);
-    }
-
-    // 3 & 4. ワークスペースルートの config/（開発環境）
-    let workspace_root = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+    // 2. ワークスペースルートの bin/（開発環境）
+    let bin_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .parent()
-        .map(|p| p.to_path_buf());
-    if let Some(ref root) = workspace_root {
-        // OS 別ファイルを優先
-        let os_path = root.join("config").join(os_default_config_name());
-        if os_path.exists() {
-            return Some(os_path);
-        }
-        // 共通フォールバック
-        let path = root.join("config").join("default.toml");
+        .map(|p| p.join("bin"));
+    if let Some(ref dir) = bin_dir {
+        let path = dir.join("config.toml");
         if path.exists() {
             return Some(path);
         }
