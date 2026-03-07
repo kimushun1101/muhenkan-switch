@@ -29,8 +29,6 @@ fn build_tray(handle: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
     let sep1 = PredefinedMenuItem::separator(handle)?;
     let settings_item =
         MenuItemBuilder::with_id("settings", "設定...").build(handle)?;
-    let open_config_item =
-        MenuItemBuilder::with_id("open_config", "config.toml を開く").build(handle)?;
     let open_dir_item = MenuItemBuilder::with_id("open_dir", "インストール先を開く")
         .build(handle)?;
     let sep2 = PredefinedMenuItem::separator(handle)?;
@@ -47,7 +45,6 @@ fn build_tray(handle: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
         .item(&restart_item)
         .item(&sep1)
         .item(&settings_item)
-        .item(&open_config_item)
         .item(&open_dir_item)
         .item(&sep2)
         .item(&autostart_item)
@@ -79,9 +76,6 @@ fn build_tray(handle: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
                         let _ = window.show();
                         let _ = window.set_focus();
                     }
-                }
-                "open_config" => {
-                    let _ = crate::commands::open_config_in_editor();
                 }
                 "open_dir" => {
                     let _ = crate::commands::open_install_dir();
