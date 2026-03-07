@@ -37,12 +37,11 @@
       "binaries/kanata_cmd_allowed",
       "binaries/muhenkan-switch-core"
     ],
-    "resources": ["../kanata/muhenkan.kbd"],
+    "resources": {
+      "../kanata/muhenkan.kbd": "muhenkan.kbd"
+    },
     "licenseFile": "../LICENSE",
     "windows": {
-      "wix": {
-        "language": ["ja-JP"]
-      },
       "nsis": {
         "languages": ["Japanese"]
       }
