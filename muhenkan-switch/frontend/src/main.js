@@ -537,6 +537,24 @@ function escapeHtml(str) {
   return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
+// ── Updater ──
+async function checkForUpdate(silent = true) {
+  try {
+    const update = await invoke("check_update");
+    if (update) {
+      if (confirm(`新しいバージョン ${update.version} が利用可能です。\nアップデートしますか？`)) {
+        await invoke("stop_kanata");
+        await invoke("install_update");
+      }
+    } else if (!silent) {
+      alert("現在のバージョンは最新です。");
+    }
+  } catch (e) {
+    console.error("[updater]", e);
+    if (!silent) alert("アップデート確認に失敗しました:\n" + e);
+  }
+}
+
 // ── Initialize ──
 async function init() {
   await loadConfig();
@@ -549,6 +567,12 @@ async function init() {
   } catch (e) {
     console.error("バージョン情報の取得に失敗:", e);
   }
+
+  // 起動 5 秒後にサイレントチェック
+  setTimeout(() => checkForUpdate(true), 5000);
+
+  // トレイメニューからの手動チェック
+  listen("check-update-requested", () => checkForUpdate(false));
 }
 
 init();

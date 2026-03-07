@@ -147,10 +147,13 @@ jobs:
           if (-not $binaryFile) { Write-Error "kanata binary not found: $binaryName"; exit 1 }
           Copy-Item $binaryFile.FullName "muhenkan-switch/binaries/kanata_cmd_allowed-x86_64-pc-windows-msvc.exe"
 
-      # 4. cargo tauri build で .msi / NSIS .exe を生成
+      # 4. cargo tauri build で .msi / NSIS .exe を生成（署名付き updater artifacts を含む）
       - name: Build Windows installer (.msi and NSIS)
         run: npx --yes @tauri-apps/cli@2 build --target x86_64-pc-windows-msvc --bundles msi,nsis
         working-directory: muhenkan-switch
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
 
       # 5. 生成されたインストーラーを artifacts にアップロード
       #    Cargo ワークスペースの target/ はルートに置かれるため muhenkan-switch/ プレフィックスは不要
@@ -160,14 +163,17 @@ jobs:
           name: release-windows-msi
           path: |
             target/x86_64-pc-windows-msvc/release/bundle/msi/*.msi
+            target/x86_64-pc-windows-msvc/release/bundle/msi/*.msi.sig
             target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
+            target/x86_64-pc-windows-msvc/release/bundle/nsis/*.nsis.zip
+            target/x86_64-pc-windows-msvc/release/bundle/nsis/*.nsis.zip.sig
 
       # 6. Power User 向け zip もビルド・パッケージ
       - name: Package zip release (Power User)
         shell: bash
         run: |
           RELEASE_DIR="muhenkan-switch-rs-windows-x64"
-          mkdir -p "$RELEASE_DIR"
+          mkdir -p "$RELEASE_DIR/scripts"
 
           cp target/x86_64-pc-windows-msvc/release/muhenkan-switch-core.exe "$RELEASE_DIR/"
           cp target/x86_64-pc-windows-msvc/release/muhenkan-switch.exe "$RELEASE_DIR/" 2>/dev/null || true
@@ -175,12 +181,12 @@ jobs:
           cp kanata/muhenkan.kbd "$RELEASE_DIR/"
           cp kanata/muhenkan-macos.kbd "$RELEASE_DIR/"
           cp README.md "$RELEASE_DIR/"
-          cp scripts/install.ps1 "$RELEASE_DIR/"
-          cp scripts/uninstall.ps1 "$RELEASE_DIR/"
-          cp scripts/update.ps1 "$RELEASE_DIR/"
           cp scripts/install.bat "$RELEASE_DIR/"
           cp scripts/uninstall.bat "$RELEASE_DIR/"
           cp scripts/update.bat "$RELEASE_DIR/"
+          cp scripts/install.ps1 "$RELEASE_DIR/scripts/"
+          cp scripts/uninstall.ps1 "$RELEASE_DIR/scripts/"
+          cp scripts/update.ps1 "$RELEASE_DIR/scripts/"
 
       - name: Create zip archive (Windows)
         shell: pwsh
@@ -201,6 +207,29 @@ jobs:
         with:
           merge-multiple: true
 
+      - name: Generate latest.json for updater
+        shell: bash
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          NSIS_ZIP=$(find . -name "*.nsis.zip" -not -name "*.sig" | head -1)
+          NSIS_SIG="${NSIS_ZIP}.sig"
+          ARTIFACT_NAME=$(basename "$NSIS_ZIP")
+          SIGNATURE=$(cat "$NSIS_SIG")
+          DOWNLOAD_URL="https://github.com/kimushun1101/muhenkan-switch-rs/releases/download/v${VERSION}/${ARTIFACT_NAME}"
+          cat > latest.json <<EOF
+          {
+            "version": "${VERSION}",
+            "notes": "muhenkan-switch v${VERSION}",
+            "pub_date": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "platforms": {
+              "windows-x86_64": {
+                "signature": "${SIGNATURE}",
+                "url": "${DOWNLOAD_URL}"
+              }
+            }
+          }
+          EOF
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
@@ -208,7 +237,11 @@ jobs:
             muhenkan-switch-rs-*.tar.gz
             muhenkan-switch-rs-*.zip
             msi/*.msi
+            msi/*.msi.sig
             nsis/*-setup.exe
+            nsis/*.nsis.zip
+            nsis/*.nsis.zip.sig
+            latest.json
           body: |
             ## muhenkan-switch-rs
 

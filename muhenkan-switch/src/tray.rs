@@ -31,6 +31,8 @@ fn build_tray(handle: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
         MenuItemBuilder::with_id("settings", "設定...").build(handle)?;
     let open_dir_item = MenuItemBuilder::with_id("open_dir", "インストール先を開く")
         .build(handle)?;
+    let check_update_item =
+        MenuItemBuilder::with_id("check_update", "アップデートを確認...").build(handle)?;
     let sep2 = PredefinedMenuItem::separator(handle)?;
     let autostart_item =
         CheckMenuItemBuilder::with_id("autostart", "ログイン時に自動起動")
@@ -46,6 +48,7 @@ fn build_tray(handle: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
         .item(&sep1)
         .item(&settings_item)
         .item(&open_dir_item)
+        .item(&check_update_item)
         .item(&sep2)
         .item(&autostart_item)
         .item(&sep3)
@@ -79,6 +82,10 @@ fn build_tray(handle: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
                 }
                 "open_dir" => {
                     let _ = crate::commands::open_install_dir();
+                }
+                "check_update" => {
+                    use tauri::Emitter;
+                    let _ = app.emit("check-update-requested", ());
                 }
                 "autostart" => {
                     use tauri_plugin_autostart::ManagerExt;

@@ -13,6 +13,7 @@ fn main() {
             Some(vec![]),
         ))
         .plugin(tauri_plugin_store::Builder::default().build())
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(kanata::KanataManager::new())
         .invoke_handler(tauri::generate_handler![
             commands::get_config,
@@ -34,6 +35,8 @@ fn main() {
             commands::open_config_in_editor,
             commands::open_help_window,
             commands::validate_timestamp_format,
+            commands::check_update,
+            commands::install_update,
         ])
         .setup(|app| {
             // 初回起動時: exe 同梱ディレクトリに config.toml がなければデフォルト設定を生成
