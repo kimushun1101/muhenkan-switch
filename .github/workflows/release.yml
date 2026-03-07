@@ -165,8 +165,7 @@ jobs:
             target/x86_64-pc-windows-msvc/release/bundle/msi/*.msi
             target/x86_64-pc-windows-msvc/release/bundle/msi/*.msi.sig
             target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
-            target/x86_64-pc-windows-msvc/release/bundle/nsis/*.nsis.zip
-            target/x86_64-pc-windows-msvc/release/bundle/nsis/*.nsis.zip.sig
+            target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe.sig
 
       # 6. Power User 向け zip もビルド・パッケージ
       - name: Package zip release (Power User)
@@ -211,10 +210,10 @@ jobs:
         shell: bash
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
-          NSIS_ZIP=$(find . -name "*.nsis.zip" -not -name "*.sig" | head -1)
-          NSIS_SIG="${NSIS_ZIP}.sig"
-          ARTIFACT_NAME=$(basename "$NSIS_ZIP")
-          SIGNATURE=$(cat "$NSIS_SIG")
+          SETUP_EXE=$(find . -name "*-setup.exe" -not -name "*.sig" | head -1)
+          SETUP_SIG="${SETUP_EXE}.sig"
+          ARTIFACT_NAME=$(basename "$SETUP_EXE")
+          SIGNATURE=$(cat "$SETUP_SIG")
           DOWNLOAD_URL="https://github.com/kimushun1101/muhenkan-switch-rs/releases/download/v${VERSION}/${ARTIFACT_NAME}"
           cat > latest.json <<EOF
           {
@@ -239,8 +238,7 @@ jobs:
             msi/*.msi
             msi/*.msi.sig
             nsis/*-setup.exe
-            nsis/*.nsis.zip
-            nsis/*.nsis.zip.sig
+            nsis/*-setup.exe.sig
             latest.json
           body: |
             ## muhenkan-switch-rs
