@@ -233,7 +233,7 @@ jobs:
           files: |
             muhenkan-switch-rs-*.tar.gz
             muhenkan-switch-rs-*.zip
-            nsis/*-setup.exe
+            *-setup.exe
             latest.json
           body: |
             ## muhenkan-switch-rs
