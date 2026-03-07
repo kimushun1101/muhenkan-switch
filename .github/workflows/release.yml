@@ -139,7 +139,7 @@ jobs:
         run: |
           $version = (Get-Content kanata-version.txt).Trim()
           $zipUrl = "https://github.com/jtroo/kanata/releases/download/${version}/windows-binaries-x64.zip"
-          $binaryName = "kanata_windows_gui_winIOv2_cmd_allowed_x64.exe"
+          $binaryName = "kanata_windows_tty_winIOv2_cmd_allowed_x64.exe"
           Write-Host "Downloading kanata ${version} from ${zipUrl}"
           Invoke-WebRequest -Uri $zipUrl -OutFile "kanata.zip"
           Expand-Archive -Path "kanata.zip" -DestinationPath "kanata-extract"

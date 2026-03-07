@@ -16,7 +16,7 @@ $ErrorActionPreference = "Stop"
 # ── 設定 ──
 $KANATA_VERSION = "v1.11.0"
 $KANATA_ASSET = "windows-binaries-x64.zip"
-$KANATA_BINARY = "kanata_windows_gui_winIOv2_cmd_allowed_x64.exe"
+$KANATA_BINARY = "kanata_windows_tty_winIOv2_cmd_allowed_x64.exe"
 $INSTALL_DIR = Join-Path $env:LOCALAPPDATA "muhenkan-switch-rs"
 
 # ── スクリプトのあるディレクトリ（展開した zip のルート）──
