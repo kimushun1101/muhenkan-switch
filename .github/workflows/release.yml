@@ -110,7 +110,7 @@ jobs:
           name: release-${{ matrix.asset_suffix }}
           path: muhenkan-switch-rs-${{ matrix.asset_suffix }}.*
 
-  build-windows-msi:
+  build-windows-nsis:
     runs-on: windows-latest
 
     steps:
@@ -147,9 +147,9 @@ jobs:
           if (-not $binaryFile) { Write-Error "kanata binary not found: $binaryName"; exit 1 }
           Copy-Item $binaryFile.FullName "muhenkan-switch/binaries/kanata_cmd_allowed-x86_64-pc-windows-msvc.exe"
 
-      # 4. cargo tauri build で .msi / NSIS .exe を生成（署名付き updater artifacts を含む）
-      - name: Build Windows installer (.msi and NSIS)
-        run: npx --yes @tauri-apps/cli@2 build --target x86_64-pc-windows-msvc --bundles msi,nsis
+      # 4. cargo tauri build で NSIS .exe を生成（署名付き updater artifacts を含む）
+      - name: Build Windows installer (NSIS)
+        run: npx --yes @tauri-apps/cli@2 build --target x86_64-pc-windows-msvc --bundles nsis
         working-directory: muhenkan-switch
         env:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
@@ -157,15 +157,13 @@ jobs:
 
       # 5. 生成されたインストーラーを artifacts にアップロード
       #    Cargo ワークスペースの target/ はルートに置かれるため muhenkan-switch/ プレフィックスは不要
-      - name: Upload MSI artifact
+      - name: Upload NSIS artifact
         uses: actions/upload-artifact@v4
         with:
-          name: release-windows-msi
+          name: release-windows-nsis
           path: |
-            target/x86_64-pc-windows-msvc/release/bundle/msi/*.msi
-            target/x86_64-pc-windows-msvc/release/bundle/msi/*.msi.sig
-            target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
-            target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe.sig
+            target/x86_64-pc-windows-msvc/release/bundle/nsis/*-setup.exe
+            target/x86_64-pc-windows-msvc/release/bundle/nsis/*-setup.exe.sig
 
       # 6. Power User 向け zip もビルド・パッケージ
       - name: Package zip release (Power User)
@@ -199,7 +197,7 @@ jobs:
           path: muhenkan-switch-rs-windows-x64.*
 
   release:
-    needs: [build, build-windows-msi]
+    needs: [build, build-windows-nsis]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
@@ -235,17 +233,14 @@ jobs:
           files: |
             muhenkan-switch-rs-*.tar.gz
             muhenkan-switch-rs-*.zip
-            msi/*.msi
-            msi/*.msi.sig
             nsis/*-setup.exe
-            nsis/*-setup.exe.sig
             latest.json
           body: |
             ## muhenkan-switch-rs
 
             ### Windows インストール（推奨）
 
-            1. 下記から `muhenkan-switch_x64.msi`（または `_x64-setup.exe`）をダウンロード
+            1. 下記から `muhenkan-switch_x64-setup.exe` をダウンロード
             2. ダブルクリックしてインストール
             3. スタートメニューから muhenkan-switch を起動
 
@@ -262,7 +257,7 @@ jobs:
             ```
 
             ### ダウンロード
-            - **Windows (x64) インストーラー**: `muhenkan-switch_x64.msi` / `muhenkan-switch_x64-setup.exe`
+            - **Windows (x64) インストーラー**: `muhenkan-switch_x64-setup.exe`
             - **Windows (x64) zip（上級者向け）**: `muhenkan-switch-rs-windows-x64.zip`
             - **Linux (x64)**: `muhenkan-switch-rs-linux-x64.tar.gz`
             - **macOS (x64)**: `muhenkan-switch-rs-macos-x64.tar.gz` ⚠️ 未検証
