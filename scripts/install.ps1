@@ -19,8 +19,10 @@ $KANATA_ASSET = "windows-binaries-x64.zip"
 $KANATA_BINARY = "kanata_windows_tty_winIOv2_cmd_allowed_x64.exe"
 $INSTALL_DIR = Join-Path $env:LOCALAPPDATA "muhenkan-switch-rs"
 
-# ── スクリプトのあるディレクトリ（展開した zip のルート）──
+# ── スクリプトのあるディレクトリ（scripts/ サブディレクトリ）──
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
+# 展開した zip のルートは一つ上の階層
+$ReleaseDir = Split-Path -Parent $ScriptDir
 
 Write-Host ""
 Write-Host "=== muhenkan-switch-rs インストーラー (Windows) ===" -ForegroundColor Cyan
@@ -49,20 +51,31 @@ $filesToCopy = @(
     @{ Src = "muhenkan-switch-core.exe"; Dest = "muhenkan-switch-core.exe" }
     @{ Src = "config.toml";   Dest = "config.toml" }
     @{ Src = "muhenkan.kbd";  Dest = "muhenkan.kbd" }
-    @{ Src = "update.ps1";    Dest = "update.ps1" }
-    @{ Src = "uninstall.ps1"; Dest = "uninstall.ps1" }
     @{ Src = "update.bat";    Dest = "update.bat" }
     @{ Src = "uninstall.bat"; Dest = "uninstall.bat" }
 )
 
 foreach ($file in $filesToCopy) {
-    $src = Join-Path $ScriptDir $file.Src
+    $src = Join-Path $ReleaseDir $file.Src
     $dest = Join-Path $INSTALL_DIR $file.Dest
     if (Test-Path $src) {
         Copy-Item $src $dest -Force
         Write-Host "[OK] $($file.Src) をコピーしました" -ForegroundColor Green
     } else {
         Write-Host "[SKIP] $($file.Src) が見つかりません" -ForegroundColor Yellow
+    }
+}
+
+# ── scripts/ サブディレクトリに .ps1 をコピー ──
+$scriptsDestDir = Join-Path $INSTALL_DIR "scripts"
+New-Item -ItemType Directory -Path $scriptsDestDir -Force | Out-Null
+foreach ($ps1 in @("update.ps1", "uninstall.ps1")) {
+    $src = Join-Path $ScriptDir $ps1
+    if (Test-Path $src) {
+        Copy-Item $src (Join-Path $scriptsDestDir $ps1) -Force
+        Write-Host "[OK] scripts/$ps1 をコピーしました" -ForegroundColor Green
+    } else {
+        Write-Host "[SKIP] scripts/$ps1 が見つかりません" -ForegroundColor Yellow
     }
 }
 

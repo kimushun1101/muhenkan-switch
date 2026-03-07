@@ -211,6 +211,43 @@ mod imp {
     }
 }
 
+// ── Updater ──
+
+#[derive(Serialize)]
+pub struct UpdateInfo {
+    pub version: String,
+    pub body: Option<String>,
+}
+
+#[tauri::command]
+pub async fn check_update(app: tauri::AppHandle) -> Result<Option<UpdateInfo>, String> {
+    use tauri_plugin_updater::UpdaterExt;
+    match app.updater().map_err(|e| format!("{:#}", e))?.check().await {
+        Ok(Some(update)) => Ok(Some(UpdateInfo {
+            version: update.version.clone(),
+            body: update.body.clone(),
+        })),
+        Ok(None) => Ok(None),
+        Err(e) => Err(format!("{:#}", e)),
+    }
+}
+
+#[tauri::command]
+pub async fn install_update(app: tauri::AppHandle) -> Result<(), String> {
+    use tauri_plugin_updater::UpdaterExt;
+    let update = app
+        .updater()
+        .map_err(|e| format!("{:#}", e))?
+        .check()
+        .await
+        .map_err(|e| format!("{:#}", e))?
+        .ok_or("アップデートが見つかりません".to_string())?;
+    update
+        .download_and_install(|_, _| {}, || {})
+        .await
+        .map_err(|e| format!("{:#}", e))
+}
+
 // ── Autostart ──
 
 #[tauri::command]
