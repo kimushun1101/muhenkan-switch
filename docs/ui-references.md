@@ -48,6 +48,13 @@
 - **Universal Binary 要件** — Intel (x86_64) + Apple Silicon (aarch64) の両方をサポートするには、sidecar も含めて universal binary 化（lipo）が必要
 - **設定ファイルの永続化** — .app バンドル内は読み取り専用。config.toml 等は `~/Library/Application Support/` に移す再設計が必要
 
+### MSI をやめて NSIS のみにした理由
+
+- **未署名 MSI はポリシーでブロックされる** — Windows のグループポリシーにより「システム管理者によって、ポリシーはこのインストールを実行できないように設定されています」と表示され、インストールできない環境がある
+- **署名にはコード署名証明書が必要** — OV 証明書で $70〜200/年、EV 証明書で $200〜500/年。OSS 向け無料の [SignPath.io](https://signpath.io/) もあるが審査が必要
+- **MSI が好まれるのは企業一括配布（SCCM/Intune）だが、その場合も署名済みが前提** — 未署名 MSI を配布するメリットはほぼない
+- **NSIS はポリシー制限を受けにくい** — SmartScreen 警告は出るが、「詳細情報」→「実行」で通る
+
 ### 参考リンク
 
 - [Tauri v2 AppImage docs](https://v2.tauri.app/distribute/appimage/)
