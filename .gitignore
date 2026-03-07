@@ -31,6 +31,7 @@ Thumbs.db
 # Generated files
 /muhenkan-switch/gen/
 /muhenkan-switch/muhenkan-switch
+/muhenkan-switch/binaries/
 
 # Test install staging
 /tmp-test-install/
