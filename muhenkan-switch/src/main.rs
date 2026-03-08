@@ -60,11 +60,20 @@ fn main() {
             commands::get_install_type,
         ])
         .setup(|app| {
-            // 初回起動時: exe 同梱ディレクトリに config.toml がなければデフォルト設定を生成
+            // 初回起動時 or 壊れた config.toml の再生成
             if let Ok(exe_path) = std::env::current_exe() {
                 if let Some(exe_dir) = exe_path.parent() {
                     let config_path = exe_dir.join("config.toml");
-                    if !config_path.exists() {
+                    let should_generate = if config_path.exists() {
+                        // 旧バージョンが生成した不完全な config.toml を検出して再生成
+                        match muhenkan_switch_config::load_from(&config_path) {
+                            Ok(cfg) => cfg.folders.is_empty() && cfg.apps.is_empty(),
+                            Err(_) => true,
+                        }
+                    } else {
+                        true
+                    };
+                    if should_generate {
                         let default = muhenkan_switch_config::default_config();
                         if let Err(e) = muhenkan_switch_config::save(&config_path, &default) {
                             eprintln!("[setup] config.toml の生成に失敗: {:#}", e);
