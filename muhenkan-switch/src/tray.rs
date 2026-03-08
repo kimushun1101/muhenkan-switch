@@ -31,8 +31,12 @@ fn build_tray(handle: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
         MenuItemBuilder::with_id("settings", "設定...").build(handle)?;
     let open_dir_item = MenuItemBuilder::with_id("open_dir", "インストール先を開く")
         .build(handle)?;
-    let check_update_item =
-        MenuItemBuilder::with_id("check_update", "アップデートを確認...").build(handle)?;
+    let is_installer = crate::commands::is_nsis_install();
+    let check_update_item = if is_installer {
+        Some(MenuItemBuilder::with_id("check_update", "アップデートを確認...").build(handle)?)
+    } else {
+        None
+    };
     let sep2 = PredefinedMenuItem::separator(handle)?;
     let autostart_item =
         CheckMenuItemBuilder::with_id("autostart", "ログイン時に自動起動")
@@ -40,15 +44,18 @@ fn build_tray(handle: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
     let sep3 = PredefinedMenuItem::separator(handle)?;
     let quit_item = MenuItemBuilder::with_id("quit", "終了").build(handle)?;
 
-    let menu = MenuBuilder::new(handle)
+    let mut menu = MenuBuilder::new(handle)
         .item(&status_item)
         .item(&start_item)
         .item(&stop_item)
         .item(&restart_item)
         .item(&sep1)
         .item(&settings_item)
-        .item(&open_dir_item)
-        .item(&check_update_item)
+        .item(&open_dir_item);
+    if let Some(ref item) = check_update_item {
+        menu = menu.item(item);
+    }
+    let menu = menu
         .item(&sep2)
         .item(&autostart_item)
         .item(&sep3)

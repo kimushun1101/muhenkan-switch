@@ -269,6 +269,29 @@ pub fn set_autostart_enabled(app: tauri::AppHandle, enabled: bool) -> Result<(),
     }
 }
 
+// ── Install type detection ──
+
+/// Returns true if this is an NSIS installer install (no update.bat next to exe).
+pub fn is_nsis_install() -> bool {
+    if !cfg!(target_os = "windows") {
+        return false;
+    }
+    let has_update_bat = std::env::current_exe()
+        .ok()
+        .and_then(|p| p.parent().map(|d| d.join("update.bat").exists()))
+        .unwrap_or(false);
+    !has_update_bat
+}
+
+#[tauri::command]
+pub fn get_install_type() -> String {
+    if is_nsis_install() {
+        "installer".to_string()
+    } else {
+        "script".to_string()
+    }
+}
+
 // ── Utility commands ──
 
 #[tauri::command]
@@ -322,9 +345,11 @@ pub fn open_help_window(app: tauri::AppHandle) -> Result<(), String> {
     }
     // Window creation dispatches to the main thread via run_on_main_thread().
     // Spawn a thread so the invoke() returns immediately and IPC stays responsive.
+    let install_type = get_install_type();
     std::thread::spawn(move || {
         use tauri::{WebviewUrl, WebviewWindowBuilder};
-        let _ = WebviewWindowBuilder::new(&app, "help", WebviewUrl::App("help.html".into()))
+        let url = format!("help.html?install={}", install_type);
+        let _ = WebviewWindowBuilder::new(&app, "help", WebviewUrl::App(url.into()))
             .title("使い方 — muhenkan-switch")
             .inner_size(600.0, 700.0)
             .resizable(true)
