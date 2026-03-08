@@ -43,7 +43,8 @@
     "licenseFile": "../LICENSE",
     "windows": {
       "nsis": {
-        "languages": ["Japanese"]
+        "languages": ["Japanese"],
+        "installerHooks": "./nsis/hooks.nsh"
       }
     }
   },
