@@ -478,6 +478,20 @@ mod tests {
         assert_eq!(config.timestamp.format, "%Y%m%d");
         assert_eq!(config.timestamp.position, "before");
         assert!(config.search.contains_key("google"));
+        // OS 別デフォルトが正しくパースされ、全セクションが埋まっていること
+        assert!(
+            config.search.len() >= 5,
+            "Expected at least 5 search engines, got {}",
+            config.search.len()
+        );
+        assert!(
+            !config.folders.is_empty(),
+            "Expected non-empty folders, got empty"
+        );
+        assert!(
+            !config.apps.is_empty(),
+            "Expected non-empty apps, got empty"
+        );
     }
 
     #[test]
