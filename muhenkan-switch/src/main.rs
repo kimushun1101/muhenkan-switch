@@ -37,6 +37,7 @@ fn main() {
             commands::validate_timestamp_format,
             commands::check_update,
             commands::install_update,
+            commands::get_install_type,
         ])
         .setup(|app| {
             // 初回起動時: exe 同梱ディレクトリに config.toml がなければデフォルト設定を生成

@@ -568,11 +568,15 @@ async function init() {
     console.error("バージョン情報の取得に失敗:", e);
   }
 
-  // 起動 5 秒後にサイレントチェック
-  setTimeout(() => checkForUpdate(true), 5000);
+  // インストーラー版のみ自動更新チェック
+  const installType = await invoke("get_install_type");
+  if (installType === "installer") {
+    // 起動 5 秒後にサイレントチェック
+    setTimeout(() => checkForUpdate(true), 5000);
 
-  // トレイメニューからの手動チェック
-  listen("check-update-requested", () => checkForUpdate(false));
+    // トレイメニューからの手動チェック
+    listen("check-update-requested", () => checkForUpdate(false));
+  }
 }
 
 init();
