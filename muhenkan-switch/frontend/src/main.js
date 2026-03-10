@@ -1,5 +1,6 @@
 const { invoke } = window.__TAURI__.core;
 const { listen } = window.__TAURI__.event;
+const { message, ask } = window.__TAURI__.dialog;
 
 // ── State ──
 let config = null;       // Current config from backend
@@ -427,7 +428,7 @@ document.getElementById("btn-apply").addEventListener("click", async () => {
     // Client-side dispatch key validation
     const dupError = validateDispatchKeys();
     if (dupError) {
-      alert(dupError);
+      await message(dupError, { title: "エラー", kind: "error" });
       return;
     }
 
@@ -443,7 +444,7 @@ document.getElementById("btn-apply").addEventListener("click", async () => {
     setTimeout(() => { btn.textContent = orig; }, 1500);
   } catch (e) {
     console.error("[apply] error:", e);
-    alert("保存に失敗しました:\n" + e);
+    await message("保存に失敗しました:\n" + e, { title: "エラー", kind: "error" });
   }
 });
 
@@ -492,24 +493,25 @@ document.getElementById("btn-export-config").addEventListener("click", async () 
   try {
     const exported = await invoke("export_config");
     if (exported) {
-      alert("設定ファイルをエクスポートしました。");
+      await message("設定ファイルをエクスポートしました。", { title: "エクスポート" });
     }
   } catch (e) {
-    alert("エクスポートに失敗しました:\n" + e);
+    await message("エクスポートに失敗しました:\n" + e, { title: "エラー", kind: "error" });
   }
 });
 
 document.getElementById("btn-import-config").addEventListener("click", async () => {
-  if (!confirm("現在の設定を上書きします。よろしいですか？")) return;
+  const ok = await ask("現在の設定を上書きします。よろしいですか？", { title: "インポート", kind: "warning" });
+  if (!ok) return;
   try {
     const newConfig = await invoke("import_config");
     if (newConfig) {
       config = newConfig;
       renderConfig();
-      alert("設定ファイルをインポートしました。");
+      await message("設定ファイルをインポートしました。", { title: "インポート" });
     }
   } catch (e) {
-    alert("インポートに失敗しました:\n" + e);
+    await message("インポートに失敗しました:\n" + e, { title: "エラー", kind: "error" });
   }
 });
 
@@ -531,7 +533,7 @@ document.getElementById("btn-open-dir").addEventListener("click", async () => {
   try {
     await invoke("open_install_dir");
   } catch (e) {
-    alert("インストール先を開けませんでした:\n" + e);
+    await message("インストール先を開けませんでした:\n" + e, { title: "エラー", kind: "error" });
   }
 });
 
@@ -568,16 +570,16 @@ async function checkForUpdate(silent = true) {
   try {
     const update = await invoke("check_update");
     if (update) {
-      if (confirm(`新しいバージョン ${update.version} が利用可能です。\nアップデートしますか？`)) {
+      if (await ask(`新しいバージョン ${update.version} が利用可能です。\nアップデートしますか？`, { title: "アップデート" })) {
         await invoke("stop_kanata");
         await invoke("install_update");
       }
     } else if (!silent) {
-      alert("現在のバージョンは最新です。");
+      await message("現在のバージョンは最新です。", { title: "アップデート" });
     }
   } catch (e) {
     console.error("[updater]", e);
-    if (!silent) alert("アップデート確認に失敗しました:\n" + e);
+    if (!silent) await message("アップデート確認に失敗しました:\n" + e, { title: "エラー", kind: "error" });
   }
 }
 
