@@ -42,6 +42,57 @@ pub fn default_config() -> Config {
     config::default_config()
 }
 
+#[tauri::command]
+pub async fn export_config(app: tauri::AppHandle) -> Result<bool, String> {
+    use tauri_plugin_dialog::DialogExt;
+    let src = resolve_config_path();
+    let (tx, rx) = std::sync::mpsc::channel();
+    let default_dir = dirs::desktop_dir()
+        .or_else(dirs::download_dir)
+        .or_else(dirs::home_dir);
+    let mut builder = app.dialog().file().add_filter("TOML", &["toml"]).set_file_name("muhenkan-switch-config.toml");
+    if let Some(dir) = default_dir {
+        builder = builder.set_directory(dir);
+    }
+    builder.save_file(move |path| {
+            let _ = tx.send(path.map(|p| p.as_path().unwrap().to_path_buf()));
+        });
+    let dest = rx.recv().map_err(|e| e.to_string())?;
+    match dest {
+        Some(dest) => {
+            std::fs::copy(&src, &dest).map_err(|e| e.to_string())?;
+            Ok(true)
+        }
+        None => Ok(false),
+    }
+}
+
+#[tauri::command]
+pub async fn import_config(app: tauri::AppHandle) -> Result<Option<Config>, String> {
+    use tauri_plugin_dialog::DialogExt;
+    let (tx, rx) = std::sync::mpsc::channel();
+    app.dialog()
+        .file()
+        .add_filter("TOML", &["toml"])
+        .pick_file(move |path| {
+            let _ = tx.send(path.map(|p| p.as_path().unwrap().to_path_buf()));
+        });
+    let selected = rx.recv().map_err(|e| e.to_string())?;
+    match selected {
+        Some(src) => {
+            let imported = config::load_from(&src).map_err(|e| e.to_string())?;
+            let errors = config::validate(&imported);
+            if !errors.is_empty() {
+                return Err(errors.join("\n"));
+            }
+            let dest = resolve_config_path();
+            config::save(&dest, &imported).map_err(|e| e.to_string())?;
+            Ok(Some(imported))
+        }
+        None => Ok(None),
+    }
+}
+
 // ── Kanata commands ──
 
 #[derive(Serialize, Clone)]
