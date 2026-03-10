@@ -34,6 +34,7 @@ fn main() {
         ))
         .plugin(tauri_plugin_store::Builder::default().build())
         .plugin(tauri_plugin_updater::Builder::new().build())
+        .plugin(tauri_plugin_notification::init())
         .manage(kanata::KanataManager::new())
         .invoke_handler(tauri::generate_handler![
             commands::get_config,
@@ -45,7 +46,6 @@ fn main() {
             commands::get_kanata_status,
             commands::start_kanata,
             commands::stop_kanata,
-            commands::restart_kanata,
             commands::get_running_processes,
             commands::get_autostart_enabled,
             commands::set_autostart_enabled,

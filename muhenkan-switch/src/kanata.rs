@@ -1,6 +1,7 @@
 use anyhow::{Context, Result};
 use shared_child::SharedChild;
 use std::path::PathBuf;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 use tauri::{Emitter, Manager};
@@ -148,6 +149,8 @@ const fn core_binary_name() -> &'static str {
 
 pub struct KanataManager {
     child: Arc<Mutex<Option<Arc<SharedChild>>>>,
+    /// ユーザー操作による意図的な停止かどうかを示すフラグ
+    intentional_stop: Arc<AtomicBool>,
     #[cfg(target_os = "windows")]
     job: Option<job_object::JobObject>,
 }
@@ -156,9 +159,15 @@ impl KanataManager {
     pub fn new() -> Self {
         Self {
             child: Arc::new(Mutex::new(None)),
+            intentional_stop: Arc::new(AtomicBool::new(false)),
             #[cfg(target_os = "windows")]
             job: job_object::JobObject::new(),
         }
+    }
+
+    /// 意図的な停止フラグの参照を取得（監視スレッド用）
+    pub fn intentional_stop_flag(&self) -> Arc<AtomicBool> {
+        Arc::clone(&self.intentional_stop)
     }
 
     /// kanata バイナリのパスを取得
@@ -323,6 +332,7 @@ impl KanataManager {
     }
 
     pub fn stop(&self) -> Result<()> {
+        self.intentional_stop.store(true, Ordering::SeqCst);
         let mut guard = self.child.lock().unwrap();
         if let Some(child) = guard.take() {
             child.kill().context("キー割当の停止に失敗しました")?;
@@ -330,12 +340,6 @@ impl KanataManager {
             eprintln!("[kanata] stopped");
         }
         Ok(())
-    }
-
-    pub fn restart(&self) -> Result<()> {
-        self.stop()?;
-        std::thread::sleep(Duration::from_millis(500));
-        self.start()
     }
 
     pub fn status(&self) -> (bool, Option<u32>) {
@@ -451,6 +455,7 @@ pub fn setup(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
 
     let app_handle = app.handle().clone();
     let child_ref = Arc::clone(&manager.child);
+    let intentional_flag = manager.intentional_stop_flag();
 
     // 状態監視スレッド
     std::thread::spawn(move || {
@@ -467,6 +472,16 @@ pub fn setup(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
             };
 
             if running != last_running {
+                // 実行中→停止 かつ 意図的な停止ではない場合に通知
+                if last_running && !running && !intentional_flag.load(Ordering::SeqCst) {
+                    use tauri_plugin_notification::NotificationExt;
+                    let _ = app_handle
+                        .notification()
+                        .builder()
+                        .title("muhenkan-switch")
+                        .body("キー割当が停止しました。muhenkan-switch を再起動してください。")
+                        .show();
+                }
                 last_running = running;
                 let _ = app_handle.emit("kanata-status-changed", running);
             }

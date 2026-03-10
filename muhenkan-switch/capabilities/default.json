@@ -11,6 +11,7 @@
     "dialog:allow-ask",
     "store:default",
     "autostart:default",
-    "updater:default"
+    "updater:default",
+    "notification:default"
   ]
 }
