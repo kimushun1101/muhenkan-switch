@@ -476,12 +476,7 @@ function updateKanataUI(running) {
   const footerDot = document.getElementById("footer-kanata-dot");
   const footerText = document.getElementById("footer-kanata-text");
   if (footerDot) footerDot.classList.toggle("running", running);
-  if (footerText) footerText.textContent = running ? "キー割当（kanata）: 実行中" : "キー割当（kanata）: 停止中";
-  // General tab
-  const genDot = document.getElementById("general-kanata-dot");
-  const genText = document.getElementById("general-kanata-text");
-  if (genDot) genDot.classList.toggle("running", running);
-  if (genText) genText.textContent = running ? "実行中" : "停止中";
+  if (footerText) footerText.textContent = running ? "キー割当: 実行中" : "キー割当: 停止中";
 }
 
 listen("kanata-status-changed", (event) => {
@@ -568,14 +563,15 @@ function escapeHtml(str) {
 // ── Updater ──
 async function checkForUpdate(silent = true) {
   try {
+    const currentVersion = await invoke("get_app_version");
     const update = await invoke("check_update");
     if (update) {
-      if (await ask(`新しいバージョン ${update.version} が利用可能です。\nアップデートしますか？`, { title: "アップデート" })) {
+      if (await ask(`現在: v${currentVersion} → 最新: v${update.version}\nアップデートしますか？`, { title: "アップデート" })) {
         await invoke("stop_kanata");
         await invoke("install_update");
       }
     } else if (!silent) {
-      await message("現在のバージョンは最新です。", { title: "アップデート" });
+      await message(`v${currentVersion} は最新です。`, { title: "アップデート" });
     }
   } catch (e) {
     console.error("[updater]", e);
@@ -589,9 +585,9 @@ async function init() {
   await refreshKanataStatus();
   await loadAutostart();
 
-  // General tab info
+  // フッターにバージョン表示
   try {
-    document.getElementById("app-version").textContent = "v" + await invoke("get_app_version");
+    document.getElementById("footer-version").textContent = "v" + await invoke("get_app_version");
   } catch (e) {
     console.error("バージョン情報の取得に失敗:", e);
   }

@@ -331,6 +331,10 @@ button:disabled {
   color: var(--text-dim);
 }
 
+#footer-version {
+  margin-right: 4px;
+}
+
 .status-right {
   display: flex;
   gap: 6px;

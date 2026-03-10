@@ -117,11 +117,6 @@ pub fn stop_kanata(manager: State<KanataManager>) -> Result<(), String> {
     manager.stop().map_err(|e| format!("{:#}", e))
 }
 
-#[tauri::command]
-pub fn restart_kanata(manager: State<KanataManager>) -> Result<(), String> {
-    manager.restart().map_err(|e| format!("{:#}", e))
-}
-
 // ── Process list (for app selection) ──
 
 #[derive(Serialize)]

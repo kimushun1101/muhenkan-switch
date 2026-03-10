@@ -3,9 +3,7 @@ use std::time::Instant;
 
 use tauri::menu::{CheckMenuItemBuilder, MenuBuilder, MenuItemBuilder, PredefinedMenuItem};
 use tauri::tray::TrayIconBuilder;
-use tauri::{AppHandle, Manager};
-
-use crate::kanata::KanataManager;
+use tauri::{AppHandle, Emitter, Manager};
 
 pub fn setup(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     let handle = app.handle();
@@ -16,19 +14,11 @@ pub fn setup(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
 }
 
 fn build_tray(handle: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
-    let status_item =
-        MenuItemBuilder::with_id("kanata_status", "キー割当（kanata）: 停止中")
-            .enabled(false)
-            .build(handle)?;
-    let start_item =
-        MenuItemBuilder::with_id("kanata_start", "キー割当（kanata）を開始").build(handle)?;
-    let stop_item =
-        MenuItemBuilder::with_id("kanata_stop", "キー割当（kanata）を停止").build(handle)?;
-    let restart_item =
-        MenuItemBuilder::with_id("kanata_restart", "キー割当（kanata）を再起動").build(handle)?;
+    let settings_item = MenuItemBuilder::with_id("settings", "設定...").build(handle)?;
     let sep1 = PredefinedMenuItem::separator(handle)?;
-    let settings_item =
-        MenuItemBuilder::with_id("settings", "設定...").build(handle)?;
+    let autostart_item =
+        CheckMenuItemBuilder::with_id("autostart", "ログイン時に自動起動")
+            .build(handle)?;
     let open_dir_item = MenuItemBuilder::with_id("open_dir", "インストール先を開く")
         .build(handle)?;
     let is_installer = crate::commands::is_nsis_install();
@@ -37,27 +27,18 @@ fn build_tray(handle: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
     } else {
         None
     };
-    let sep2 = PredefinedMenuItem::separator(handle)?;
-    let autostart_item =
-        CheckMenuItemBuilder::with_id("autostart", "ログイン時に自動起動")
-            .build(handle)?;
     let sep3 = PredefinedMenuItem::separator(handle)?;
     let quit_item = MenuItemBuilder::with_id("quit", "終了").build(handle)?;
 
     let mut menu = MenuBuilder::new(handle)
-        .item(&status_item)
-        .item(&start_item)
-        .item(&stop_item)
-        .item(&restart_item)
-        .item(&sep1)
         .item(&settings_item)
+        .item(&sep1)
+        .item(&autostart_item)
         .item(&open_dir_item);
     if let Some(ref item) = check_update_item {
         menu = menu.item(item);
     }
     let menu = menu
-        .item(&sep2)
-        .item(&autostart_item)
         .item(&sep3)
         .item(&quit_item)
         .build()?;
@@ -69,18 +50,6 @@ fn build_tray(handle: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
         .on_menu_event(move |app, event| {
             let id = event.id().as_ref();
             match id {
-                "kanata_start" => {
-                    let manager = app.state::<KanataManager>();
-                    let _ = manager.start();
-                }
-                "kanata_stop" => {
-                    let manager = app.state::<KanataManager>();
-                    let _ = manager.stop();
-                }
-                "kanata_restart" => {
-                    let manager = app.state::<KanataManager>();
-                    let _ = manager.restart();
-                }
                 "settings" => {
                     if let Some(window) = app.get_webview_window("main") {
                         let _ = window.show();
@@ -91,7 +60,6 @@ fn build_tray(handle: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
                     let _ = crate::commands::open_install_dir();
                 }
                 "check_update" => {
-                    use tauri::Emitter;
                     let _ = app.emit("check-update-requested", ());
                 }
                 "autostart" => {
@@ -105,6 +73,7 @@ fn build_tray(handle: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
                     }
                 }
                 "quit" => {
+                    use crate::kanata::KanataManager;
                     let manager = app.state::<KanataManager>();
                     let _ = manager.stop();
                     app.exit(0);
