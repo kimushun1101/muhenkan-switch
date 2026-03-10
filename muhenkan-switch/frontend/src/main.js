@@ -487,6 +487,38 @@ listen("kanata-status-changed", (event) => {
   updateKanataUI(event.payload);
 });
 
+// ── Config export / import ──
+document.getElementById("btn-export-config").addEventListener("click", async () => {
+  try {
+    const exported = await invoke("export_config");
+    if (exported) {
+      const btn = document.getElementById("btn-export-config");
+      const orig = btn.textContent;
+      btn.textContent = "エクスポートしました";
+      setTimeout(() => { btn.textContent = orig; }, 1500);
+    }
+  } catch (e) {
+    alert("エクスポートに失敗しました:\n" + e);
+  }
+});
+
+document.getElementById("btn-import-config").addEventListener("click", async () => {
+  if (!confirm("現在の設定を上書きします。よろしいですか？")) return;
+  try {
+    const newConfig = await invoke("import_config");
+    if (newConfig) {
+      config = newConfig;
+      renderConfig();
+      const btn = document.getElementById("btn-import-config");
+      const orig = btn.textContent;
+      btn.textContent = "インポートしました";
+      setTimeout(() => { btn.textContent = orig; }, 1500);
+    }
+  } catch (e) {
+    alert("インポートに失敗しました:\n" + e);
+  }
+});
+
 // ── General tab: help / install dir / quit ──
 document.getElementById("btn-help").addEventListener("click", async () => {
   try {

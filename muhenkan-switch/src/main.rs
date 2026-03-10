@@ -40,6 +40,8 @@ fn main() {
             commands::save_config,
             commands::reset_config,
             commands::default_config,
+            commands::export_config,
+            commands::import_config,
             commands::get_kanata_status,
             commands::start_kanata,
             commands::stop_kanata,
