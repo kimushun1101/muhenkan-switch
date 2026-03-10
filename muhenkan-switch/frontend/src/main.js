@@ -492,10 +492,7 @@ document.getElementById("btn-export-config").addEventListener("click", async () 
   try {
     const exported = await invoke("export_config");
     if (exported) {
-      const btn = document.getElementById("btn-export-config");
-      const orig = btn.textContent;
-      btn.textContent = "エクスポートしました";
-      setTimeout(() => { btn.textContent = orig; }, 1500);
+      alert("設定ファイルをエクスポートしました。");
     }
   } catch (e) {
     alert("エクスポートに失敗しました:\n" + e);
@@ -509,10 +506,7 @@ document.getElementById("btn-import-config").addEventListener("click", async () 
     if (newConfig) {
       config = newConfig;
       renderConfig();
-      const btn = document.getElementById("btn-import-config");
-      const orig = btn.textContent;
-      btn.textContent = "インポートしました";
-      setTimeout(() => { btn.textContent = orig; }, 1500);
+      alert("設定ファイルをインポートしました。");
     }
   } catch (e) {
     alert("インポートに失敗しました:\n" + e);
