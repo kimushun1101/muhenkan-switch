@@ -39,6 +39,7 @@ finder   = {key = "e", process = "Finder",              command = "open -a Finde
 # word     = {key = "d", process = "Microsoft Word",    command = "open -a 'Microsoft Word'"}      # 文書（Word）
 
 # ── タイムスタンプ ──
+# エクスプローラー上: ファイル更新日時 / テキスト入力時: 現在日時
 [timestamp]
 # chrono のフォーマット文字列
 # %Y=年4桁, %m=月, %d=日, %H=時, %M=分, %S=秒
