@@ -68,7 +68,8 @@
   ;; プレーンテキスト貼り付け
   pp (cmd muhenkan-switch-core plain-paste)
   ;; V キー: Shift 押下時 → プレーンテキスト貼り付け / 通常 → タイムスタンプ
-  v-act (fork lsft @pp (fork rsft @pp @ts-v))
+  v-rsft (fork rsft @pp @ts-v)
+  v-act (fork lsft @pp @v-rsft)
 
   ;; インデント操作
   indent (macro spc spc spc spc)
