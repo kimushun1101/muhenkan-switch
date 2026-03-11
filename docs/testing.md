@@ -131,7 +131,7 @@ cargo run -p muhenkan-switch-core -- switch-app --target word
 ```bash
 # notify-send が入っている場合
 # タイムスタンプの貼り付けで通知を確認
-# 何かテキストをクリップボードにコピーした状態で：
+# テキストエディタにフォーカスした状態で：
 cargo run -p muhenkan-switch-core -- dispatch v
 ```
 
