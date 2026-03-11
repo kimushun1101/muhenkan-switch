@@ -39,6 +39,7 @@ explorer = {key = "e", process = "explorer",         command = "explorer"}
 # word     = {key = "d", process = "WINWORD",         command = "winword"}           # 文書（Word）
 
 # ── タイムスタンプ ──
+# エクスプローラー上: ファイル更新日時 / テキスト入力時: 現在日時
 [timestamp]
 # chrono のフォーマット文字列
 # %Y=年4桁, %m=月, %d=日, %H=時, %M=分, %S=秒
