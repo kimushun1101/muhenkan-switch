@@ -46,8 +46,6 @@ enum Commands {
         /// ディスパッチキー (config.toml の key フィールドに対応)
         key: String,
     },
-    /// クリップボードをプレーンテキストとして入力
-    PlainPaste,
     /// GUI 設定ウィンドウを前面に出す（未起動なら起動する）
     OpenGui,
 }
@@ -56,10 +54,8 @@ fn main() -> Result<()> {
     let cli = Cli::parse();
 
     // config 不要なコマンドは先に処理
-    match cli.command {
-        Commands::OpenGui => return commands::open_gui::run(),
-        Commands::PlainPaste => return commands::plain_paste::run(),
-        _ => {}
+    if let Commands::OpenGui = cli.command {
+        return commands::open_gui::run();
     }
 
     let config = config::load()?;
@@ -70,6 +66,6 @@ fn main() -> Result<()> {
         Commands::OpenFolder { target } => commands::open_folder::run(&target, &config),
         Commands::Timestamp { action } => commands::timestamp::run(&action, &config),
         Commands::Dispatch { key } => commands::dispatch::run(&key, &config),
-        Commands::PlainPaste | Commands::OpenGui => unreachable!(),
+        Commands::OpenGui => unreachable!(),
     }
 }

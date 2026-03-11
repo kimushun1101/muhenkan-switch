@@ -50,8 +50,7 @@ summary: muhenkan-switchをkanata＋Rust製muhenkan-switchバイナリ構成でW
 | アプリ切り替え | OS別: Win32 API (`windows` クレート) / wmctrl / osascript(未検証) |
 | フォルダオープン | `open` クレート |
 | 選択文字列 → Web検索 | `arboard`（クリップボード） + `webbrowser`（ブラウザ起動） |
-| タイムスタンプ | `chrono` → テキスト時は現在日時を `arboard` で貼り付け、エクスプローラー時はファイル更新日時でリネーム |
-| プレーンテキスト貼り付け | `arboard` でテキスト取得 → `SendInput` (KEYEVENTF_UNICODE) で直接入力 |
+| タイムスタンプ / プレーンテキスト | テキスト時は `arboard` でクリップボードのテキストを取得し `SendInput` で直接入力、エクスプローラー時は `chrono` + ファイル更新日時でリネーム |
 | スクリーンショット | OS別コマンド呼び出し |
 
 ### Layer 3: 設定管理 → muhenkan-switch が config.toml を読み込み
@@ -140,7 +139,6 @@ Commands:
   switch-app   --target <NAME>    指定アプリを最前面に
   open-folder  --target <NAME>    指定フォルダを開く
   timestamp    --action <ACTION>  タイムスタンプ操作 (paste|copy|cut)
-  plain-paste                     クリップボードをプレーンテキストとして入力
   open-gui                        GUI 設定ウィンドウを前面に出す
 ```
 

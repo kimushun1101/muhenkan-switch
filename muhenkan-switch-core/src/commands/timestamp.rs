@@ -1,4 +1,5 @@
-use anyhow::Result;
+use anyhow::{Context, Result};
+use arboard::Clipboard;
 use chrono::Local;
 use std::path::{Path, PathBuf};
 
@@ -12,10 +13,8 @@ pub fn run(action: &str, config: &Config) -> Result<()> {
 
     match (action, explorer_hwnd) {
         // ── V: paste ──
-        ("paste", None) => {
-            let timestamp = Local::now().format(&config.timestamp.format).to_string();
-            text_paste(&timestamp)
-        }
+        // テキストコンテキスト: クリップボードをプレーンテキストとして入力
+        ("paste", None) => plain_paste(),
         ("paste", Some(hwnd)) => {
             let toast = Toast::show("処理中...");
             let result = explorer_rename_prepend(
@@ -80,9 +79,13 @@ fn format_toast_result(result: &Result<Vec<PathBuf>>) -> String {
 
 // ── テキスト入力コンテキスト ──
 
-/// V: タイムスタンプをカーソル位置に直接入力
-fn text_paste(timestamp: &str) -> Result<()> {
-    super::keys::simulate_type(timestamp)
+/// V: クリップボードのテキストを書式なしで直接入力
+fn plain_paste() -> Result<()> {
+    let mut clipboard = Clipboard::new()?;
+    let text = clipboard
+        .get_text()
+        .context("クリップボードにテキストがありません")?;
+    super::keys::simulate_type(&text)
 }
 
 // ── Explorer コンテキスト ──

@@ -65,12 +65,6 @@
   ts-c (cmd muhenkan-switch-core timestamp --action copy)
   ts-x (cmd muhenkan-switch-core timestamp --action cut)
 
-  ;; プレーンテキスト貼り付け
-  pp (cmd muhenkan-switch-core plain-paste)
-  ;; V キー: Shift 押下時 → プレーンテキスト貼り付け / 通常 → タイムスタンプ
-  v-rsft (fork rsft @pp @ts-v)
-  v-act (fork lsft @pp @v-rsft)
-
   ;; インデント操作
   indent (macro spc spc spc spc)
   dedent (macro home del del del del)
@@ -106,8 +100,8 @@
   @dsp-a  @dsp-w  @dsp-e  @dsp-s  @dsp-d  @dsp-f
   ;; 左手下段 → ディスパッチ
   @dsp-b
-  ;; 左手下段 → タイムスタンプ操作（V は Shift で分岐）
-  @v-act  @ts-c  @ts-x
+  ;; 左手下段 → タイムスタンプ操作
+  @ts-v  @ts-c  @ts-x
   ;; 右手 → Vim風カーソル移動
   left  down  up  right
   ;; 単語移動 / 行頭行末
