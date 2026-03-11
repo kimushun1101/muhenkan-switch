@@ -68,6 +68,11 @@ Node.js やビルドステップは不要。
   ブランチ名は `feat/issue-{番号}` を基本とする。
 - **`main` への直接 push は禁止。** コミットした後に push する前にブランチを確認すること。
 - PR 本文には `Closes #番号` を記載して Issue と紐付ける。
+- **PR 作成前にドキュメントの更新が必要か確認する。** 機能追加・変更時は以下を確認:
+  - `README.md` — 機能一覧
+  - `docs/design.md` — 設計・実装方針
+  - `config/default-*.toml` — 設定コメント
+  - `muhenkan-switch/frontend/help.html` — ヘルプ画面
 
 ## バージョン管理
 
