@@ -1,5 +1,4 @@
 use anyhow::Result;
-use arboard::Clipboard;
 use chrono::Local;
 use std::path::{Path, PathBuf};
 
@@ -81,18 +80,9 @@ fn format_toast_result(result: &Result<Vec<PathBuf>>) -> String {
 
 // ── テキスト入力コンテキスト ──
 
-/// V: タイムスタンプをカーソル位置に貼り付け（クリップボード復元付き）
+/// V: タイムスタンプをカーソル位置に直接入力
 fn text_paste(timestamp: &str) -> Result<()> {
-    let mut clipboard = Clipboard::new()?;
-    let saved = clipboard.get_text().ok();
-    clipboard.set_text(timestamp)?;
-    super::keys::simulate_paste()?;
-    // ペースト完了を待ってからクリップボードを復元
-    std::thread::sleep(std::time::Duration::from_millis(100));
-    if let Some(text) = saved {
-        let _ = clipboard.set_text(text);
-    }
-    Ok(())
+    super::keys::simulate_type(timestamp)
 }
 
 // ── Explorer コンテキスト ──

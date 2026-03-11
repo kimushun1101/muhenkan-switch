@@ -4,8 +4,8 @@ pub fn simulate_copy() -> Result<()> {
     imp::simulate_copy()
 }
 
-pub fn simulate_paste() -> Result<()> {
-    imp::simulate_paste()
+pub fn simulate_type(text: &str) -> Result<()> {
+    imp::simulate_type(text)
 }
 
 // ── Platform: Windows ──
@@ -15,16 +15,45 @@ mod imp {
     use super::*;
     use std::mem;
     use windows::Win32::UI::Input::KeyboardAndMouse::{
-        SendInput, INPUT, INPUT_KEYBOARD, KEYBDINPUT, KEYEVENTF_KEYUP, VIRTUAL_KEY, VK_C,
-        VK_CONTROL, VK_V,
+        SendInput, INPUT, INPUT_KEYBOARD, KEYBDINPUT, KEYEVENTF_KEYUP, KEYEVENTF_UNICODE,
+        VIRTUAL_KEY, VK_C, VK_CONTROL,
     };
 
     pub(super) fn simulate_copy() -> Result<()> {
         send_ctrl_key(VK_C)
     }
 
-    pub(super) fn simulate_paste() -> Result<()> {
-        send_ctrl_key(VK_V)
+    pub(super) fn simulate_type(text: &str) -> Result<()> {
+        let mut inputs: Vec<INPUT> = Vec::new();
+        for c in text.encode_utf16() {
+            let mut down = INPUT::default();
+            down.r#type = INPUT_KEYBOARD;
+            down.Anonymous.ki = KEYBDINPUT {
+                wScan: c,
+                dwFlags: KEYEVENTF_UNICODE,
+                ..Default::default()
+            };
+            let mut up = INPUT::default();
+            up.r#type = INPUT_KEYBOARD;
+            up.Anonymous.ki = KEYBDINPUT {
+                wScan: c,
+                dwFlags: KEYEVENTF_UNICODE | KEYEVENTF_KEYUP,
+                ..Default::default()
+            };
+            inputs.push(down);
+            inputs.push(up);
+        }
+        unsafe {
+            let sent = SendInput(&inputs, mem::size_of::<INPUT>() as i32);
+            if sent != inputs.len() as u32 {
+                anyhow::bail!(
+                    "SendInput failed: only {} of {} inputs sent",
+                    sent,
+                    inputs.len()
+                );
+            }
+        }
+        Ok(())
     }
 
     /// Send Ctrl+<key> via Win32 SendInput.
@@ -85,9 +114,9 @@ mod imp {
         Ok(())
     }
 
-    pub(super) fn simulate_paste() -> Result<()> {
+    pub(super) fn simulate_type(text: &str) -> Result<()> {
         Command::new("xdotool")
-            .args(["key", "ctrl+v"])
+            .args(["type", "--clearmodifiers", text])
             .output()?;
         Ok(())
     }
@@ -110,11 +139,14 @@ mod imp {
         Ok(())
     }
 
-    pub(super) fn simulate_paste() -> Result<()> {
+    pub(super) fn simulate_type(text: &str) -> Result<()> {
         Command::new("osascript")
             .args([
                 "-e",
-                r#"tell application "System Events" to keystroke "v" using command down"#,
+                &format!(
+                    r#"tell application "System Events" to keystroke "{}""#,
+                    text
+                ),
             ])
             .output()?;
         Ok(())
