@@ -14,7 +14,7 @@ for lib in webkit2gtk-4.1 javascriptcoregtk-4.1 libsoup-3.0; do
 done
 
 if [ -n "$MISSING" ]; then
-  echo "[check-deps] ERROR: Missing system libraries:$MISSING"
-  echo "[check-deps] Run 'mise run setup' to install them."
+  echo "ERROR: Missing system libraries:$MISSING"
+  echo "Run 'mise run setup' to install them."
   exit 1
 fi

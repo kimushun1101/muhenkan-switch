@@ -3,7 +3,7 @@
 set -euo pipefail
 
 if [ "$(uname)" != "Linux" ]; then
-  echo "[test-install] Currently only supports Linux."
+  echo "Currently only supports Linux."
   exit 1
 fi
 
@@ -11,7 +11,7 @@ STAGING="tmp-test-install/muhenkan-switch-rs-linux-x64"
 rm -rf tmp-test-install
 mkdir -p "$STAGING"
 
-echo "[test-install] Creating staging directory..."
+echo "Creating staging directory..."
 
 # バイナリ
 cp ./bin/muhenkan-switch-core "$STAGING/"
@@ -31,11 +31,11 @@ chmod +x "$STAGING/"*.sh
 # README
 cp README.md "$STAGING/"
 
-echo "[test-install] Staging directory: $STAGING"
-echo "[test-install] Contents:"
+echo "Staging directory: $STAGING"
+echo "Contents:"
 ls -la "$STAGING/"
 echo ""
-echo "[test-install] Running install.sh..."
+echo "Running install.sh..."
 echo ""
 
 cd "$STAGING"

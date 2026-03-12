@@ -3,12 +3,12 @@
 set -euo pipefail
 
 if [ "$(uname)" != "Linux" ]; then
-  echo "[setup] Not Linux — no system dependencies needed."
+  echo "Not Linux — no system dependencies needed."
   exit 0
 fi
 
 # ── Tauri ビルド依存ライブラリ ──
-echo "[setup] Installing Tauri build dependencies..."
+echo "Installing Tauri build dependencies..."
 if command -v apt-get >/dev/null 2>&1; then
   sudo apt-get update
   sudo apt-get install -y libwebkit2gtk-4.1-dev libsoup-3.0-dev \
@@ -25,7 +25,7 @@ elif command -v pacman >/dev/null 2>&1; then
     openssl gtk3 libayatana-appindicator librsvg \
     wmctrl xdotool libnotify
 else
-  echo "[setup] ERROR: Unsupported package manager. Please install manually:"
+  echo "ERROR: Unsupported package manager. Please install manually:"
   echo "  libwebkit2gtk-4.1-dev, libsoup-3.0-dev, libgtk-3-dev,"
   echo "  libjavascriptcoregtk-4.1-dev, libssl-dev, librsvg2-dev,"
   echo "  wmctrl, xdotool, libnotify-bin"
@@ -34,13 +34,13 @@ fi
 
 # ── kanata 用 uinput パーミッション案内 ──
 echo ""
-echo "[setup] Done."
+echo "Done."
 echo ""
 if id -nG "$USER" | grep -qw uinput; then
-  echo "[setup] uinput グループ: 設定済み"
+  echo "uinput グループ: 設定済み"
 else
   cat << 'GUIDE'
-[setup] kanata を sudo なしで実行するには、以下を実行して再ログインしてください:
+kanata を sudo なしで実行するには、以下を実行して再ログインしてください:
 
   sudo groupadd -f uinput
   sudo usermod -aG input $USER

@@ -2,7 +2,7 @@
 # uinput パーミッション設定をリセット（再テスト用）
 set -euo pipefail
 
-echo "[reset-uinput] Resetting uinput configuration..."
+echo "Resetting uinput configuration..."
 echo ""
 echo "以下の操作を行います:"
 echo "  1. /etc/udev/rules.d/99-uinput.rules を削除"
@@ -21,5 +21,5 @@ sudo gpasswd -d "$USER" uinput 2>/dev/null || true
 sudo udevadm control --reload-rules && sudo udevadm trigger
 
 echo ""
-echo "[reset-uinput] Done. 再ログインすると uinput 設定がリセットされます。"
-echo "[reset-uinput] 再ログイン後に mise run dev を起動すると pkexec ダイアログが表示されます。"
+echo "Done. 再ログインすると uinput 設定がリセットされます。"
+echo "再ログイン後に mise run dev を起動すると pkexec ダイアログが表示されます。"

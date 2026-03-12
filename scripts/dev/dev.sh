@@ -9,5 +9,5 @@ if [ "${OS:-}" = "Windows_NT" ]; then
   taskkill //F //IM muhenkan-switch.exe 2>/dev/null || true
 fi
 
-echo "[dev] Starting GUI from ./bin/ ..."
+echo "Starting GUI from ./bin/ ..."
 ./bin/muhenkan-switch${EXT}

@@ -8,7 +8,7 @@ mkdir -p ./bin
 DEST="./bin/kanata_cmd_allowed${EXT}"
 
 if [ -f "$DEST" ]; then
-  echo "[fetch-kanata] kanata_cmd_allowed already exists -- skipping."
+  echo "kanata_cmd_allowed already exists -- skipping."
   exit 0
 fi
 
@@ -38,7 +38,7 @@ case "$SYSTEM" in
     BINARY="kanata_windows_tty_winIOv2_cmd_allowed_x64.exe"
     ;;
   *)
-    echo "[fetch-kanata] Unsupported OS: $SYSTEM"
+    echo "Unsupported OS: $SYSTEM"
     exit 1
     ;;
 esac
@@ -47,7 +47,7 @@ URL="https://github.com/jtroo/kanata/releases/download/${VERSION}/${ASSET}"
 DLDIR=".tmp-kanata-dl"
 mkdir -p "$DLDIR"
 
-echo "[fetch-kanata] Downloading kanata ${VERSION} (${ASSET})..."
+echo "Downloading kanata ${VERSION} (${ASSET})..."
 curl -fsSL "$URL" -o "$DLDIR/kanata.zip"
 
 unzip -o "$DLDIR/kanata.zip" "$BINARY" -d "$DLDIR"
@@ -60,7 +60,7 @@ fi
 rm -rf "$DLDIR"
 
 if [ ! -f "$DEST" ]; then
-  echo "[fetch-kanata] ERROR: Binary not found in archive."
+  echo "ERROR: Binary not found in archive."
   exit 1
 fi
 
@@ -68,15 +68,15 @@ fi
 if [ "$SYSTEM" = "Linux" ]; then
   if ! "$DEST" --version >/dev/null 2>&1; then
     rm -f "$DEST"
-    echo "[fetch-kanata] Prebuilt binary incompatible (likely GLIBC mismatch)."
-    echo "[fetch-kanata] Building kanata from source..."
+    echo "Prebuilt binary incompatible (likely GLIBC mismatch)."
+    echo "Building kanata from source..."
     cargo install kanata --version "${VERSION#v}" --features cmd --root ./tmp-kanata-install
     cp "./tmp-kanata-install/bin/kanata" "$DEST"
     rm -rf ./tmp-kanata-install
-    echo "[fetch-kanata] Done -> $DEST (built from source)"
+    echo "Done -> $DEST (built from source)"
   else
-    echo "[fetch-kanata] Done -> $DEST (prebuilt)"
+    echo "Done -> $DEST (prebuilt)"
   fi
 else
-  echo "[fetch-kanata] Done -> $DEST (prebuilt)"
+  echo "Done -> $DEST (prebuilt)"
 fi
