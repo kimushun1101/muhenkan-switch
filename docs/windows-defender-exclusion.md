@@ -39,6 +39,6 @@ Remove-MpPreference -ExclusionPath "C:\Users\<ユーザー名>\repos\muhenkan-sw
 
 ## 備考
 
-- この問題は組織のポリシーや Windows のエディション（Pro / Enterprise）によって発生頻度が異なる
-- Home エディションでは通常発生しない
+- この問題は Windows Home エディションでも発生する（確認済み）
+- 発生条件は環境により異なる（`cargo clean` 後のフルビルドで再現しやすい）
 - CI/CD（GitHub Actions）では影響なし
