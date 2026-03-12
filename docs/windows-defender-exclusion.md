@@ -2,21 +2,28 @@
 
 ## 問題
 
-`cargo clean` 後のフルビルドや `target/` 配下の `.exe` 実行時に、Windows のアプリケーション制御ポリシー（Windows Defender SmartScreen / WDAC）によりブロックされることがある。
+ビルド後の `.exe` 実行時に、Windows Defender のリアルタイム保護により以下の問題が発生することがある。
 
-```
-Os { code: 4551, kind: Uncategorized, message: "このアプリは、システム管理者によってブロックされています。" }
-```
+- **ビルドエラー**: `cargo clean` 後のフルビルドで `target/` 内の exe がブロックされる
+  ```
+  Os { code: 4551, kind: Uncategorized, message: "このアプリは、システム管理者によってブロックされています。" }
+  ```
+- **実行エラー**: `mise run dev` で `bin/` にコピーした exe の実行が間欠的に失敗する
+  ```
+  ./bin/muhenkan-switch.exe: Permission denied
+  ```
 
 ## 原因
 
-`target/debug/` や `target/release/` に生成される未署名の `.exe` が、Windows Defender のポリシーにより実行を拒否される。
+Windows Defender のリアルタイム保護が、新しく生成・コピーされた未署名の `.exe` をスキャンし、一時的にロックする。スキャン完了前にビルドや実行が進むと Permission denied になる。
 
 ## 除外設定（管理者権限 PowerShell）
 
+リポジトリのルートディレクトリごと除外するのが簡単。
+
 ```powershell
-# target/ ディレクトリを除外に追加
-Add-MpPreference -ExclusionPath "C:\Users\<ユーザー名>\repos\muhenkan-switch-rs\target"
+# リポジトリを除外に追加
+Add-MpPreference -ExclusionPath "C:\Users\<ユーザー名>\repos\muhenkan-switch-rs"
 ```
 
 > **注意:** 管理者権限の PowerShell で実行する必要がある。
@@ -33,12 +40,13 @@ Get-MpPreference | Select-Object -ExpandProperty ExclusionPath
 開発が終わったら、セキュリティのために除外を解除する。
 
 ```powershell
-# target/ ディレクトリの除外を解除
-Remove-MpPreference -ExclusionPath "C:\Users\<ユーザー名>\repos\muhenkan-switch-rs\target"
+# 除外を解除
+Remove-MpPreference -ExclusionPath "C:\Users\<ユーザー名>\repos\muhenkan-switch-rs"
 ```
 
 ## 備考
 
 - この問題は Windows Home エディションでも発生する（確認済み）
-- 発生条件は環境により異なる（`cargo clean` 後のフルビルドで再現しやすい）
+- `target/` のビルドエラーと `bin/` の実行エラーは同じ原因（リアルタイムスキャン）
+- `bin/` の Permission denied は間欠的に発生し、リトライすると成功することが多い
 - CI/CD（GitHub Actions）では影響なし

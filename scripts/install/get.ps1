@@ -5,7 +5,7 @@
     GitHub Releases から最新版をダウンロードし、install.ps1 を実行します。
 .NOTES
     使い方:
-    irm https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/main/scripts/get.ps1 | iex
+    irm https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/main/scripts/install/get.ps1 | iex
 #>
 
 Set-StrictMode -Version Latest
