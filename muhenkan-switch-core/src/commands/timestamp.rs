@@ -1,4 +1,5 @@
-use anyhow::Result;
+use anyhow::{Context, Result};
+use arboard::Clipboard;
 use chrono::Local;
 use std::path::{Path, PathBuf};
 
@@ -14,7 +15,7 @@ pub fn run(action: &str, config: &Config) -> Result<()> {
         // ── V: paste ──
         ("paste", None) => {
             let timestamp = Local::now().format(&config.timestamp.format).to_string();
-            text_paste(&timestamp)
+            super::keys::simulate_type(&timestamp)
         }
         ("paste", Some(hwnd)) => {
             let toast = Toast::show("処理中...");
@@ -28,7 +29,9 @@ pub fn run(action: &str, config: &Config) -> Result<()> {
             result.map(|_| ())
         }
 
-        // ── C: copy (Explorer only) ──
+        // ── C: copy ──
+        // テキストコンテキスト: 選択テキストをプレーンテキストとしてクリップボードにコピー
+        ("copy", None) => plain_copy(),
         ("copy", Some(hwnd)) => {
             let toast = Toast::show("処理中...");
             let result = explorer_duplicate(
@@ -40,7 +43,6 @@ pub fn run(action: &str, config: &Config) -> Result<()> {
             toast.finish(&format_toast_result(&result));
             result.map(|_| ())
         }
-        ("copy", None) => Ok(()),
 
         // ── X: cut (Explorer only) ──
         ("cut", Some(hwnd)) => {
@@ -80,9 +82,18 @@ fn format_toast_result(result: &Result<Vec<PathBuf>>) -> String {
 
 // ── テキスト入力コンテキスト ──
 
-/// V: タイムスタンプをカーソル位置に直接入力
-fn text_paste(timestamp: &str) -> Result<()> {
-    super::keys::simulate_type(timestamp)
+/// C: 選択テキストをプレーンテキストとしてクリップボードにコピー
+fn plain_copy() -> Result<()> {
+    // Ctrl+C で選択テキストをクリップボードにコピー
+    super::keys::simulate_copy()?;
+    std::thread::sleep(std::time::Duration::from_millis(50));
+    // クリップボードからテキストのみ取得し、プレーンテキストとして再設定
+    let mut clipboard = Clipboard::new()?;
+    let text = clipboard
+        .get_text()
+        .context("クリップボードにテキストがありません")?;
+    clipboard.set_text(&text)?;
+    Ok(())
 }
 
 // ── Explorer コンテキスト ──
