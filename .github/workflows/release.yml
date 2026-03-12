@@ -86,15 +86,15 @@ jobs:
           # インストール/アンインストールスクリプト
           case "${{ matrix.asset_suffix }}" in
             linux-x64)
-              cp scripts/install.sh "$RELEASE_DIR/"
-              cp scripts/uninstall.sh "$RELEASE_DIR/"
-              cp scripts/update.sh "$RELEASE_DIR/"
+              cp scripts/install/install.sh "$RELEASE_DIR/"
+              cp scripts/install/uninstall.sh "$RELEASE_DIR/"
+              cp scripts/install/update.sh "$RELEASE_DIR/"
               chmod +x "$RELEASE_DIR/install.sh" "$RELEASE_DIR/uninstall.sh" "$RELEASE_DIR/update.sh"
               ;;
             macos-x64|macos-arm64)
-              cp scripts/install-macos.sh "$RELEASE_DIR/"
-              cp scripts/uninstall-macos.sh "$RELEASE_DIR/"
-              cp scripts/update-macos.sh "$RELEASE_DIR/"
+              cp scripts/install/install-macos.sh "$RELEASE_DIR/"
+              cp scripts/install/uninstall-macos.sh "$RELEASE_DIR/"
+              cp scripts/install/update-macos.sh "$RELEASE_DIR/"
               chmod +x "$RELEASE_DIR/install-macos.sh" "$RELEASE_DIR/uninstall-macos.sh" "$RELEASE_DIR/update-macos.sh"
               ;;
           esac
@@ -178,12 +178,12 @@ jobs:
           cp kanata/muhenkan.kbd "$RELEASE_DIR/"
           cp kanata/muhenkan-macos.kbd "$RELEASE_DIR/"
           cp README.md "$RELEASE_DIR/"
-          cp scripts/install.bat "$RELEASE_DIR/"
-          cp scripts/uninstall.bat "$RELEASE_DIR/"
-          cp scripts/update.bat "$RELEASE_DIR/"
-          cp scripts/install.ps1 "$RELEASE_DIR/scripts/"
-          cp scripts/uninstall.ps1 "$RELEASE_DIR/scripts/"
-          cp scripts/update.ps1 "$RELEASE_DIR/scripts/"
+          cp scripts/install/install.bat "$RELEASE_DIR/"
+          cp scripts/install/uninstall.bat "$RELEASE_DIR/"
+          cp scripts/install/update.bat "$RELEASE_DIR/"
+          cp scripts/install/install.ps1 "$RELEASE_DIR/scripts/"
+          cp scripts/install/uninstall.ps1 "$RELEASE_DIR/scripts/"
+          cp scripts/install/update.ps1 "$RELEASE_DIR/scripts/"
 
       - name: Create zip archive (Windows)
         shell: pwsh
@@ -248,12 +248,12 @@ jobs:
 
             **Linux / macOS:**
             ```bash
-            curl -fsSL https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/main/scripts/get.sh | sh
+            curl -fsSL https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/main/scripts/install/get.sh | sh
             ```
 
             **Windows（上級者向け PowerShell ワンライナー）:**
             ```powershell
-            irm https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/main/scripts/get.ps1 | iex
+            irm https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/main/scripts/install/get.ps1 | iex
             ```
 
             ### ダウンロード

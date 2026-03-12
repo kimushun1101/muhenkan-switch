@@ -59,7 +59,7 @@ jobs:
             echo "1. リリースノートで破壊的変更がないか確認"
             echo "2. バージョン同期スクリプトを実行:"
             echo "   \`\`\`bash"
-            echo "   bash scripts/sync-kanata-version.sh $LATEST"
+            echo "   bash scripts/dev/sync-kanata-version.sh $LATEST"
             echo "   \`\`\`"
             echo "3. 動作確認後リリース"
           } > /tmp/issue-body.md

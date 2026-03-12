@@ -4,7 +4,7 @@ set -euo pipefail
 # muhenkan-switch-rs ワンライナーインストーラー
 #
 # 使い方:
-#   curl -fsSL https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/main/scripts/get.sh | sh
+#   curl -fsSL https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/main/scripts/install/get.sh | sh
 #
 # パイプ実行時は一時ファイルに保存してから bash で実行するため、
 # install スクリプト内の read プロンプトも正常に動作します。
@@ -50,7 +50,7 @@ case "$OS" in
     *)
         echo "[ERROR] 未対応の OS です: $OS"
         echo "        Windows の場合は PowerShell で以下を実行してください:"
-        echo "        irm https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/main/scripts/get.ps1 | iex"
+        echo "        irm https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/main/scripts/install/get.ps1 | iex"
         exit 1
         ;;
 esac

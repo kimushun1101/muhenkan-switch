@@ -43,7 +43,7 @@
 
 > **PowerShell ワンライナーでのインストール（上級者向け）:**
 > ```powershell
-> irm https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/main/scripts/get.ps1 | iex
+> irm https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/main/scripts/install/get.ps1 | iex
 > ```
 
 #### Linux / macOS
@@ -51,12 +51,12 @@
 以下のコマンドをターミナルに貼り付けて実行するだけで、最新版のダウンロードからインストールまで自動で行われます。
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/main/scripts/get.sh | sh
+curl -fsSL https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/main/scripts/install/get.sh | sh
 ```
 
 > **セキュリティについて**: スクリプトの内容を事前に確認したい場合は、先にダウンロードしてから実行できます。
 > ```bash
-> curl -fsSL https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/main/scripts/get.sh -o get.sh
+> curl -fsSL https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/main/scripts/install/get.sh -o get.sh
 > less get.sh    # 内容を確認
 > bash get.sh    # 実行
 > ```

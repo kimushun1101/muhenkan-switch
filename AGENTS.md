@@ -19,7 +19,7 @@ Node.js やビルドステップは不要。
 ### シェルスクリプト (*.sh)
 
 - **`sed -i` は直接使わない** — macOS の BSD sed は `sed -i ''` が必要。
-  `sedi()` ヘルパー（`scripts/sync-kanata-version.sh` 参照）のようなラッパーを使うか、
+  `sedi()` ヘルパー（`scripts/dev/sync-kanata-version.sh` 参照）のようなラッパーを使うか、
   一時ファイル + mv のパターンで回避する。
 - **改行コードは LF** — `.gitattributes` で `*.sh text eol=lf` を設定済み。
   新しいシェルスクリプトを追加する場合も同様に LF であることを確認する。
@@ -78,7 +78,7 @@ Node.js やビルドステップは不要。
 
 - **Rust クレート**: `Cargo.toml` の `[workspace.package] version` が単一ソース。
 - **kanata**: `kanata-version.txt` が単一ソース。
-  `scripts/sync-kanata-version.sh` で 4 ファイルに同期する。
+  `scripts/dev/sync-kanata-version.sh` で 4 ファイルに同期する。
 - バージョン等の定数を複数ファイルにハードコードしない。
 
 ## 開発コマンド
