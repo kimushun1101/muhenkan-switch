@@ -50,7 +50,7 @@ summary: muhenkan-switchをkanata＋Rust製muhenkan-switchバイナリ構成でW
 | アプリ切り替え | OS別: Win32 API (`windows` クレート) / wmctrl / osascript(未検証) |
 | フォルダオープン | `open` クレート |
 | 選択文字列 → Web検索 | `arboard`（クリップボード） + `webbrowser`（ブラウザ起動） |
-| タイムスタンプ / プレーンテキスト | テキスト時は `arboard` でクリップボードのテキストを取得し `SendInput` で直接入力、エクスプローラー時は `chrono` + ファイル更新日時でリネーム |
+| タイムスタンプ / プレーンコピー | V: テキスト時は `chrono` で現在日時を `SendInput` 直接入力、C: テキスト時は `Ctrl+C` → `arboard` でプレーンテキスト化。エクスプローラー時はファイル更新日時でリネーム・複製・除去 |
 | スクリーンショット | OS別コマンド呼び出し |
 
 ### Layer 3: 設定管理 → muhenkan-switch が config.toml を読み込み

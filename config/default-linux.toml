@@ -39,7 +39,8 @@ nautilus = {key = "e", process = "org.gnome.Nautilus", command = "nautilus"}
 # libreoffice = {key = "d", process = "soffice",       command = "libreoffice --writer"}                 # 文書（LibreOffice Writer）
 
 # ── タイムスタンプ ──
-# エクスプローラー上でファイル更新日時によるリネーム・複製に使用
+# V: テキスト入力時は現在日時、エクスプローラー上ではファイル更新日時でリネーム
+# C: テキスト入力時はプレーンテキストコピー、エクスプローラー上では複製
 [timestamp]
 # chrono のフォーマット文字列
 # %Y=年4桁, %m=月, %d=日, %H=時, %M=分, %S=秒

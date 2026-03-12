@@ -13,8 +13,10 @@ pub fn run(action: &str, config: &Config) -> Result<()> {
 
     match (action, explorer_hwnd) {
         // ── V: paste ──
-        // テキストコンテキスト: クリップボードをプレーンテキストとして入力
-        ("paste", None) => plain_paste(),
+        ("paste", None) => {
+            let timestamp = Local::now().format(&config.timestamp.format).to_string();
+            super::keys::simulate_type(&timestamp)
+        }
         ("paste", Some(hwnd)) => {
             let toast = Toast::show("処理中...");
             let result = explorer_rename_prepend(
@@ -27,7 +29,9 @@ pub fn run(action: &str, config: &Config) -> Result<()> {
             result.map(|_| ())
         }
 
-        // ── C: copy (Explorer only) ──
+        // ── C: copy ──
+        // テキストコンテキスト: 選択テキストをプレーンテキストとしてクリップボードにコピー
+        ("copy", None) => plain_copy(),
         ("copy", Some(hwnd)) => {
             let toast = Toast::show("処理中...");
             let result = explorer_duplicate(
@@ -39,7 +43,6 @@ pub fn run(action: &str, config: &Config) -> Result<()> {
             toast.finish(&format_toast_result(&result));
             result.map(|_| ())
         }
-        ("copy", None) => Ok(()),
 
         // ── X: cut (Explorer only) ──
         ("cut", Some(hwnd)) => {
@@ -79,13 +82,18 @@ fn format_toast_result(result: &Result<Vec<PathBuf>>) -> String {
 
 // ── テキスト入力コンテキスト ──
 
-/// V: クリップボードのテキストを書式なしで直接入力
-fn plain_paste() -> Result<()> {
+/// C: 選択テキストをプレーンテキストとしてクリップボードにコピー
+fn plain_copy() -> Result<()> {
+    // Ctrl+C で選択テキストをクリップボードにコピー
+    super::keys::simulate_copy()?;
+    std::thread::sleep(std::time::Duration::from_millis(50));
+    // クリップボードからテキストのみ取得し、プレーンテキストとして再設定
     let mut clipboard = Clipboard::new()?;
     let text = clipboard
         .get_text()
         .context("クリップボードにテキストがありません")?;
-    super::keys::simulate_type(&text)
+    clipboard.set_text(&text)?;
+    Ok(())
 }
 
 // ── Explorer コンテキスト ──
