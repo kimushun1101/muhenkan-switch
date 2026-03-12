@@ -59,11 +59,11 @@ if [ -f "$FILE" ]; then
     echo "[OK] scripts/install/install-macos.sh"
 fi
 
-# 4. scripts/dev/fetch-kanata.py (VERSION = "vX.Y.Z")
-FILE="$REPO_ROOT/scripts/dev/fetch-kanata.py"
+# 4. scripts/dev/fetch-kanata.sh (VERSION = "vX.Y.Z")
+FILE="$REPO_ROOT/scripts/dev/fetch-kanata.sh"
 if [ -f "$FILE" ]; then
-    sedi "s/^VERSION = \"v[^\"]*\"/VERSION = \"$NEW_VERSION\"/" "$FILE"
-    echo "[OK] scripts/dev/fetch-kanata.py"
+    sedi "s/^VERSION=\"v[^\"]*\"/VERSION=\"$NEW_VERSION\"/" "$FILE"
+    echo "[OK] scripts/dev/fetch-kanata.sh"
 fi
 
 echo "[sync] 完了"

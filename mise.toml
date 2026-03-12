@@ -14,7 +14,6 @@
 
 [tools]
 rust = "1.93"
-python = "3"
 node = "lts"
 
 [tasks.setup]
@@ -31,7 +30,7 @@ run = "bash scripts/dev/sync-kanata-version.sh"
 
 [tasks.fetch-kanata]
 description = "Download kanata binary for development"
-run = "python scripts/dev/fetch-kanata.py"
+run = "bash scripts/dev/fetch-kanata.sh"
 
 [tasks.build]
 description = "Build workspace (debug)"
