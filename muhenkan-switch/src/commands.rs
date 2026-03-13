@@ -331,16 +331,9 @@ pub fn set_autostart_enabled(app: tauri::AppHandle, enabled: bool) -> Result<(),
 
 // ── Install type detection ──
 
-/// Returns true if this is an NSIS installer install (no update.bat next to exe).
+/// Returns true if this is an installer install (Windows always uses NSIS).
 pub fn is_nsis_install() -> bool {
-    if !cfg!(target_os = "windows") {
-        return false;
-    }
-    let has_update_bat = std::env::current_exe()
-        .ok()
-        .and_then(|p| p.parent().map(|d| d.join("update.bat").exists()))
-        .unwrap_or(false);
-    !has_update_bat
+    cfg!(target_os = "windows")
 }
 
 #[tauri::command]

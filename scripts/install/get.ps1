@@ -2,7 +2,7 @@
 .SYNOPSIS
     muhenkan-switch-rs ワンライナーインストーラー (Windows)
 .DESCRIPTION
-    GitHub Releases から最新版をダウンロードし、install.ps1 を実行します。
+    GitHub Releases から最新の setup.exe をダウンロードし、実行します。
 .NOTES
     使い方:
     irm https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/main/scripts/install/get.ps1 | iex
@@ -13,7 +13,7 @@ $ErrorActionPreference = "Stop"
 
 # ── 設定 ──
 $REPO = "kimushun1101/muhenkan-switch-rs"
-$ASSET_NAME = "muhenkan-switch-rs-windows-x64.zip"
+$ASSET_NAME = "muhenkan-switch_x64-setup.exe"
 
 Write-Host ""
 Write-Host "=== muhenkan-switch-rs インストーラー (Windows) ===" -ForegroundColor Cyan
@@ -40,43 +40,23 @@ Write-Host ""
 Write-Host "$latestTag をダウンロードしています..." -ForegroundColor Cyan
 
 $downloadUrl = "https://github.com/$REPO/releases/download/$latestTag/$ASSET_NAME"
-$tempZip = Join-Path $env:TEMP "muhenkan-switch-rs-install.zip"
-$tempExtract = Join-Path $env:TEMP "muhenkan-switch-rs-install"
+$tempExe = Join-Path $env:TEMP $ASSET_NAME
 
 try {
-    Invoke-WebRequest -Uri $downloadUrl -OutFile $tempZip -UseBasicParsing
+    Invoke-WebRequest -Uri $downloadUrl -OutFile $tempExe -UseBasicParsing
     Write-Host "[OK] ダウンロード完了" -ForegroundColor Green
 } catch {
     Write-Host "[ERROR] ダウンロードに失敗しました: $_" -ForegroundColor Red
     exit 1
 }
 
-# ── 展開 ──
-try {
-    if (Test-Path $tempExtract) {
-        Remove-Item $tempExtract -Recurse -Force
-    }
-    Expand-Archive -Path $tempZip -DestinationPath $tempExtract -Force
-    Write-Host "[OK] 展開完了" -ForegroundColor Green
-} catch {
-    Write-Host "[ERROR] 展開に失敗しました: $_" -ForegroundColor Red
-    exit 1
-}
-
-# ── install.ps1 を実行 ──
-$installScript = Get-ChildItem -Path $tempExtract -Recurse -Filter "install.ps1" | Select-Object -First 1
-if ($installScript) {
-    Write-Host ""
-    Write-Host "インストールスクリプトを実行しています..." -ForegroundColor Cyan
-    & powershell.exe -ExecutionPolicy Bypass -File $installScript.FullName
-} else {
-    Write-Host "[ERROR] install.ps1 が見つかりませんでした" -ForegroundColor Red
-    exit 1
-}
+# ── setup.exe を実行 ──
+Write-Host ""
+Write-Host "インストーラーを起動しています..." -ForegroundColor Cyan
+Start-Process -FilePath $tempExe -Wait
 
 # ── クリーンアップ ──
-if (Test-Path $tempZip) { Remove-Item $tempZip -Force -ErrorAction SilentlyContinue }
-if (Test-Path $tempExtract) { Remove-Item $tempExtract -Recurse -Force -ErrorAction SilentlyContinue }
+if (Test-Path $tempExe) { Remove-Item $tempExe -Force -ErrorAction SilentlyContinue }
 
 Write-Host ""
 Write-Host "=== インストール完了 ===" -ForegroundColor Green
