@@ -165,36 +165,6 @@ jobs:
             target/x86_64-pc-windows-msvc/release/bundle/nsis/*-setup.exe
             target/x86_64-pc-windows-msvc/release/bundle/nsis/*-setup.exe.sig
 
-      # 6. Power User 向け zip もビルド・パッケージ
-      - name: Package zip release (Power User)
-        shell: bash
-        run: |
-          RELEASE_DIR="muhenkan-switch-rs-windows-x64"
-          mkdir -p "$RELEASE_DIR/scripts"
-
-          cp target/x86_64-pc-windows-msvc/release/muhenkan-switch-core.exe "$RELEASE_DIR/"
-          cp target/x86_64-pc-windows-msvc/release/muhenkan-switch.exe "$RELEASE_DIR/" 2>/dev/null || true
-          cp config/default.toml "$RELEASE_DIR/config.toml"
-          cp kanata/muhenkan.kbd "$RELEASE_DIR/"
-          cp kanata/muhenkan-macos.kbd "$RELEASE_DIR/"
-          cp README.md "$RELEASE_DIR/"
-          cp scripts/install/install.bat "$RELEASE_DIR/"
-          cp scripts/install/uninstall.bat "$RELEASE_DIR/"
-          cp scripts/install/update.bat "$RELEASE_DIR/"
-          cp scripts/install/install.ps1 "$RELEASE_DIR/scripts/"
-          cp scripts/install/uninstall.ps1 "$RELEASE_DIR/scripts/"
-          cp scripts/install/update.ps1 "$RELEASE_DIR/scripts/"
-
-      - name: Create zip archive (Windows)
-        shell: pwsh
-        run: |
-          Compress-Archive -Path "muhenkan-switch-rs-windows-x64" `
-            -DestinationPath "muhenkan-switch-rs-windows-x64.zip"
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: release-windows-x64
-          path: muhenkan-switch-rs-windows-x64.*
 
   release:
     needs: [build, build-windows-nsis]
@@ -232,7 +202,6 @@ jobs:
         with:
           files: |
             muhenkan-switch-rs-*.tar.gz
-            muhenkan-switch-rs-*.zip
             *-setup.exe
             latest.json
           body: |
@@ -257,8 +226,7 @@ jobs:
             ```
 
             ### ダウンロード
-            - **Windows (x64) インストーラー**: `muhenkan-switch_x64-setup.exe`
-            - **Windows (x64) zip（上級者向け）**: `muhenkan-switch-rs-windows-x64.zip`
+            - **Windows (x64)**: `muhenkan-switch_x64-setup.exe`
             - **Linux (x64)**: `muhenkan-switch-rs-linux-x64.tar.gz`
             - **macOS (x64)**: `muhenkan-switch-rs-macos-x64.tar.gz` ⚠️ 未検証
             - **macOS (ARM)**: `muhenkan-switch-rs-macos-arm64.tar.gz` ⚠️ 未検証

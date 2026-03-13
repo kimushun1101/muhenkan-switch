@@ -25,8 +25,9 @@
 - **アプリ切り替え**: A/T/S/E/F → 指定アプリを最前面に（デフォルト設定）
 - **Web検索**: Q/R/W/G/B → 選択テキストで辞書・DeepL翻訳・AI検索
 - **フォルダオープン**: 1/2/3/4/5 → Downloads/Desktop/Documents 等
-- **タイムスタンプ**: V/C/X → エクスプローラー上ではファイル更新日時でリネーム・複製・除去、テキスト入力時は V でタイムスタンプ入力、C で選択テキストをプレーンテキストとしてコピー
-- **句読点入力**: カンマ → 「、」、ピリオド → 「。」
+- **タイムスタンプ**: V/C/X → エクスプローラー上ではファイル更新日時でリネーム・複製・除去、テキスト入力時は V でタイムスタンプ入力
+- **プレーンテキストコピー**: C → テキスト入力時に選択テキストをプレーンテキストとしてコピー
+- **インデント操作**: カンマ → 逆インデント、ピリオド → インデント
 
 詳細は [docs/design.md](docs/design.md) を参照してください。
 
@@ -37,7 +38,7 @@
 #### Windows
 
 1. [最新リリース](https://github.com/kimushun1101/muhenkan-switch-rs/releases/latest) から
-   `muhenkan-switch_x64.msi`（または `muhenkan-switch_x64-setup.exe`）をダウンロード
+   `muhenkan-switch_x64-setup.exe` をダウンロード
 2. ダブルクリックしてインストール
 3. スタートメニューから `muhenkan-switch` を起動
 
@@ -62,15 +63,12 @@ curl -fsSL https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/mai
 > ```
 
 <details>
-<summary>手動インストール（アーカイブをダウンロードする方法）</summary>
+<summary>手動インストール（アーカイブをダウンロードする方法、Linux/macOS）</summary>
 
 [Releases](https://github.com/kimushun1101/muhenkan-switch-rs/releases) から
 お使いの OS 用のアーカイブをダウンロード・展開し、インストールスクリプトを実行してください。
 
-```
-# Windows: install.bat をダブルクリック
-# または install.ps1 を右クリック →「PowerShell で実行」
-
+```bash
 # Linux
 ./install.sh
 
@@ -80,28 +78,17 @@ curl -fsSL https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/mai
 
 </details>
 
-インストールスクリプトは以下を自動で行います:
+インストールスクリプト（Linux/macOS）は以下を自動で行います:
 - kanata のダウンロード（GitHub Releases から）
 - ファイルの配置（下記インストール先）
-- PATH の設定（Linux/macOS: `~/.local/bin` にシンボリックリンク）
-- スタートメニューショートカットの作成（Windows）
-- オプション: 自動起動の設定（Windows: スタートアップ、Linux: XDG autostart、macOS: launchd）
+- PATH の設定（`~/.local/bin` にシンボリックリンク）
+- オプション: 自動起動の設定（Linux: XDG autostart、macOS: launchd）
 
 | OS | インストール先 |
 |----|--------------|
-| Windows | `%LOCALAPPDATA%\muhenkan-switch-rs` |
+| Windows | `%LOCALAPPDATA%\muhenkan-switch` |
 | Linux | `~/.local/share/muhenkan-switch-rs` |
 | macOS | `~/Library/Application Support/muhenkan-switch-rs` |
-
-インストール後のディレクトリ構成:
-```
-<install_dir>/
-├── kanata_cmd_allowed(.exe)   # kanata 本体（自動ダウンロード）
-├── muhenkan-switch(.exe)       # muhenkan-switch GUI（メインアプリ）
-├── muhenkan-switch-core(.exe)  # muhenkan-switch-core（kanata から呼び出される実行エンジン）
-├── muhenkan.kbd               # kanata 設定ファイル (macOS: muhenkan-macos.kbd)
-└── config.toml                # muhenkan-switch 設定ファイル
-```
 
 ### 2. 起動
 
@@ -135,21 +122,9 @@ sudo udevadm control --reload-rules && sudo udevadm trigger
 
 ### アンインストール
 
-#### Windows（.msi でインストールした場合）
+#### Windows
 
 **設定 → アプリ → muhenkan-switch → アンインストール** で削除できます。
-.msi インストーラーは Windows の標準的な仕組みに従って登録されているため、
-スクリプト不要でコントロールパネルからアンインストールできます。
-
-<details>
-<summary>zip 版（上級者向け）でインストールした場合</summary>
-
-```powershell
-# Windows（PowerShell）
-& "$env:LOCALAPPDATA\muhenkan-switch-rs\uninstall.ps1"
-```
-
-</details>
 
 #### Linux / macOS
 
@@ -163,25 +138,11 @@ sudo udevadm control --reload-rules && sudo udevadm trigger
 
 ### 更新
 
-#### Windows（.msi でインストールした場合）
+#### Windows
 
 [最新リリース](https://github.com/kimushun1101/muhenkan-switch-rs/releases/latest) から
-新しい `.msi` をダウンロードしてダブルクリックするだけで上書き更新されます。
-
-<details>
-<summary>zip 版（上級者向け）でインストールした場合</summary>
-
-```powershell
-# Windows（PowerShell）
-& "$env:LOCALAPPDATA\muhenkan-switch-rs\update.ps1"
-```
-
-更新スクリプトは以下を自動で行います:
-- GitHub Releases から最新バージョンの確認
-- 現在のバージョンとの比較（既に最新の場合は終了）
-- 最新版のダウンロード・展開・インストール
-
-</details>
+新しい `muhenkan-switch_x64-setup.exe` をダウンロードしてダブルクリックするだけで上書き更新されます。
+アプリ起動中に自動更新チェックも行われます。
 
 #### Linux / macOS
 

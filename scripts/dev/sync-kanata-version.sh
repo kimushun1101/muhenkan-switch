@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # kanata バージョンを kanata-version.txt から読み取り、
-# 4 つのファイルに反映する同期スクリプト。
+# 3 つのファイルに反映する同期スクリプト。
 #
 # 使い方:
 #   ./scripts/dev/sync-kanata-version.sh            # kanata-version.txt の値を反映
@@ -45,21 +45,14 @@ if [ -f "$FILE" ]; then
     echo "[OK] scripts/install/install.sh"
 fi
 
-# 2. scripts/install/install.ps1
-FILE="$REPO_ROOT/scripts/install/install.ps1"
-if [ -f "$FILE" ]; then
-    sedi "s/^\\\$KANATA_VERSION = \"[^\"]*\"/\$KANATA_VERSION = \"$NEW_VERSION\"/" "$FILE"
-    echo "[OK] scripts/install/install.ps1"
-fi
-
-# 3. scripts/install/install-macos.sh
+# 2. scripts/install/install-macos.sh
 FILE="$REPO_ROOT/scripts/install/install-macos.sh"
 if [ -f "$FILE" ]; then
     sedi "s/^KANATA_VERSION=\"[^\"]*\"/KANATA_VERSION=\"$NEW_VERSION\"/" "$FILE"
     echo "[OK] scripts/install/install-macos.sh"
 fi
 
-# 4. scripts/dev/fetch-kanata.sh (VERSION = "vX.Y.Z")
+# 3. scripts/dev/fetch-kanata.sh (VERSION = "vX.Y.Z")
 FILE="$REPO_ROOT/scripts/dev/fetch-kanata.sh"
 if [ -f "$FILE" ]; then
     sedi "s/^VERSION=\"v[^\"]*\"/VERSION=\"$NEW_VERSION\"/" "$FILE"
