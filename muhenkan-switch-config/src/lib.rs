@@ -3,6 +3,8 @@ use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 
+pub mod svg;
+
 // ── Dispatch keys ──
 
 /// kbd ファイルでディスパッチに割り当てられている物理キーの一覧。

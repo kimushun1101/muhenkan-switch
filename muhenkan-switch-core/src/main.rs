@@ -48,6 +48,15 @@ enum Commands {
     },
     /// GUI 設定ウィンドウを前面に出す（未起動なら起動する）
     OpenGui,
+    /// キーボードレイアウト図を SVG で生成
+    GenerateSvg {
+        /// 出力ファイルパス（省略時は stdout）
+        #[arg(short, long)]
+        output: Option<String>,
+        /// config.toml パス（省略時は自動検出）
+        #[arg(short, long)]
+        config: Option<String>,
+    },
 }
 
 fn main() -> Result<()> {
@@ -58,6 +67,24 @@ fn main() -> Result<()> {
         return commands::open_gui::run();
     }
 
+    // GenerateSvg は独自の config 読み込みを行う
+    if let Commands::GenerateSvg {
+        ref output,
+        ref config,
+    } = cli.command
+    {
+        let cfg = match config {
+            Some(path) => muhenkan_switch_config::load_from(std::path::Path::new(path))?,
+            None => muhenkan_switch_config::load()?,
+        };
+        let svg = muhenkan_switch_config::svg::generate(&cfg);
+        match output {
+            Some(path) => std::fs::write(path, &svg)?,
+            None => print!("{}", svg),
+        }
+        return Ok(());
+    }
+
     let config = config::load()?;
 
     match cli.command {
@@ -66,6 +93,6 @@ fn main() -> Result<()> {
         Commands::OpenFolder { target } => commands::open_folder::run(&target, &config),
         Commands::Timestamp { action } => commands::timestamp::run(&action, &config),
         Commands::Dispatch { key } => commands::dispatch::run(&key, &config),
-        Commands::OpenGui => unreachable!(),
+        Commands::OpenGui | Commands::GenerateSvg { .. } => unreachable!(),
     }
 }
