@@ -185,34 +185,6 @@ GUI (Tauri) から kanata プロセスの開始・停止・再起動を行う。
 
 ---
 
-## 実装ロードマップ
-
-### Phase 1: kanata コアキーマッピング ✅
-- `muhenkan.kbd` で無変換 + HJKL カーソル移動を実装
-- Windows / Linux で動作確認
-
-### Phase 2: muhenkan-switch 最小実装 ✅
-- 実装順序: open-folder → search → timestamp → switch-app
-- kanata の `cmd` アクションとの結合テスト
-
-### Phase 3: GUI (Tauri v2) ✅
-- 設定の閲覧・編集 UI
-- kanata プロセスの開始・停止・再起動
-- システムトレイ常駐
-
-### Phase 4: キーディスパッチ ✅
-- `dispatch` サブコマンドの実装
-- config.toml にキー割り当て (`key`) を追加
-- GUI にディスパッチキー編集 UI を追加
-- config crate テスト 24 件整備
-
-### Phase 5: 機能拡充（継続）
-- ビルド自動化 + GitHub Actions クロスコンパイル ✅
-- アプリアイコンのデザイン・適用 ✅
-- ホットストリング
-
----
-
 ## キー割り当ての設計思想
 
 ### 無変換キー中心の設計

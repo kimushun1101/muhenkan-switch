@@ -100,7 +100,7 @@ kanata の設定ガイドは [こちら](https://github.com/jtroo/kanata/wiki/Co
 LGPL-3.0-only
 
 本プロジェクト（muhenkan-switch-rs）は Rust によるフルスクラッチ実装です。
-旧版（[muhenkan-switch](https://github.com/kimushun1101/muhenkan-switch) AutoHotkey 版）の仕様を継承していますが、
+旧版（[muhenkan-switch](https://github.com/kimushun1101/muhenkan-switch) AutoHotkey 版）の仕様を一部継承していますが、
 コードの流用はないため LGPL-3.0 で提供します。
 
 同梱する kanata も LGPL-3.0 です（`LICENSE` 参照）。
