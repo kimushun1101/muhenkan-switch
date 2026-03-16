@@ -38,6 +38,7 @@ fn main() {
         .manage(kanata::KanataManager::new())
         .invoke_handler(tauri::generate_handler![
             commands::get_config,
+            commands::generate_keyboard_svg,
             commands::save_config,
             commands::reset_config,
             commands::default_config,

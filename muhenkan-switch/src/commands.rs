@@ -23,6 +23,12 @@ pub fn get_config() -> Result<Config, String> {
 }
 
 #[tauri::command]
+pub fn generate_keyboard_svg() -> Result<String, String> {
+    let cfg = config::load().map_err(|e| e.to_string())?;
+    Ok(config::svg::generate(&cfg))
+}
+
+#[tauri::command]
 pub fn save_config(config: Config) -> Result<(), String> {
     let errors = config::validate(&config);
     if !errors.is_empty() {
