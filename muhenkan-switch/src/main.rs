@@ -57,6 +57,7 @@ fn main() {
             commands::open_install_dir,
             commands::open_config_in_editor,
             commands::open_help_window,
+            commands::open_keyboard_window,
             commands::validate_timestamp_format,
             commands::check_update,
             commands::install_update,
