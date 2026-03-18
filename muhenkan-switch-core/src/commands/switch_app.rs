@@ -401,6 +401,7 @@ mod tests {
     #[test]
     fn run_missing_app_errors() {
         let config = Config {
+            punctuation_style: "、。".to_string(),
             search: Default::default(),
             folders: Default::default(),
             apps: Default::default(),

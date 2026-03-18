@@ -26,8 +26,8 @@ desktop   = {key = "2", path = "~/Desktop"}
 documents = {key = "3", path = "~/Documents"}
 # ↓ よく使うプロジェクトフォルダに変更してお使いください
 project   = {key = "4", path = "~/repos"}
-# trash は OS によりパスが異なります。空欄の場合はデフォルト動作（~/.local/share/Trash/files）
-trash     = {key = "5", path = ""}
+# ↓ お好みのフォルダに変更してお使いください
+home      = {key = "5", path = "~"}
 
 # ── アプリ切り替え ──
 # key: ディスパッチキー（無変換+key で発動）
