@@ -155,7 +155,7 @@ cargo test --workspace
 
 **CLI crate (muhenkan-switch-core):**
 - **timestamp** (`test_compose_*`, `test_resolve_*`) — タイムスタンプ結合・アクション解決の純粋ロジック
-- **open_folder** — `expand_home` のチルダ展開、`resolve_trash_path` のパス解決、存在しないフォルダのエラー
+- **open_folder** — `expand_home` のチルダ展開、存在しないフォルダのエラー、空パスのエラー
 - **switch_app** — `try_wmctrl`/`try_xdotool` が存在しないアプリでパニックしないこと、`activate_window` のエラーハンドリング
 - **toast** — `Toast::show`/`finish` が notify-send 不在でもパニックしないこと、日本語メッセージ対応
 
