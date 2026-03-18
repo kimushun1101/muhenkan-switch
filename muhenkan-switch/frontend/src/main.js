@@ -38,6 +38,11 @@ async function loadConfig() {
 function renderConfig() {
   if (!config) return;
 
+  // Punctuation style
+  const puncStyle = config.punctuation_style || "、。";
+  const puncRadio = document.querySelector(`input[name="punctuation-style"][value="${puncStyle}"]`);
+  if (puncRadio) puncRadio.checked = true;
+
   // Timestamp
   renderTimestamp();
 
@@ -379,6 +384,7 @@ function collectConfig() {
       position: document.querySelector('input[name="ts-position"]:checked').value,
       delimiter: getTimestampDelimiter(),
     },
+    punctuation_style: document.querySelector('input[name="punctuation-style"]:checked')?.value || "、。",
   };
 
   // Search

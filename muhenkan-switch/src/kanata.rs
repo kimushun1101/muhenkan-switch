@@ -262,6 +262,11 @@ impl KanataManager {
         anyhow::bail!("キー割当の補助プログラムが見つかりません。\n再インストールしてください。");
     }
 
+    /// kbd ファイルのパスを外部に公開する（句読点書き換え用）
+    pub fn resolve_kbd_path() -> Result<PathBuf> {
+        Self::kbd_path()
+    }
+
     pub fn start(&self) -> Result<()> {
         let mut guard = self.child.lock().unwrap();
         if let Some(ref child) = *guard {

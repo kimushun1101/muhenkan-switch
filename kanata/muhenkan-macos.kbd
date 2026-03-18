@@ -57,10 +57,6 @@
   ts-c (cmd muhenkan-switch-core timestamp --action copy)
   ts-x (cmd muhenkan-switch-core timestamp --action cut)
 
-  ;; インデント操作
-  indent (macro spc spc spc spc)
-  dedent (macro home del del del del)
-
   ;; GUI 設定ウィンドウを前面に出す
   open-gui (cmd muhenkan-switch-core open-gui)
 )
@@ -89,6 +85,6 @@
   left  down  up  right
   C-left  C-right  home  end
   bspc  del  esc
-  @dedent  @indent
+  (unicode 、)  (unicode 。)
   @open-gui
 )

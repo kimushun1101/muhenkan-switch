@@ -1,6 +1,12 @@
 # muhenkan-switch-rs 設定ファイル（共通フォールバック）
 # OS 別の設定は default-windows.toml / default-macos.toml / default-linux.toml を参照してください。
 
+# ── 句読点スタイル ──
+# 無変換+「,」「.」で入力される句読点を切り替えます。
+# "、。" = 読点・句点
+# "，．" = 全角コンマ・全角ピリオド
+punctuation_style = "、。"
+
 # ── 検索エンジン ──
 # key: ディスパッチキー（無変換+key で発動）
 # url: {query} が選択テキスト（URLエンコード済み）に置換されます

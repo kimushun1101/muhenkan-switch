@@ -29,7 +29,7 @@ pub fn generate_keyboard_svg() -> Result<String, String> {
 }
 
 #[tauri::command]
-pub fn save_config(app: tauri::AppHandle, config: Config) -> Result<(), String> {
+pub fn save_config(app: tauri::AppHandle, config: Config, manager: State<KanataManager>) -> Result<(), String> {
     use tauri::Emitter;
     let errors = config::validate(&config);
     if !errors.is_empty() {
@@ -37,6 +37,14 @@ pub fn save_config(app: tauri::AppHandle, config: Config) -> Result<(), String> 
     }
     let path = resolve_config_path();
     config::save(&path, &config).map_err(|e| e.to_string())?;
+
+    // kbd ファイルの句読点を書き換え → kanata 再起動
+    if let Ok(kbd_path) = KanataManager::resolve_kbd_path() {
+        let _ = config::rewrite_kbd_punctuation(&kbd_path, &config.punctuation_style);
+    }
+    let _ = manager.stop();
+    let _ = manager.start();
+
     let _ = app.emit("config-saved", ());
     Ok(())
 }
