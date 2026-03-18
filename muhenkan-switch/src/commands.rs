@@ -23,13 +23,22 @@ pub fn get_config() -> Result<Config, String> {
 }
 
 #[tauri::command]
-pub fn save_config(config: Config) -> Result<(), String> {
+pub fn generate_keyboard_svg() -> Result<String, String> {
+    let cfg = config::load().map_err(|e| e.to_string())?;
+    Ok(config::svg::generate(&cfg))
+}
+
+#[tauri::command]
+pub fn save_config(app: tauri::AppHandle, config: Config) -> Result<(), String> {
+    use tauri::Emitter;
     let errors = config::validate(&config);
     if !errors.is_empty() {
         return Err(errors.join("\n"));
     }
     let path = resolve_config_path();
-    config::save(&path, &config).map_err(|e| e.to_string())
+    config::save(&path, &config).map_err(|e| e.to_string())?;
+    let _ = app.emit("config-saved", ());
+    Ok(())
 }
 
 #[tauri::command]
@@ -404,10 +413,82 @@ pub fn open_help_window(app: tauri::AppHandle) -> Result<(), String> {
         let url = format!("help.html?install={}", install_type);
         let _ = WebviewWindowBuilder::new(&app, "help", WebviewUrl::App(url.into()))
             .title("使い方 — muhenkan-switch")
-            .inner_size(600.0, 700.0)
+            .inner_size(850.0, 750.0)
             .resizable(true)
             .center()
             .build();
+    });
+    Ok(())
+}
+
+#[tauri::command]
+pub fn open_keyboard_window(app: tauri::AppHandle) -> Result<(), String> {
+    use tauri::Manager;
+    if let Some(win) = app.get_webview_window("keyboard") {
+        let _ = win.set_focus();
+        return Ok(());
+    }
+    let cfg = config::load().map_err(|e| e.to_string())?;
+    let svg = config::svg::generate(&cfg);
+    std::thread::spawn(move || {
+        use tauri::{WebviewUrl, WebviewWindowBuilder};
+        let html = format!(
+            r##"<!DOCTYPE html>
+<html><head><meta charset="UTF-8">
+<style>
+body {{ margin:0; background:#1e1e2e; overflow:hidden; width:100vw; height:100vh; cursor:grab; user-select:none; }}
+body.dragging {{ cursor:grabbing; }}
+#wrap {{ transform-origin:0 0; padding:20px; display:inline-block; }}
+</style></head>
+<body>
+<div id="wrap">{svg}</div>
+<script>
+let scale = 1, tx = 0, ty = 0;
+const wrap = document.getElementById("wrap");
+function apply() {{
+  wrap.style.transform = "translate(" + tx + "px," + ty + "px) scale(" + scale + ")";
+}}
+// ホイールでズーム（Ctrl 不要）
+document.addEventListener("wheel", e => {{
+  e.preventDefault();
+  const old = scale;
+  scale = Math.min(5, Math.max(0.3, scale * (e.deltaY < 0 ? 1.1 : 0.9)));
+  // マウス位置を中心にズーム
+  const r = scale / old;
+  tx = e.clientX - r * (e.clientX - tx);
+  ty = e.clientY - r * (e.clientY - ty);
+  apply();
+}}, {{ passive: false }});
+// ドラッグで移動
+let dragging = false, sx = 0, sy = 0;
+document.addEventListener("mousedown", e => {{
+  if (e.button === 0) {{ dragging = true; sx = e.clientX - tx; sy = e.clientY - ty; document.body.classList.add("dragging"); }}
+}});
+document.addEventListener("mousemove", e => {{
+  if (dragging) {{ tx = e.clientX - sx; ty = e.clientY - sy; apply(); }}
+}});
+document.addEventListener("mouseup", () => {{
+  dragging = false; document.body.classList.remove("dragging");
+}});
+// Ctrl+0 でリセット
+document.addEventListener("keydown", e => {{
+  if (e.ctrlKey && e.key === "0") {{ e.preventDefault(); scale = 1; tx = 0; ty = 0; apply(); }}
+}});
+</script>
+</body></html>"##
+        );
+        let url = WebviewUrl::App("about:blank".into());
+        if let Ok(win) = WebviewWindowBuilder::new(&app, "keyboard", url)
+            .title("キーボード配列 — muhenkan-switch")
+            .inner_size(800.0, 340.0)
+            .resizable(true)
+            .center()
+            .build()
+        {
+            // HTML を直接評価して表示
+            let escaped = html.replace('\\', "\\\\").replace('`', "\\`");
+            let _ = win.eval(&format!("document.open();document.write(`{escaped}`);document.close();"));
+        }
     });
     Ok(())
 }
