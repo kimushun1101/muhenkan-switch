@@ -30,7 +30,7 @@
 | YUIO → 単語移動/行頭行末 | レイヤー内マクロ |
 | NM → BackSpace/Delete | レイヤー内で `bspc` `del` |
 | ; → ESC | レイヤー内で `esc` |
-| カンマ・ピリオド → インデント操作 | dedent / indent マクロ |
+| カンマ・ピリオド → 句読点（、。） | `(unicode 、)` / `(unicode 。)` |
 
 ### Layer 2: OS連携 → muhenkan-switch バイナリ（Rust）
 
@@ -226,7 +226,7 @@ muhenkan-switch は**無変換キーを左手親指で押しながら**他のキ
 - **単語・行移動**: u/i（単語左右）、y/o（行頭・行末）
 - **削除**: n（BackSpace）、m（Delete）
 - **エスケープ**: ;
-- **句読点**: ,/. → 、/。
+- **句読点**: ,/. → 、/。 or 全角，/全角．（config.toml の `punctuation_style` で切替）
 
 ### なぜ変換キーは使わないのか
 
@@ -260,7 +260,7 @@ muhenkan-switch は**無変換キーを左手親指で押しながら**他のキ
 ```
     [y][u][i][o]   [p:空き]
      [h][j][k][l]  [;:Esc]
-      [n][m]  [,:de-indent] [.:indent]
+      [n][m]  [,:、] [.:。]
 ```
 
 | カテゴリ | キー | 割当 | 備考 |
@@ -270,7 +270,7 @@ muhenkan-switch は**無変換キーを左手親指で押しながら**他のキ
 | 行移動 | y, o | Home, End | |
 | 削除 | n, m | BackSpace, Delete | 物理キーが遠いため muhenkan に価値あり |
 | エスケープ | ; | Esc | 物理キーが遠いため muhenkan に価値あり |
-| インデント | , . | de-indent, indent | Tab が効かない環境でも動作（#28） |
+| 句読点 | , . | 、/。 or 全角，/全角． | config.toml の `punctuation_style` で切替 |
 | 空き | p | （未割り当て） | スクリーンショットを廃止（#28） |
 
 ### 割り当てるべき操作の基準

@@ -85,6 +85,16 @@ fn main() {
                     }
                 }
             }
+            // kbd ファイルの句読点を config に合わせて同期
+            if let Ok(cfg) = muhenkan_switch_config::load() {
+                if let Ok(kbd_path) = kanata::KanataManager::resolve_kbd_path() {
+                    let _ = muhenkan_switch_config::rewrite_kbd_punctuation(
+                        &kbd_path,
+                        &cfg.punctuation_style,
+                    );
+                }
+            }
+
             tray::setup(app)?;
             kanata::setup(app)?;
             Ok(())

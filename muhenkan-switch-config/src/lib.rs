@@ -92,6 +92,12 @@ pub struct Config {
     pub apps: IndexMap<String, AppEntry>,
     #[serde(default)]
     pub timestamp: TimestampConfig,
+    #[serde(default = "default_punctuation_style")]
+    pub punctuation_style: String,
+}
+
+fn default_punctuation_style() -> String {
+    "、。".to_string()
 }
 
 impl Config {
@@ -237,6 +243,7 @@ pub fn default_config() -> Config {
         folders: IndexMap::new(),
         apps: IndexMap::new(),
         timestamp: TimestampConfig::default(),
+        punctuation_style: default_punctuation_style(),
     }
 }
 
@@ -343,6 +350,9 @@ pub fn save(path: &std::path::Path, config: &Config) -> Result<()> {
         apps_table[name] = toml_edit::value(inline);
     }
 
+    // punctuation_style（トップレベル）
+    doc["punctuation_style"] = toml_edit::value(&config.punctuation_style);
+
     // [timestamp] セクション
     let ts_table = doc
         .entry("timestamp")
@@ -388,6 +398,14 @@ pub fn validate(config: &Config) -> Vec<String> {
         errors.push(format!(
             "Timestamp position must be \"before\" or \"after\", got \"{}\"",
             config.timestamp.position
+        ));
+    }
+
+    // punctuation_style の検証
+    if config.punctuation_style != "、。" && config.punctuation_style != "，．" {
+        errors.push(format!(
+            "punctuation_style must be \"touten\" or \"commadot\", got \"{}\"",
+            config.punctuation_style
         ));
     }
 
@@ -444,6 +462,30 @@ pub fn validate(config: &Config) -> Vec<String> {
     }
 
     errors
+}
+
+// ── kbd punctuation rewrite ──
+
+/// kbd ファイル内の句読点行を指定スタイルに書き換える。
+pub fn rewrite_kbd_punctuation(kbd_path: &std::path::Path, style: &str) -> Result<()> {
+    let content = std::fs::read_to_string(kbd_path)
+        .with_context(|| format!("Failed to read kbd file: {}", kbd_path.display()))?;
+
+    let old_touten = "(unicode 、)  (unicode 。)";
+    let old_commadot = "(unicode ，)  (unicode ．)";
+    let new_fragment = match style {
+        "，．" => "(unicode ，)  (unicode ．)",
+        _ => "(unicode 、)  (unicode 。)",
+    };
+
+    let new_content = content
+        .replace(old_touten, new_fragment)
+        .replace(old_commadot, new_fragment);
+
+    std::fs::write(kbd_path, new_content)
+        .with_context(|| format!("Failed to write kbd file: {}", kbd_path.display()))?;
+
+    Ok(())
 }
 
 // ── Helpers ──
@@ -712,6 +754,7 @@ mod tests {
             folders: IndexMap::new(),
             apps: IndexMap::new(),
             timestamp: TimestampConfig::default(),
+            punctuation_style: default_punctuation_style(),
         };
         // Assign all 15 dispatch keys across sections
         let keys = DISPATCH_KEYS;

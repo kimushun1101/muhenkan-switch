@@ -28,7 +28,7 @@ enum KeyCategory {
 
 /// 右手キーの固定機能名。
 /// 右手キーの固定機能名（kanata/muhenkan.kbd の mh-layer 定義に準拠）。
-fn text_edit_label(key: &str) -> &'static str {
+fn text_edit_label(key: &str, punctuation_style: &str) -> &'static str {
     match key {
         // hjkl: Vim 風カーソル移動
         "H" => "←",
@@ -44,9 +44,9 @@ fn text_edit_label(key: &str) -> &'static str {
         "N" => "BS",
         "M" => "Del",
         ";" => "Esc",
-        // ,.: インデント操作
-        "," => "逆字下",
-        "." => "字下げ",
+        // ,.: 句読点
+        "," => if punctuation_style == "，．" { "，" } else { "、" },
+        "." => if punctuation_style == "，．" { "．" } else { "。" },
         _ => "",
     }
 }
@@ -212,7 +212,7 @@ pub fn generate(config: &Config) -> String {
     for key in &keys {
         let (fill, bottom_label) = match key.category {
             KeyCategory::TextEdit => {
-                (fill_color("textedit"), text_edit_label(key.label).to_string())
+                (fill_color("textedit"), text_edit_label(key.label, &config.punctuation_style).to_string())
             }
             KeyCategory::Timestamp => {
                 (fill_color("timestamp"), timestamp_label(key.label).to_string())
