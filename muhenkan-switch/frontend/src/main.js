@@ -9,9 +9,9 @@ let guiSettings = {};    // GUI-only settings
 // ── Available dispatch keys (must match kbd file) ──
 const DISPATCH_KEYS = [
   "1", "2", "3", "4", "5",
-  "q", "r", "t", "g",
-  "b",
-  "a", "w", "e", "s", "d", "f",
+  "q", "w", "e", "r", "t",
+  "a", "s", "d", "f", "g",
+  "z", "b",
 ];
 
 // ── Tab switching ──

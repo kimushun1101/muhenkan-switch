@@ -22,7 +22,7 @@
   ;; 左手中段（ディスパッチ）
   a  w  e  s  d  f
   ;; 左手下段（ディスパッチ）
-  b
+  z  b
   ;; 左手下段（ファイル操作）
   v  c  x
   ;; 右手（カーソル操作）
@@ -57,6 +57,7 @@
   dsp-s (cmd muhenkan-switch-core dispatch s)
   dsp-d (cmd muhenkan-switch-core dispatch d)
   dsp-f (cmd muhenkan-switch-core dispatch f)
+  dsp-z (cmd muhenkan-switch-core dispatch z)
   dsp-b (cmd muhenkan-switch-core dispatch b)
 
   ;; ── 固定アクション ──
@@ -76,7 +77,7 @@
   1  2  3  4  5
   q  r  t  g
   a  w  e  s  d  f
-  b
+  z  b
   v  c  x
   h  j  k  l
   u  i  y  o
@@ -95,7 +96,7 @@
   ;; 左手中段 → ディスパッチ
   @dsp-a  @dsp-w  @dsp-e  @dsp-s  @dsp-d  @dsp-f
   ;; 左手下段 → ディスパッチ
-  @dsp-b
+  @dsp-z  @dsp-b
   ;; 左手下段 → タイムスタンプ操作
   @ts-v  @ts-c  @ts-x
   ;; 右手 → Vim風カーソル移動
