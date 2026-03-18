@@ -131,51 +131,61 @@
     }
     // キーボード配列 SVG を Tauri 経由で取得して埋め込む
     if (window.__TAURI__) {
-      window.__TAURI__.core.invoke("generate_keyboard_svg").then(svg => {
-        const container = document.getElementById("keyboard-svg");
-        container.innerHTML = svg;
-        const svgEl = container.querySelector("svg");
-        if (!svgEl) return;
+      const container = document.getElementById("keyboard-svg");
+      let scale = 1, tx = 0, ty = 0, dragging = false, sx = 0, sy = 0;
 
-        let scale = 1, tx = 0, ty = 0;
-        function apply() {
-          svgEl.style.transform = "translate(" + tx + "px," + ty + "px) scale(" + scale + ")";
-        }
-        // ホイールでズーム（コンテナ上のみ）
-        container.addEventListener("wheel", e => {
+      function loadSvg() {
+        window.__TAURI__.core.invoke("generate_keyboard_svg").then(svg => {
+          container.innerHTML = svg;
+          scale = 1; tx = 0; ty = 0;
+          const svgEl = container.querySelector("svg");
+          if (svgEl) svgEl.style.transform = "";
+        }).catch(err => {
+          container.textContent = "キーボード図の読み込みに失敗しました: " + err;
+        });
+      }
+
+      function applySvgTransform() {
+        const svgEl = container.querySelector("svg");
+        if (svgEl) svgEl.style.transform = "translate(" + tx + "px," + ty + "px) scale(" + scale + ")";
+      }
+
+      // ホイールでズーム（コンテナ上のみ）
+      container.addEventListener("wheel", e => {
+        e.preventDefault();
+        const rect = container.getBoundingClientRect();
+        const mx = e.clientX - rect.left;
+        const my = e.clientY - rect.top;
+        const old = scale;
+        scale = Math.min(5, Math.max(0.5, scale * (e.deltaY < 0 ? 1.12 : 0.88)));
+        const r = scale / old;
+        tx = mx - r * (mx - tx);
+        ty = my - r * (my - ty);
+        applySvgTransform();
+      }, { passive: false });
+      // ドラッグで移動
+      container.addEventListener("mousedown", e => {
+        if (e.button === 0) {
+          dragging = true; sx = e.clientX - tx; sy = e.clientY - ty;
+          container.classList.add("dragging");
           e.preventDefault();
-          const rect = container.getBoundingClientRect();
-          const mx = e.clientX - rect.left;
-          const my = e.clientY - rect.top;
-          const old = scale;
-          scale = Math.min(5, Math.max(0.5, scale * (e.deltaY < 0 ? 1.12 : 0.88)));
-          const r = scale / old;
-          tx = mx - r * (mx - tx);
-          ty = my - r * (my - ty);
-          apply();
-        }, { passive: false });
-        // ドラッグで移動
-        let dragging = false, sx = 0, sy = 0;
-        container.addEventListener("mousedown", e => {
-          if (e.button === 0) {
-            dragging = true; sx = e.clientX - tx; sy = e.clientY - ty;
-            container.classList.add("dragging");
-            e.preventDefault();
-          }
-        });
-        document.addEventListener("mousemove", e => {
-          if (dragging) { tx = e.clientX - sx; ty = e.clientY - sy; apply(); }
-        });
-        document.addEventListener("mouseup", () => {
-          dragging = false; container.classList.remove("dragging");
-        });
-        // ダブルクリックでリセット
-        container.addEventListener("dblclick", () => {
-          scale = 1; tx = 0; ty = 0; apply();
-        });
-      }).catch(err => {
-        document.getElementById("keyboard-svg").textContent = "キーボード図の読み込みに失敗しました: " + err;
+        }
       });
+      document.addEventListener("mousemove", e => {
+        if (dragging) { tx = e.clientX - sx; ty = e.clientY - sy; applySvgTransform(); }
+      });
+      document.addEventListener("mouseup", () => {
+        dragging = false; container.classList.remove("dragging");
+      });
+      // ダブルクリックでリセット
+      container.addEventListener("dblclick", () => {
+        scale = 1; tx = 0; ty = 0; applySvgTransform();
+      });
+
+      // 初回読み込み
+      loadSvg();
+      // 設定保存時に自動更新
+      window.__TAURI__.event.listen("config-saved", () => { loadSvg(); });
     }
   </script>
 </body>

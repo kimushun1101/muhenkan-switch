@@ -29,13 +29,16 @@ pub fn generate_keyboard_svg() -> Result<String, String> {
 }
 
 #[tauri::command]
-pub fn save_config(config: Config) -> Result<(), String> {
+pub fn save_config(app: tauri::AppHandle, config: Config) -> Result<(), String> {
+    use tauri::Emitter;
     let errors = config::validate(&config);
     if !errors.is_empty() {
         return Err(errors.join("\n"));
     }
     let path = resolve_config_path();
-    config::save(&path, &config).map_err(|e| e.to_string())
+    config::save(&path, &config).map_err(|e| e.to_string())?;
+    let _ = app.emit("config-saved", ());
+    Ok(())
 }
 
 #[tauri::command]
