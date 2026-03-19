@@ -259,9 +259,9 @@ function addAppRow(container, name = "", process = "", command = "", dispatchKey
   const row = document.createElement("div");
   row.className = "list-row";
   row.innerHTML = `
-    <input type="text" class="key-input" placeholder="キー" value="${escapeHtml(name)}">
-    <input type="text" class="process-input" placeholder="プロセス名" value="${escapeHtml(process)}">
-    <input type="text" class="command-input" placeholder="実行コマンド" value="${escapeHtml(command)}">
+    <input type="text" class="key-input" placeholder="名前" value="${escapeHtml(name)}">
+    <input type="text" class="process-input" placeholder="プロセス名" value="${escapeHtml(process)}" readonly>
+    <input type="hidden" class="command-input" value="${escapeHtml(command)}">
     <button class="btn-pick-process" title="プロセス選択">選択</button>
     <button class="btn-remove" title="削除">&times;</button>
   `;

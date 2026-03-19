@@ -7,14 +7,14 @@ pub fn run(target: &str, config: &Config) -> Result<()> {
     let path_str = config::get_folder_path(&config.folders, target)?;
 
     if path_str.is_empty() {
-        anyhow::bail!("Folder '{}' has no path configured in config.toml", target);
+        anyhow::bail!("フォルダ '{}' のパスが config.toml に設定されていません", target);
     }
 
     // ~ をホームディレクトリに展開
     let path = expand_home(path_str);
 
     if !path.exists() {
-        anyhow::bail!("Folder does not exist: {}", path.display());
+        anyhow::bail!("フォルダが見つかりません: {}", path.display());
     }
 
     open::that(&path)?;
@@ -89,7 +89,7 @@ mod tests {
         };
         let result = run("nonexistent", &config);
         assert!(result.is_err());
-        assert!(result.unwrap_err().to_string().contains("not defined"));
+        assert!(result.unwrap_err().to_string().contains("定義されていません"));
     }
 
     #[test]
@@ -113,7 +113,7 @@ mod tests {
         };
         let result = run("test", &config);
         assert!(result.is_err());
-        assert!(result.unwrap_err().to_string().contains("does not exist"));
+        assert!(result.unwrap_err().to_string().contains("見つかりません"));
     }
 
     #[test]
@@ -137,6 +137,6 @@ mod tests {
         };
         let result = run("unknown", &config);
         assert!(result.is_err());
-        assert!(result.unwrap_err().to_string().contains("no path configured"));
+        assert!(result.unwrap_err().to_string().contains("設定されていません"));
     }
 }

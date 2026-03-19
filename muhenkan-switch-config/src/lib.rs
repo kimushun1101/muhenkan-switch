@@ -498,7 +498,7 @@ pub fn get_search_url<'a>(
     search
         .get(engine)
         .map(|e| e.url())
-        .ok_or_else(|| anyhow::anyhow!("Search engine '{}' is not defined in config.toml", engine))
+        .ok_or_else(|| anyhow::anyhow!("検索エンジン '{}' が config.toml に定義されていません", engine))
 }
 
 /// フォルダのパスを取得する。
@@ -509,7 +509,7 @@ pub fn get_folder_path<'a>(
     folders
         .get(target)
         .map(|e| e.path())
-        .ok_or_else(|| anyhow::anyhow!("Folder '{}' is not defined in config.toml", target))
+        .ok_or_else(|| anyhow::anyhow!("フォルダ '{}' が config.toml に定義されていません", target))
 }
 
 #[cfg(test)]

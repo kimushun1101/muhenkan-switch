@@ -4,6 +4,8 @@ use clap::{Parser, Subcommand};
 mod commands;
 mod config;
 
+use commands::toast::Toast;
+
 #[derive(Parser)]
 #[command(
     name = "muhenkan-switch-core",
@@ -59,7 +61,16 @@ enum Commands {
     },
 }
 
-fn main() -> Result<()> {
+fn main() {
+    if let Err(e) = run() {
+        let msg = format!("{e:#}");
+        eprintln!("Error: {msg}");
+        let toast = Toast::show(&msg);
+        toast.finish(&msg);
+    }
+}
+
+fn run() -> Result<()> {
     let cli = Cli::parse();
 
     // config 不要なコマンドは先に処理

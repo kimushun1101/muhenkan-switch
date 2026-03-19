@@ -237,16 +237,35 @@ mod imp {
 
 #[cfg(target_os = "macos")]
 mod imp {
-    /// macOS: トースト通知は未実装 (no-op)。
-    /// osascript の `display notification` や terminal-notifier で実装可能。
+    use std::process::Command;
+
     pub struct Toast;
 
     impl Toast {
-        pub fn show(_initial_message: &str) -> Self {
+        pub fn show(initial_message: &str) -> Self {
+            let _ = Command::new("osascript")
+                .args([
+                    "-e",
+                    &format!(
+                        r#"display notification "{}" with title "muhenkan-switch""#,
+                        initial_message.replace('"', r#"\""#)
+                    ),
+                ])
+                .spawn();
             Toast
         }
 
-        pub fn finish(self, _message: &str) {}
+        pub fn finish(self, message: &str) {
+            let _ = Command::new("osascript")
+                .args([
+                    "-e",
+                    &format!(
+                        r#"display notification "{}" with title "muhenkan-switch""#,
+                        message.replace('"', r#"\""#)
+                    ),
+                ])
+                .spawn();
+        }
     }
 }
 

@@ -2,18 +2,26 @@ use anyhow::Result;
 #[cfg(not(target_os = "windows"))]
 use std::process::Command;
 
+use super::toast::Toast;
 use crate::config::Config;
 
 pub fn run(target: &str, config: &Config) -> Result<()> {
     let entry = config
         .apps
         .get(target)
-        .ok_or_else(|| anyhow::anyhow!("App '{}' is not defined in config.toml", target))?;
+        .ok_or_else(|| anyhow::anyhow!("アプリ '{}' が config.toml に定義されていません", target))?;
 
     let process_name = entry.process();
     let command = entry.command();
 
     imp::activate_window(process_name, command)
+}
+
+/// プロセスが見つからず launch コマンドも未設定の場合に Toast で通知する。
+fn notify_process_not_found(app: &str) {
+    let msg = format!("'{}' が見つかりません — config.toml の command を設定してください", app);
+    let toast = Toast::show(&msg);
+    toast.finish(&msg);
 }
 
 // ── Platform: Windows ──
@@ -74,9 +82,11 @@ mod imp {
         }
 
         if pids.is_empty() {
-            // Process not found — launch if configured
+            // Process not found — launch if configured, otherwise notify
             if let Some(cmd) = launch {
                 shell_execute(cmd)?;
+            } else {
+                notify_process_not_found(app);
             }
             return Ok(());
         }
@@ -113,9 +123,11 @@ mod imp {
         let hwnd = match data.hwnd {
             Some(h) => h,
             None => {
-                // Window not found — launch if configured
+                // Window not found — launch if configured, otherwise notify
                 if let Some(cmd) = launch {
                     shell_execute(cmd)?;
+                } else {
+                    notify_process_not_found(app);
                 }
                 return Ok(());
             }
@@ -258,14 +270,12 @@ mod imp {
             || try_xdotool(app, "--name");
 
         if !activated {
-            eprintln!(
-                "Warning: Wayland ではウィンドウのアクティブ化ができません。\
-                 X11 セッション（「Ubuntu on Xorg」）への切り替えを推奨します。"
-            );
             if let Some(cmd) = launch {
                 if let Err(e) = Command::new("sh").args(["-c", cmd]).spawn() {
                     eprintln!("Warning: failed to launch '{}': {}", cmd, e);
                 }
+            } else {
+                notify_process_not_found(app);
             }
         }
 
@@ -286,6 +296,8 @@ mod imp {
                 if let Err(e) = Command::new("sh").args(["-c", cmd]).spawn() {
                     eprintln!("Warning: failed to launch '{}': {}", cmd, e);
                 }
+            } else {
+                notify_process_not_found(app);
             }
         }
 
@@ -409,6 +421,6 @@ mod tests {
         };
         let result = run("nonexistent", &config);
         assert!(result.is_err());
-        assert!(result.unwrap_err().to_string().contains("not defined"));
+        assert!(result.unwrap_err().to_string().contains("定義されていません"));
     }
 }
