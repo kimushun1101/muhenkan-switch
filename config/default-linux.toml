@@ -38,7 +38,8 @@ Home      = {key = "5", path = "~"}
 "ブラウザ"    = {key = "f", process = "firefox",        command = "firefox"}
 slack         = {key = "s", process = "Slack",          command = "slack"}
 "ターミナル"  = {key = "w", process = "gnome-terminal", command = "gnome-terminal"}
-# ↓ `d` キーはお好みのアプリを設定してください
+"ドキュメント" = {key = "d", process = "onenote",          command = "onenote"}
+# ↓ `d` キーはお好みのアプリに変更できます
 # "ドキュメント" = {key = "d", process = "obsidian",  command = "obsidian"}              # ノート（Obsidian）
 # "ドキュメント" = {key = "d", process = "Notion",    command = "notion-app"}            # ノート（Notion、要インストール）
 # "ドキュメント" = {key = "d", process = "soffice",   command = "libreoffice --writer"}  # 文書（LibreOffice Writer）
