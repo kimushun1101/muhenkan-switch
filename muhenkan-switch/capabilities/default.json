@@ -4,6 +4,8 @@
   "windows": ["main", "help"],
   "permissions": [
     "core:default",
+    "core:window:allow-close",
+    "core:window:allow-hide",
     "shell:allow-open",
     "dialog:allow-open",
     "dialog:allow-save",

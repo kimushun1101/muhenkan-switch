@@ -91,6 +91,21 @@
     </section>
 
     <section>
+      <h2>設定画面のショートカット</h2>
+      <table>
+        <thead>
+          <tr><th>キー</th><th>機能</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><kbd>Ctrl</kbd> + <kbd>S</kbd></td><td>設定を適用（保存）</td></tr>
+          <tr><td><kbd>Ctrl</kbd> + <kbd>Q</kbd></td><td>アプリを終了</td></tr>
+          <tr><td><kbd>F1</kbd></td><td>この画面を表示</td></tr>
+          <tr><td><kbd>Escape</kbd></td><td>設定画面をトレイに格納 / ヘルプを閉じる</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
       <h2>設定タブ</h2>
       <table>
         <thead>
@@ -180,6 +195,14 @@
       // ダブルクリックでリセット
       container.addEventListener("dblclick", () => {
         scale = 1; tx = 0; ty = 0; applySvgTransform();
+      });
+
+      // Escape → ヘルプウィンドウを閉じる
+      document.addEventListener("keydown", e => {
+        if (e.key === "Escape") {
+          e.preventDefault();
+          window.__TAURI__.window.getCurrentWindow().close();
+        }
       });
 
       // 初回読み込み
