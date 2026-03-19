@@ -14,105 +14,8 @@ const DISPATCH_KEYS = [
   "z", "b",
 ];
 
-// ── App presets (OS-aware) ──
-function detectOS() {
-  const ua = navigator.userAgent;
-  if (ua.includes("Win")) return "windows";
-  if (ua.includes("Mac")) return "macos";
-  return "linux";
-}
-
-const APP_PRESETS = (() => {
-  const os = detectOS();
-  if (os === "windows") {
-    return {
-      "エディタ": [
-        { label: "VS Code", process: "Code", command: "code" },
-        { label: "Cursor", process: "Cursor", command: "cursor" },
-        { label: "Zed", process: "Zed", command: "zed" },
-      ],
-      "ブラウザ": [
-        { label: "Edge", process: "msedge", command: "msedge" },
-        { label: "Chrome", process: "chrome", command: "chrome" },
-        { label: "Firefox", process: "firefox", command: "firefox" },
-        { label: "Zen", process: "zen", command: "zen" },
-      ],
-      "ドキュメント": [
-        { label: "OneNote", process: "OneNote", command: "onenote" },
-        { label: "Obsidian", process: "Obsidian", command: "obsidian" },
-        { label: "Notion", process: "Notion", command: "notion" },
-        { label: "Word", process: "WINWORD", command: "winword" },
-      ],
-      "チャット": [
-        { label: "Slack", process: "slack", command: "slack" },
-        { label: "Discord", process: "Discord", command: "discord" },
-        { label: "Teams", process: "ms-teams", command: "ms-teams" },
-      ],
-      "ターミナル": [
-        { label: "Windows Terminal", process: "WindowsTerminal", command: "wt" },
-        { label: "Alacritty", process: "alacritty", command: "alacritty" },
-      ],
-    };
-  } else if (os === "macos") {
-    return {
-      "エディタ": [
-        { label: "VS Code", process: "Visual Studio Code", command: "code" },
-        { label: "Cursor", process: "Cursor", command: "open -a Cursor" },
-        { label: "Zed", process: "Zed", command: "open -a Zed" },
-      ],
-      "ブラウザ": [
-        { label: "Safari", process: "Safari", command: "open -a Safari" },
-        { label: "Chrome", process: "Google Chrome", command: "open -a 'Google Chrome'" },
-        { label: "Firefox", process: "firefox", command: "open -a Firefox" },
-        { label: "Zen", process: "zen", command: "open -a 'Zen Browser'" },
-      ],
-      "ドキュメント": [
-        { label: "OneNote", process: "Microsoft OneNote", command: "open -a 'Microsoft OneNote'" },
-        { label: "Obsidian", process: "Obsidian", command: "open -a Obsidian" },
-        { label: "Notion", process: "Notion", command: "open -a Notion" },
-        { label: "Word", process: "Microsoft Word", command: "open -a 'Microsoft Word'" },
-      ],
-      "チャット": [
-        { label: "Slack", process: "Slack", command: "open -a Slack" },
-        { label: "Discord", process: "Discord", command: "open -a Discord" },
-        { label: "Teams", process: "Microsoft Teams", command: "open -a 'Microsoft Teams'" },
-      ],
-      "ターミナル": [
-        { label: "Terminal", process: "Terminal", command: "open -a Terminal" },
-        { label: "iTerm2", process: "iTerm2", command: "open -a iTerm" },
-        { label: "Alacritty", process: "alacritty", command: "open -a Alacritty" },
-      ],
-    };
-  } else {
-    return {
-      "エディタ": [
-        { label: "VS Code", process: "code", command: "code" },
-        { label: "Cursor", process: "cursor", command: "cursor" },
-        { label: "Zed", process: "zed", command: "zed" },
-      ],
-      "ブラウザ": [
-        { label: "Firefox", process: "firefox", command: "firefox" },
-        { label: "Chrome", process: "google-chrome", command: "google-chrome" },
-        { label: "Zen", process: "zen", command: "zen" },
-      ],
-      "ドキュメント": [
-        { label: "OneNote", process: "onenote", command: "onenote" },
-        { label: "Obsidian", process: "obsidian", command: "obsidian" },
-        { label: "Notion", process: "Notion", command: "notion-app" },
-        { label: "LibreOffice Writer", process: "soffice", command: "libreoffice --writer" },
-      ],
-      "チャット": [
-        { label: "Slack", process: "Slack", command: "slack" },
-        { label: "Discord", process: "Discord", command: "discord" },
-      ],
-      "ターミナル": [
-        { label: "GNOME Terminal", process: "gnome-terminal", command: "gnome-terminal" },
-        { label: "Alacritty", process: "alacritty", command: "alacritty" },
-        { label: "Kitty", process: "kitty", command: "kitty" },
-      ],
-    };
-  }
-})();
+// ── App presets (loaded from backend) ──
+let APP_PRESETS = {};
 
 // ── App select dropdown helper ──
 function createAppSelect(currentProcess = "", currentCommand = "") {
@@ -165,7 +68,10 @@ document.querySelectorAll(".tab").forEach((tab) => {
 // ── Load config on startup ──
 async function loadConfig() {
   try {
-    config = await invoke("get_config");
+    [config, APP_PRESETS] = await Promise.all([
+      invoke("get_config"),
+      invoke("get_app_presets"),
+    ]);
     renderConfig();
   } catch (e) {
     console.error("設定の読み込みに失敗:", e);

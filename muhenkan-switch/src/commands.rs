@@ -110,6 +110,22 @@ pub async fn import_config(app: tauri::AppHandle) -> Result<Option<Config>, Stri
     }
 }
 
+// ── App presets ──
+
+/// コンパイル時に埋め込んだ app-presets.json から現在の OS 用プリセットを返す。
+#[tauri::command]
+pub fn get_app_presets() -> Result<serde_json::Value, String> {
+    const PRESETS_JSON: &str = include_str!("../../config/app-presets.json");
+    let all: serde_json::Value =
+        serde_json::from_str(PRESETS_JSON).map_err(|e| e.to_string())?;
+    let os_key = match std::env::consts::OS {
+        "windows" => "windows",
+        "macos" => "macos",
+        _ => "linux",
+    };
+    Ok(all.get(os_key).cloned().unwrap_or(serde_json::Value::Object(Default::default())))
+}
+
 // ── Kanata commands ──
 
 #[derive(Serialize, Clone)]
