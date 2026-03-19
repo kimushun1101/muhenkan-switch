@@ -140,6 +140,11 @@ select:focus {
   border-color: var(--accent);
 }
 
+input[type="text"][readonly] {
+  opacity: 0.7;
+  cursor: default;
+}
+
 .checkbox-label,
 .radio-label {
   display: flex;
