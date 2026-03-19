@@ -38,11 +38,11 @@ Home      = {key = "5", path = "~"}
 "ブラウザ" = {key = "f", process = "msedge",           command = "msedge"}
 slack      = {key = "s", process = "slack",            command = "slack"}
 WinTerm    = {key = "w", process = "WindowsTerminal", command = "wt"}
-"ドキュメント" = {key = "d", process = "OneNote",          command = "onenote"}
+Document = {key = "d", process = "OneNote",          command = "onenote"}
 # ↓ `d` キーはお好みのアプリに変更できます
-# "ドキュメント" = {key = "d", process = "Obsidian",       command = "obsidian"}          # ノート（Obsidian）
-# "ドキュメント" = {key = "d", process = "Notion",         command = "notion"}            # ノート（Notion）
-# "ドキュメント" = {key = "d", process = "WINWORD",        command = "winword"}           # 文書（Word）
+# Document = {key = "d", process = "Obsidian",       command = "obsidian"}          # ノート（Obsidian）
+# Document = {key = "d", process = "Notion",         command = "notion"}            # ノート（Notion）
+# Document = {key = "d", process = "WINWORD",        command = "winword"}           # 文書（Word）
 # Discord       = {key = "d", process = "Discord",        command = "discord"}           # チャット（Discord）
 # ↓ `z` キーはお好みのアプリを設定してください
 # "ビデオ会議"   = {key = "z", process = "Zoom",            command = "zoom"}              # Zoom

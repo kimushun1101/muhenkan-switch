@@ -38,11 +38,11 @@ Home      = {key = "5", path = "~"}
 "ブラウザ"    = {key = "f", process = "firefox",        command = "firefox"}
 slack         = {key = "s", process = "Slack",          command = "slack"}
 "ターミナル"  = {key = "w", process = "gnome-terminal", command = "gnome-terminal"}
-"ドキュメント" = {key = "d", process = "onenote",          command = "onenote"}
+Document = {key = "d", process = "onenote",          command = "onenote"}
 # ↓ `d` キーはお好みのアプリに変更できます
-# "ドキュメント" = {key = "d", process = "obsidian",  command = "obsidian"}              # ノート（Obsidian）
-# "ドキュメント" = {key = "d", process = "Notion",    command = "notion-app"}            # ノート（Notion、要インストール）
-# "ドキュメント" = {key = "d", process = "soffice",   command = "libreoffice --writer"}  # 文書（LibreOffice Writer）
+# Document = {key = "d", process = "obsidian",  command = "obsidian"}              # ノート（Obsidian）
+# Document = {key = "d", process = "Notion",    command = "notion-app"}            # ノート（Notion、要インストール）
+# Document = {key = "d", process = "soffice",   command = "libreoffice --writer"}  # 文書（LibreOffice Writer）
 # Discord       = {key = "d", process = "Discord",   command = "discord"}              # チャット（Discord）
 
 # ── タイムスタンプ ──

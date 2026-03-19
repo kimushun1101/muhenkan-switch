@@ -11,7 +11,7 @@
       { "label": "Firefox", "process": "firefox", "command": "firefox" },
       { "label": "Zen", "process": "zen", "command": "zen" }
     ],
-    "ドキュメント": [
+    "Document": [
       { "label": "OneNote", "process": "OneNote", "command": "onenote" },
       { "label": "Obsidian", "process": "Obsidian", "command": "obsidian" },
       { "label": "Notion", "process": "Notion", "command": "notion" },
@@ -39,7 +39,7 @@
       { "label": "Firefox", "process": "firefox", "command": "open -a Firefox" },
       { "label": "Zen", "process": "zen", "command": "open -a 'Zen Browser'" }
     ],
-    "ドキュメント": [
+    "Document": [
       { "label": "OneNote", "process": "Microsoft OneNote", "command": "open -a 'Microsoft OneNote'" },
       { "label": "Obsidian", "process": "Obsidian", "command": "open -a Obsidian" },
       { "label": "Notion", "process": "Notion", "command": "open -a Notion" },
@@ -67,7 +67,7 @@
       { "label": "Chrome", "process": "google-chrome", "command": "google-chrome" },
       { "label": "Zen", "process": "zen", "command": "zen" }
     ],
-    "ドキュメント": [
+    "Document": [
       { "label": "OneNote", "process": "onenote", "command": "onenote" },
       { "label": "Obsidian", "process": "obsidian", "command": "obsidian" },
       { "label": "Notion", "process": "Notion", "command": "notion-app" },
