@@ -524,10 +524,14 @@ document.getElementById("btn-apply").addEventListener("click", async () => {
 });
 
 document.getElementById("btn-reset").addEventListener("click", async () => {
+  const yes = await ask("未保存の変更を破棄して、最後に保存した設定に戻しますか？", { title: "リセット", kind: "warning" });
+  if (!yes) return;
   await loadConfig();
 });
 
 document.getElementById("btn-defaults").addEventListener("click", async () => {
+  const yes = await ask("現在の設定を破棄して、初期値に戻しますか？", { title: "初期値に戻す", kind: "warning" });
+  if (!yes) return;
   try {
     config = await invoke("default_config");
     renderConfig();
