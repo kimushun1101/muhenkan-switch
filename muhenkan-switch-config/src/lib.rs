@@ -402,9 +402,9 @@ pub fn validate(config: &Config) -> Vec<String> {
     }
 
     // punctuation_style の検証
-    if config.punctuation_style != "、。" && config.punctuation_style != "，．" {
+    if !["、。", "，．", "，。", "、．"].contains(&config.punctuation_style.as_str()) {
         errors.push(format!(
-            "punctuation_style must be \"touten\" or \"commadot\", got \"{}\"",
+            "punctuation_style must be one of \"、。\", \"，．\", \"，。\", \"、．\", got \"{}\"",
             config.punctuation_style
         ));
     }
@@ -471,16 +471,23 @@ pub fn rewrite_kbd_punctuation(kbd_path: &std::path::Path, style: &str) -> Resul
     let content = std::fs::read_to_string(kbd_path)
         .with_context(|| format!("Failed to read kbd file: {}", kbd_path.display()))?;
 
-    let old_touten = "(unicode 、)  (unicode 。)";
-    let old_commadot = "(unicode ，)  (unicode ．)";
+    let patterns = [
+        "(unicode 、)  (unicode 。)",
+        "(unicode ，)  (unicode ．)",
+        "(unicode ，)  (unicode 。)",
+        "(unicode 、)  (unicode ．)",
+    ];
     let new_fragment = match style {
         "，．" => "(unicode ，)  (unicode ．)",
+        "，。" => "(unicode ，)  (unicode 。)",
+        "、．" => "(unicode 、)  (unicode ．)",
         _ => "(unicode 、)  (unicode 。)",
     };
 
-    let new_content = content
-        .replace(old_touten, new_fragment)
-        .replace(old_commadot, new_fragment);
+    let mut new_content = content.clone();
+    for pat in &patterns {
+        new_content = new_content.replace(pat, new_fragment);
+    }
 
     std::fs::write(kbd_path, new_content)
         .with_context(|| format!("Failed to write kbd file: {}", kbd_path.display()))?;
