@@ -226,7 +226,7 @@ muhenkan-switch は**無変換キーを左手親指で押しながら**他のキ
 - **単語・行移動**: u/i（単語左右）、y/o（行頭・行末）
 - **削除**: n（BackSpace）、m（Delete）
 - **エスケープ**: ;
-- **句読点**: ,/. → 、/。 or 全角，/全角．（config.toml の `punctuation_style` で切替）
+- **句読点**: ,/. → 4パターンから選択（config.toml の `punctuation_style` で切替）
 
 ### なぜ変換キーは使わないのか
 
@@ -270,7 +270,7 @@ muhenkan-switch は**無変換キーを左手親指で押しながら**他のキ
 | 行移動 | y, o | Home, End | |
 | 削除 | n, m | BackSpace, Delete | 物理キーが遠いため muhenkan に価値あり |
 | エスケープ | ; | Esc | 物理キーが遠いため muhenkan に価値あり |
-| 句読点 | , . | 、/。 or 全角，/全角． | config.toml の `punctuation_style` で切替 |
+| 句読点 | , . | 、。 / ，． / ，。 / 、．  | config.toml の `punctuation_style` で切替 |
 | 空き | p | （未割り当て） | スクリーンショットを廃止（#28） |
 
 ### 割り当てるべき操作の基準
