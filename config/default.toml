@@ -11,7 +11,7 @@ punctuation_style = "、。"
 # key: 割当キー（無変換+key で発動）
 # url: {query} が選択テキスト（URLエンコード済み）に置換されます
 [search]
-"英和和英辞典" = {key = "e", url = "https://ejje.weblio.jp/content/{query}"}
+"英語辞典" = {key = "e", url = "https://ejje.weblio.jp/content/{query}"}
 Google    = {key = "g", url = "https://www.google.com/search?q={query}"}
 Question  = {key = "q", url = "https://chatgpt.com/?q={query}&temporary-chat=true"}
 "類語辞典" = {key = "r", url = "https://thesaurus.weblio.jp/content/{query}"}
