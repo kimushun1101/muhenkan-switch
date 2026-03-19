@@ -281,6 +281,10 @@ button:disabled {
   font-size: 11px;
 }
 
+.list-row .app-select {
+  flex: 1;
+}
+
 .list-row .dispatch-key-select {
   width: 52px;
   flex: none;

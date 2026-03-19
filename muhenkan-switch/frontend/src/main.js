@@ -14,6 +14,144 @@ const DISPATCH_KEYS = [
   "z", "b",
 ];
 
+// ── App presets (OS-aware) ──
+function detectOS() {
+  const ua = navigator.userAgent;
+  if (ua.includes("Win")) return "windows";
+  if (ua.includes("Mac")) return "macos";
+  return "linux";
+}
+
+const APP_PRESETS = (() => {
+  const os = detectOS();
+  if (os === "windows") {
+    return {
+      "エディタ": [
+        { label: "VS Code", process: "Code", command: "code" },
+        { label: "Cursor", process: "Cursor", command: "cursor" },
+        { label: "Zed", process: "Zed", command: "zed" },
+      ],
+      "ブラウザ": [
+        { label: "Edge", process: "msedge", command: "msedge" },
+        { label: "Chrome", process: "chrome", command: "chrome" },
+        { label: "Firefox", process: "firefox", command: "firefox" },
+        { label: "Zen", process: "zen", command: "zen" },
+      ],
+      "ドキュメント": [
+        { label: "OneNote", process: "OneNote", command: "onenote" },
+        { label: "Obsidian", process: "Obsidian", command: "obsidian" },
+        { label: "Notion", process: "Notion", command: "notion" },
+        { label: "Word", process: "WINWORD", command: "winword" },
+      ],
+      "チャット": [
+        { label: "Slack", process: "slack", command: "slack" },
+        { label: "Discord", process: "Discord", command: "discord" },
+        { label: "Teams", process: "ms-teams", command: "ms-teams" },
+      ],
+      "ターミナル": [
+        { label: "Windows Terminal", process: "WindowsTerminal", command: "wt" },
+        { label: "Alacritty", process: "alacritty", command: "alacritty" },
+      ],
+    };
+  } else if (os === "macos") {
+    return {
+      "エディタ": [
+        { label: "VS Code", process: "Visual Studio Code", command: "code" },
+        { label: "Cursor", process: "Cursor", command: "open -a Cursor" },
+        { label: "Zed", process: "Zed", command: "open -a Zed" },
+      ],
+      "ブラウザ": [
+        { label: "Safari", process: "Safari", command: "open -a Safari" },
+        { label: "Chrome", process: "Google Chrome", command: "open -a 'Google Chrome'" },
+        { label: "Firefox", process: "firefox", command: "open -a Firefox" },
+        { label: "Zen", process: "zen", command: "open -a 'Zen Browser'" },
+      ],
+      "ドキュメント": [
+        { label: "OneNote", process: "Microsoft OneNote", command: "open -a 'Microsoft OneNote'" },
+        { label: "Obsidian", process: "Obsidian", command: "open -a Obsidian" },
+        { label: "Notion", process: "Notion", command: "open -a Notion" },
+        { label: "Word", process: "Microsoft Word", command: "open -a 'Microsoft Word'" },
+      ],
+      "チャット": [
+        { label: "Slack", process: "Slack", command: "open -a Slack" },
+        { label: "Discord", process: "Discord", command: "open -a Discord" },
+        { label: "Teams", process: "Microsoft Teams", command: "open -a 'Microsoft Teams'" },
+      ],
+      "ターミナル": [
+        { label: "Terminal", process: "Terminal", command: "open -a Terminal" },
+        { label: "iTerm2", process: "iTerm2", command: "open -a iTerm" },
+        { label: "Alacritty", process: "alacritty", command: "open -a Alacritty" },
+      ],
+    };
+  } else {
+    return {
+      "エディタ": [
+        { label: "VS Code", process: "code", command: "code" },
+        { label: "Cursor", process: "cursor", command: "cursor" },
+        { label: "Zed", process: "zed", command: "zed" },
+      ],
+      "ブラウザ": [
+        { label: "Firefox", process: "firefox", command: "firefox" },
+        { label: "Chrome", process: "google-chrome", command: "google-chrome" },
+        { label: "Zen", process: "zen", command: "zen" },
+      ],
+      "ドキュメント": [
+        { label: "OneNote", process: "onenote", command: "onenote" },
+        { label: "Obsidian", process: "obsidian", command: "obsidian" },
+        { label: "Notion", process: "Notion", command: "notion-app" },
+        { label: "LibreOffice Writer", process: "soffice", command: "libreoffice --writer" },
+      ],
+      "チャット": [
+        { label: "Slack", process: "Slack", command: "slack" },
+        { label: "Discord", process: "Discord", command: "discord" },
+      ],
+      "ターミナル": [
+        { label: "GNOME Terminal", process: "gnome-terminal", command: "gnome-terminal" },
+        { label: "Alacritty", process: "alacritty", command: "alacritty" },
+        { label: "Kitty", process: "kitty", command: "kitty" },
+      ],
+    };
+  }
+})();
+
+// ── App select dropdown helper ──
+function createAppSelect(currentProcess = "", currentCommand = "") {
+  const select = document.createElement("select");
+  select.className = "app-select";
+
+  const noneOpt = document.createElement("option");
+  noneOpt.value = "";
+  noneOpt.textContent = "—";
+  select.appendChild(noneOpt);
+
+  let hasCurrentProcess = !currentProcess;
+
+  for (const [category, apps] of Object.entries(APP_PRESETS)) {
+    const group = document.createElement("optgroup");
+    group.label = category;
+    for (const app of apps) {
+      const opt = document.createElement("option");
+      opt.value = app.process;
+      opt.textContent = app.label;
+      opt.dataset.command = app.command;
+      group.appendChild(opt);
+      if (app.process === currentProcess) hasCurrentProcess = true;
+    }
+    select.appendChild(group);
+  }
+
+  if (currentProcess && !hasCurrentProcess) {
+    const opt = document.createElement("option");
+    opt.value = currentProcess;
+    opt.textContent = `${currentProcess}（カスタム）`;
+    opt.dataset.command = currentCommand || currentProcess.toLowerCase();
+    select.appendChild(opt);
+  }
+
+  select.value = currentProcess || "";
+  return select;
+}
+
 // ── Tab switching ──
 document.querySelectorAll(".tab").forEach((tab) => {
   tab.addEventListener("click", () => {
@@ -257,20 +395,33 @@ function addAppRow(container, name = "", process = "", command = "", dispatchKey
   const row = document.createElement("div");
   row.className = "list-row";
   row.innerHTML = `
-    <input type="text" class="key-input" placeholder="名前" value="${escapeHtml(name)}">
-    <input type="text" class="process-input" placeholder="プロセス名" value="${escapeHtml(process)}" readonly>
-    <input type="hidden" class="command-input" value="${escapeHtml(command)}">
-    <button class="btn-pick-process" title="プロセス選択">選択</button>
+    <input type="text" class="key-input" placeholder="機能名" value="${escapeHtml(name)}">
+    <button class="btn-pick-process" title="実行中のプロセスから選択">選択</button>
     <button class="btn-remove" title="削除">&times;</button>
   `;
   const keySelect = createDispatchKeySelect(dispatchKey);
   row.insertBefore(keySelect, row.firstChild);
+
+  const appSelect = createAppSelect(process, command);
+  const nameInput = row.querySelector(".key-input");
+  nameInput.insertAdjacentElement("afterend", appSelect);
+
   row.querySelector(".btn-remove").addEventListener("click", () => row.remove());
   row.querySelector(".btn-pick-process").addEventListener("click", async () => {
     const selected = await showProcessPicker();
     if (selected) {
-      row.querySelector(".process-input").value = selected;
-      row.querySelector(".command-input").value = selected.toLowerCase();
+      let found = false;
+      for (const opt of appSelect.options) {
+        if (opt.value === selected) { found = true; break; }
+      }
+      if (!found) {
+        const opt = document.createElement("option");
+        opt.value = selected;
+        opt.textContent = `${selected}（カスタム）`;
+        opt.dataset.command = selected.toLowerCase();
+        appSelect.appendChild(opt);
+      }
+      appSelect.value = selected;
     }
   });
   container.appendChild(row);
@@ -412,10 +563,12 @@ function collectConfig() {
   // Apps
   for (const row of document.querySelectorAll("#apps-list .list-row")) {
     const name = row.querySelector(".key-input").value.trim();
-    const process = row.querySelector(".process-input").value.trim();
-    const command = row.querySelector(".command-input").value.trim();
+    const appSelect = row.querySelector(".app-select");
+    const process = appSelect.value;
+    const selectedOpt = appSelect.options[appSelect.selectedIndex];
+    const command = selectedOpt?.dataset?.command || "";
     const dispatchKey = row.querySelector(".dispatch-key-select").value;
-    if (name) {
+    if (name && process) {
       const entry = { process };
       if (dispatchKey) entry.key = dispatchKey;
       if (command) entry.command = command;
