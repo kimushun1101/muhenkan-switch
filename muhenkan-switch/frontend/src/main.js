@@ -312,6 +312,13 @@ function addAppRow(container, name = "", process = "", command = "", dispatchKey
   const nameInput = row.querySelector(".key-input");
   nameInput.insertAdjacentElement("afterend", appSelect);
 
+  appSelect.addEventListener("change", () => {
+    const selected = appSelect.options[appSelect.selectedIndex];
+    if (selected && selected.parentElement.tagName === "OPTGROUP") {
+      nameInput.value = selected.parentElement.label;
+    }
+  });
+
   row.querySelector(".btn-remove").addEventListener("click", () => row.remove());
   row.querySelector(".btn-pick-process").addEventListener("click", async () => {
     const selected = await showProcessPicker();
