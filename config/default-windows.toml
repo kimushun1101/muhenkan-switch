@@ -39,14 +39,14 @@ Home      = {key = "5", path = "~"}
 slack      = {key = "s", process = "slack",            command = "slack"}
 WinTerm    = {key = "w", process = "WindowsTerminal", command = "wt"}
 # ↓ `d` キーはお好みのアプリを設定してください
-# obsidian = {key = "d", process = "Obsidian",       command = "obsidian"}          # ノート（Obsidian）
-# notion   = {key = "d", process = "Notion",          command = "notion"}            # ノート（Notion）
-# word     = {key = "d", process = "WINWORD",         command = "winword"}           # 文書（Word）
-# discord  = {key = "d", process = "Discord",         command = "discord"}           # チャット（Discord）
+# "ドキュメント" = {key = "d", process = "Obsidian",       command = "obsidian"}          # ノート（Obsidian）
+# "ドキュメント" = {key = "d", process = "Notion",         command = "notion"}            # ノート（Notion）
+# "ドキュメント" = {key = "d", process = "WINWORD",        command = "winword"}           # 文書（Word）
+# Discord       = {key = "d", process = "Discord",        command = "discord"}           # チャット（Discord）
 # ↓ `z` キーはお好みのアプリを設定してください
-# zoom     = {key = "z", process = "Zoom",             command = "zoom"}              # ビデオ会議（Zoom）
-# zed      = {key = "z", process = "Zed",              command = "zed"}               # エディタ（Zed）
-# zen      = {key = "z", process = "zen",              command = "zen"}               # ブラウザ（Zen Browser）
+# "ビデオ会議"   = {key = "z", process = "Zoom",            command = "zoom"}              # Zoom
+# "エディタ2"    = {key = "z", process = "Zed",             command = "zed"}               # Zed
+# "ブラウザ2"    = {key = "z", process = "zen",             command = "zen"}               # Zen Browser
 
 # ── タイムスタンプ ──
 # V: テキスト入力時は現在日時、エクスプローラー上ではファイル更新日時でリネーム

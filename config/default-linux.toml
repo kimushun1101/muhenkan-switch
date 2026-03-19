@@ -39,10 +39,10 @@ Home      = {key = "5", path = "~"}
 slack         = {key = "s", process = "Slack",          command = "slack"}
 "ターミナル"  = {key = "w", process = "gnome-terminal", command = "gnome-terminal"}
 # ↓ `d` キーはお好みのアプリを設定してください
-# obsidian    = {key = "d", process = "obsidian",      command = "obsidian"}                             # ノート（Obsidian）
-# notion      = {key = "d", process = "Notion",        command = "notion-app"}                           # ノート（Notion、要インストール）
-# libreoffice = {key = "d", process = "soffice",       command = "libreoffice --writer"}                 # 文書（LibreOffice Writer）
-# discord     = {key = "d", process = "Discord",       command = "discord"}                              # チャット（Discord）
+# "ドキュメント" = {key = "d", process = "obsidian",  command = "obsidian"}              # ノート（Obsidian）
+# "ドキュメント" = {key = "d", process = "Notion",    command = "notion-app"}            # ノート（Notion、要インストール）
+# "ドキュメント" = {key = "d", process = "soffice",   command = "libreoffice --writer"}  # 文書（LibreOffice Writer）
+# Discord       = {key = "d", process = "Discord",   command = "discord"}              # チャット（Discord）
 
 # ── タイムスタンプ ──
 # V: テキスト入力時は現在日時、エクスプローラー上ではファイル更新日時でリネーム
