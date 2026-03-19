@@ -14,6 +14,47 @@ const DISPATCH_KEYS = [
   "z", "b",
 ];
 
+// ── App presets (loaded from backend) ──
+let APP_PRESETS = {};
+
+// ── App select dropdown helper ──
+function createAppSelect(currentProcess = "", currentCommand = "") {
+  const select = document.createElement("select");
+  select.className = "app-select";
+
+  const noneOpt = document.createElement("option");
+  noneOpt.value = "";
+  noneOpt.textContent = "—";
+  select.appendChild(noneOpt);
+
+  let hasCurrentProcess = !currentProcess;
+
+  for (const [category, apps] of Object.entries(APP_PRESETS)) {
+    const group = document.createElement("optgroup");
+    group.label = category;
+    for (const app of apps) {
+      const opt = document.createElement("option");
+      opt.value = app.process;
+      opt.textContent = app.label;
+      opt.dataset.command = app.command;
+      group.appendChild(opt);
+      if (app.process === currentProcess) hasCurrentProcess = true;
+    }
+    select.appendChild(group);
+  }
+
+  if (currentProcess && !hasCurrentProcess) {
+    const opt = document.createElement("option");
+    opt.value = currentProcess;
+    opt.textContent = `${currentProcess}（カスタム）`;
+    opt.dataset.command = currentCommand || currentProcess.toLowerCase();
+    select.appendChild(opt);
+  }
+
+  select.value = currentProcess || "";
+  return select;
+}
+
 // ── Tab switching ──
 document.querySelectorAll(".tab").forEach((tab) => {
   tab.addEventListener("click", () => {
@@ -27,7 +68,10 @@ document.querySelectorAll(".tab").forEach((tab) => {
 // ── Load config on startup ──
 async function loadConfig() {
   try {
-    config = await invoke("get_config");
+    [config, APP_PRESETS] = await Promise.all([
+      invoke("get_config"),
+      invoke("get_app_presets"),
+    ]);
     renderConfig();
   } catch (e) {
     console.error("設定の読み込みに失敗:", e);
@@ -257,20 +301,41 @@ function addAppRow(container, name = "", process = "", command = "", dispatchKey
   const row = document.createElement("div");
   row.className = "list-row";
   row.innerHTML = `
-    <input type="text" class="key-input" placeholder="名前" value="${escapeHtml(name)}">
-    <input type="text" class="process-input" placeholder="プロセス名" value="${escapeHtml(process)}" readonly>
-    <input type="hidden" class="command-input" value="${escapeHtml(command)}">
-    <button class="btn-pick-process" title="プロセス選択">選択</button>
+    <input type="text" class="key-input" placeholder="機能名" value="${escapeHtml(name)}">
+    <button class="btn-pick-process" title="実行中のプロセスから選択">選択</button>
     <button class="btn-remove" title="削除">&times;</button>
   `;
   const keySelect = createDispatchKeySelect(dispatchKey);
   row.insertBefore(keySelect, row.firstChild);
+
+  const appSelect = createAppSelect(process, command);
+  const nameInput = row.querySelector(".key-input");
+  nameInput.insertAdjacentElement("afterend", appSelect);
+
+  appSelect.addEventListener("change", () => {
+    const selected = appSelect.options[appSelect.selectedIndex];
+    if (selected && selected.parentElement.tagName === "OPTGROUP") {
+      const category = selected.parentElement.label;
+      nameInput.value = `${category} (${selected.textContent})`;
+    }
+  });
+
   row.querySelector(".btn-remove").addEventListener("click", () => row.remove());
   row.querySelector(".btn-pick-process").addEventListener("click", async () => {
     const selected = await showProcessPicker();
     if (selected) {
-      row.querySelector(".process-input").value = selected;
-      row.querySelector(".command-input").value = selected.toLowerCase();
+      let found = false;
+      for (const opt of appSelect.options) {
+        if (opt.value === selected) { found = true; break; }
+      }
+      if (!found) {
+        const opt = document.createElement("option");
+        opt.value = selected;
+        opt.textContent = `${selected}（カスタム）`;
+        opt.dataset.command = selected.toLowerCase();
+        appSelect.appendChild(opt);
+      }
+      appSelect.value = selected;
     }
   });
   container.appendChild(row);
@@ -364,7 +429,7 @@ function validateDispatchKeys() {
     const key = select.value;
     if (!key) continue;
     if (usedKeys[key]) {
-      return `ディスパッチキー "${key.toUpperCase()}" が重複しています`;
+      return `割当キー "${key.toUpperCase()}" が重複しています`;
     }
     usedKeys[key] = true;
   }
@@ -409,13 +474,19 @@ function collectConfig() {
     }
   }
 
-  // Apps
+  // Apps — 機能名の重複を防ぐ（IndexMap のキー重複で上書きされるのを回避）
   for (const row of document.querySelectorAll("#apps-list .list-row")) {
-    const name = row.querySelector(".key-input").value.trim();
-    const process = row.querySelector(".process-input").value.trim();
-    const command = row.querySelector(".command-input").value.trim();
+    let name = row.querySelector(".key-input").value.trim();
+    const appSelect = row.querySelector(".app-select");
+    const process = appSelect.value;
+    const selectedOpt = appSelect.options[appSelect.selectedIndex];
+    const command = selectedOpt?.dataset?.command || "";
     const dispatchKey = row.querySelector(".dispatch-key-select").value;
-    if (name) {
+    if (name && process) {
+      if (collected.apps[name]) {
+        const appLabel = selectedOpt?.textContent || process;
+        name = `${name} (${appLabel})`;
+      }
       const entry = { process };
       if (dispatchKey) entry.key = dispatchKey;
       if (command) entry.command = command;

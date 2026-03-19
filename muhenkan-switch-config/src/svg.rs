@@ -16,7 +16,7 @@ struct KeyDef {
 
 #[derive(Clone, Copy, PartialEq)]
 enum KeyCategory {
-    /// 左手ディスパッチキー（config で色が決まる）
+    /// 左手割当キー（config で色が決まる）
     Dispatch,
     /// タイムスタンプキー（V, C, X）
     Timestamp,
@@ -149,7 +149,7 @@ fn key_definitions() -> Vec<KeyDef> {
     ]
 }
 
-/// config のディスパッチキーに対する割当カテゴリとエントリ名を返す。
+/// config の割当キーに対する割当カテゴリとエントリ名を返す。
 fn lookup_dispatch<'a>(config: &'a Config, key: &str) -> Option<(&'static str, &'a str)> {
     for (name, entry) in &config.folders {
         if entry.dispatch_key() == Some(key) {
@@ -254,17 +254,32 @@ pub fn generate(config: &Config) -> String {
 
         // 下段ラベル（機能名/エントリ名）
         if !bottom_label.is_empty() {
-            let bot_y = key.y + 38.0;
-            let escaped = xml_escape(&bottom_label);
-            // 長いラベルはフォントサイズを縮小
-            let fs = if bottom_label.len() > 6 {
-                FONT_SIZE_BOTTOM - 2.0
+            // " (" を含む長いラベルは2行に分割
+            if let Some(pos) = bottom_label.find(" (") {
+                let line1 = xml_escape(&bottom_label[..pos]);
+                let line2 = xml_escape(&bottom_label[pos + 1..]);
+                let y1 = key.y + 33.0;
+                let y2 = key.y + 44.0;
+                let fs = FONT_SIZE_BOTTOM - 2.0;
+                svg.push_str(&format!(
+                    r##"<text x="{cx}" y="{y1}" text-anchor="middle" font-size="{fs}" fill="#666">{line1}</text>"##,
+                ));
+                svg.push_str(&format!(
+                    r##"<text x="{cx}" y="{y2}" text-anchor="middle" font-size="{fs}" fill="#666">{line2}</text>"##,
+                ));
             } else {
-                FONT_SIZE_BOTTOM
-            };
-            svg.push_str(&format!(
-                r##"<text x="{cx}" y="{bot_y}" text-anchor="middle" font-size="{fs}" fill="#666">{escaped}</text>"##,
-            ));
+                let bot_y = key.y + 38.0;
+                let escaped = xml_escape(&bottom_label);
+                let char_count = bottom_label.chars().count();
+                let fs = if char_count > 6 {
+                    FONT_SIZE_BOTTOM - 2.0
+                } else {
+                    FONT_SIZE_BOTTOM
+                };
+                svg.push_str(&format!(
+                    r##"<text x="{cx}" y="{bot_y}" text-anchor="middle" font-size="{fs}" fill="#666">{escaped}</text>"##,
+                ));
+            }
         }
     }
 
@@ -290,7 +305,7 @@ mod tests {
         let config = default_config();
         let svg = generate(&config);
         assert!(svg.contains("Google"), "SVG should contain 'Google'");
-        assert!(svg.contains("英和辞典"), "SVG should contain '英和辞典'");
+        assert!(svg.contains("英語辞典"), "SVG should contain '英語辞典'");
     }
 
     #[test]

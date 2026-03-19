@@ -101,7 +101,7 @@ fn default_punctuation_style() -> String {
 }
 
 impl Config {
-    /// ディスパッチキーに対応するアクションを検索する。
+    /// 割当キーに対応するアクションを検索する。
     pub fn dispatch_lookup(&self, key: &str) -> Option<DispatchAction> {
         for (name, entry) in &self.search {
             if entry.dispatch_key() == Some(key) {
@@ -263,7 +263,7 @@ fn default_search_engines() -> IndexMap<String, SearchEntry> {
 
 /// config.toml にコメントを保持しつつ保存する。
 /// 既存ファイルがあればコメントを保持、なければ新規作成。
-/// エントリはディスパッチキー順でソートされる（キーなしは末尾、名前順）。
+/// エントリは割当キー順でソートされる（キーなしは末尾、名前順）。
 pub fn save(path: &std::path::Path, config: &Config) -> Result<()> {
     use toml_edit::{DocumentMut, InlineTable, Item, Table, Value};
 
@@ -419,7 +419,7 @@ pub fn validate(config: &Config) -> Vec<String> {
         }
     }
 
-    // ディスパッチキーの重複チェック
+    // 割当キーの重複チェック
     let mut used_keys: IndexMap<String, String> = IndexMap::new();
     for (name, entry) in &config.search {
         if let Some(k) = entry.dispatch_key() {
@@ -868,7 +868,7 @@ mod tests {
 
     #[test]
     fn test_save_sorts_by_dispatch_key() {
-        // 名前のアルファベット順とディスパッチキー順が異なるデータ
+        // 名前のアルファベット順と割当キー順が異なるデータ
         let toml_str = r#"
             [search]
             gamma = {key = "g", url = "https://gamma.com/?q={query}"}

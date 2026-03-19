@@ -47,8 +47,8 @@
 - `toml` + `serde` で設定ファイルを構造体にデシリアライズ
 - `toml_edit` を使用し、コメントを保持したまま保存
 - 検索URL、アプリ名、フォルダパス、タイムスタンプ形式を設定可能
-- 各エントリにディスパッチキー (`key`) を設定可能。保存時はキー順でソート（キーなしは末尾）
-- バリデーション: タイムスタンプ形式・位置、検索URL の `{query}` プレースホルダ、ディスパッチキーの重複チェック（セクション横断）
+- 各エントリに割当キー (`key`) を設定可能。保存時はキー順でソート（キーなしは末尾）
+- バリデーション: タイムスタンプ形式・位置、検索URL の `{query}` プレースホルダ、割当キーの重複チェック（セクション横断）
 
 ---
 
@@ -108,7 +108,7 @@ graph TB
 |---------|------|------|
 | `muhenkan-switch` | bin (Tauri) | **ユーザーが直接起動する唯一のアプリ**。config.toml の閲覧・編集 UI を提供し、kanata を子プロセスとして起動・停止・再起動する。システムトレイに常駐 |
 | `muhenkan-switch-core` | bin | kanata から `cmd` アクションで呼び出される**実行エンジン**。search, switch-app, open-folder, timestamp, screenshot, dispatch サブコマンドを提供。ユーザーが直接起動することはない |
-| `muhenkan-switch-config` | lib | 設定の型定義 (`Config`, `AppEntry` 等)、config.toml の読み書き (`load`/`save`)、バリデーション、ディスパッチキー解決。GUI と CLI の**両方から依存される共有ライブラリ** |
+| `muhenkan-switch-config` | lib | 設定の型定義 (`Config`, `AppEntry` 等)、config.toml の読み書き (`load`/`save`)、バリデーション、割当キー解決。GUI と CLI の**両方から依存される共有ライブラリ** |
 
 **3 つのクレートが独立している理由:**
 
@@ -123,7 +123,7 @@ graph TB
 muhenkan-switch-core <COMMAND> [OPTIONS]
 
 Commands:
-  dispatch     <KEY>              ディスパッチキーに対応するアクションを実行
+  dispatch     <KEY>              割当キーに対応するアクションを実行
   search       --engine <NAME>    選択テキスト（クリップボード）をWeb検索
   switch-app   --target <NAME>    指定アプリを最前面に
   open-folder  --target <NAME>    指定フォルダを開く
@@ -240,7 +240,7 @@ muhenkan-switch は**無変換キーを左手親指で押しながら**他のキ
 
 ### キーボード配置の詳細
 
-#### 左手: ディスパッチキー + 固定アクション
+#### 左手: 割当キー + 固定アクション
 
 ```
   [1][2][3][4][5]         ← フォルダ (dispatch)
