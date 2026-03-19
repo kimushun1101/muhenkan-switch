@@ -315,7 +315,8 @@ function addAppRow(container, name = "", process = "", command = "", dispatchKey
   appSelect.addEventListener("change", () => {
     const selected = appSelect.options[appSelect.selectedIndex];
     if (selected && selected.parentElement.tagName === "OPTGROUP") {
-      nameInput.value = selected.parentElement.label;
+      const category = selected.parentElement.label;
+      nameInput.value = `${category} (${selected.textContent})`;
     }
   });
 
@@ -473,15 +474,19 @@ function collectConfig() {
     }
   }
 
-  // Apps
+  // Apps — 機能名の重複を防ぐ（IndexMap のキー重複で上書きされるのを回避）
   for (const row of document.querySelectorAll("#apps-list .list-row")) {
-    const name = row.querySelector(".key-input").value.trim();
+    let name = row.querySelector(".key-input").value.trim();
     const appSelect = row.querySelector(".app-select");
     const process = appSelect.value;
     const selectedOpt = appSelect.options[appSelect.selectedIndex];
     const command = selectedOpt?.dataset?.command || "";
     const dispatchKey = row.querySelector(".dispatch-key-select").value;
     if (name && process) {
+      if (collected.apps[name]) {
+        const appLabel = selectedOpt?.textContent || process;
+        name = `${name} (${appLabel})`;
+      }
       const entry = { process };
       if (dispatchKey) entry.key = dispatchKey;
       if (command) entry.command = command;

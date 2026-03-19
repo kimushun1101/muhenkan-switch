@@ -290,7 +290,7 @@ mod tests {
         let config = default_config();
         let svg = generate(&config);
         assert!(svg.contains("Google"), "SVG should contain 'Google'");
-        assert!(svg.contains("英和辞典"), "SVG should contain '英和辞典'");
+        assert!(svg.contains("英和和英辞典"), "SVG should contain '英和和英辞典'");
     }
 
     #[test]
