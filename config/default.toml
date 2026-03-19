@@ -11,23 +11,23 @@ punctuation_style = "、。"
 # key: ディスパッチキー（無変換+key で発動）
 # url: {query} が選択テキスト（URLエンコード済み）に置換されます
 [search]
-google    = {key = "g", url = "https://www.google.com/search?q={query}"}
-ejje      = {key = "q", url = "https://ejje.weblio.jp/content/{query}"}
-thesaurus = {key = "r", url = "https://thesaurus.weblio.jp/content/{query}"}
-deepl     = {key = "w", url = "https://www.deepl.com/translator#auto/ja/{query}"}
-chatgpt   = {key = "b", url = "https://chatgpt.com/?q={query}&temporary-chat=true"}
+"英和辞典" = {key = "e", url = "https://ejje.weblio.jp/content/{query}"}
+Google     = {key = "g", url = "https://www.google.com/search?q={query}"}
+ChatGPT    = {key = "q", url = "https://chatgpt.com/?q={query}&temporary-chat=true"}
+"類語辞典" = {key = "r", url = "https://thesaurus.weblio.jp/content/{query}"}
+Translate  = {key = "t", url = "https://www.deepl.com/translator#auto/ja/{query}"}
 
 # ── フォルダ ──
 # key: ディスパッチキー（無変換+key で発動）
 # path: ~ はホームディレクトリに展開されます
 [folders]
-downloads = {key = "1", path = "~/Downloads"}
-desktop   = {key = "2", path = "~/Desktop"}
-documents = {key = "3", path = "~/Documents"}
+Downloads = {key = "1", path = "~/Downloads"}
+Desktop   = {key = "2", path = "~/Desktop"}
+Documents = {key = "3", path = "~/Documents"}
 # ↓ よく使うプロジェクトフォルダに変更してお使いください
-project   = {key = "4", path = "~/repos"}
+Project   = {key = "4", path = "~/repos"}
 # ↓ お好みのフォルダに変更してお使いください
-home      = {key = "5", path = "~"}
+Home      = {key = "5", path = "~"}
 
 # ── アプリ切り替え ──
 # OS 別設定ファイル（default-windows.toml 等）を config.toml としてコピーしてお使いください。
@@ -35,13 +35,14 @@ home      = {key = "5", path = "~"}
 # process: プロセス名。ウィンドウ検索に使用
 # command: 実行コマンド。アプリ未起動時の起動に使用（省略時は process 名で起動）
 [apps]
-browser  = {key = "f", process = "firefox",  command = "firefox"}
-editor   = {key = "a", process = "Code",     command = "code"}
-terminal = {key = "t", process = "terminal", command = "terminal"}
-# ↓ `d` キーはお好みのアプリを設定してください（Document 系がおすすめ）
+"エディタ"    = {key = "a", process = "Code",     command = "code"}
+"ブラウザ"    = {key = "f", process = "firefox",  command = "firefox"}
+"ターミナル"  = {key = "w", process = "terminal", command = "terminal"}
+# ↓ `d` キーはお好みのアプリを設定してください
 # obsidian = {key = "d", process = "obsidian", command = "obsidian"}   # ノート（Obsidian）
 # notion   = {key = "d", process = "Notion",   command = "notion"}     # ノート（Notion）
 # word     = {key = "d", process = "WINWORD",  command = "winword"}    # 文書（Word）
+# discord  = {key = "d", process = "Discord",  command = "discord"}    # チャット（Discord）
 
 # ── タイムスタンプ ──
 # V: テキスト入力時は現在日時、エクスプローラー上ではファイル更新日時でリネーム
