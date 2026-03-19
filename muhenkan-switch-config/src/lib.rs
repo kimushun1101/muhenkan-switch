@@ -521,7 +521,7 @@ mod tests {
         let config = default_config();
         assert_eq!(config.timestamp.format, "%Y%m%d");
         assert_eq!(config.timestamp.position, "before");
-        assert!(config.search.contains_key("google"));
+        assert!(config.search.contains_key("Google"));
         // OS 別デフォルトが正しくパースされ、全セクションが埋まっていること
         assert!(
             config.search.len() >= 5,

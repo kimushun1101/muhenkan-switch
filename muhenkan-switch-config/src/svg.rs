@@ -289,8 +289,8 @@ mod tests {
     fn test_svg_contains_entry_names() {
         let config = default_config();
         let svg = generate(&config);
-        assert!(svg.contains("google"), "SVG should contain 'google'");
-        assert!(svg.contains("ejje"), "SVG should contain 'ejje'");
+        assert!(svg.contains("Google"), "SVG should contain 'Google'");
+        assert!(svg.contains("英和辞典"), "SVG should contain '英和辞典'");
     }
 
     #[test]
