@@ -43,9 +43,9 @@ enum Commands {
         #[arg(long)]
         action: String,
     },
-    /// ディスパッチキーに対応するアクションを実行
+    /// 割当キーに対応するアクションを実行
     Dispatch {
-        /// ディスパッチキー (config.toml の key フィールドに対応)
+        /// 割当キー (config.toml の key フィールドに対応)
         key: String,
     },
     /// GUI 設定ウィンドウを前面に出す（未起動なら起動する）

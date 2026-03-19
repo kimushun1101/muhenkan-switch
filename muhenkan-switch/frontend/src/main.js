@@ -364,7 +364,7 @@ function validateDispatchKeys() {
     const key = select.value;
     if (!key) continue;
     if (usedKeys[key]) {
-      return `ディスパッチキー "${key.toUpperCase()}" が重複しています`;
+      return `割当キー "${key.toUpperCase()}" が重複しています`;
     }
     usedKeys[key] = true;
   }

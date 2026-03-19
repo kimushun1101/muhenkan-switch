@@ -16,7 +16,7 @@ struct KeyDef {
 
 #[derive(Clone, Copy, PartialEq)]
 enum KeyCategory {
-    /// 左手ディスパッチキー（config で色が決まる）
+    /// 左手割当キー（config で色が決まる）
     Dispatch,
     /// タイムスタンプキー（V, C, X）
     Timestamp,
@@ -149,7 +149,7 @@ fn key_definitions() -> Vec<KeyDef> {
     ]
 }
 
-/// config のディスパッチキーに対する割当カテゴリとエントリ名を返す。
+/// config の割当キーに対する割当カテゴリとエントリ名を返す。
 fn lookup_dispatch<'a>(config: &'a Config, key: &str) -> Option<(&'static str, &'a str)> {
     for (name, entry) in &config.folders {
         if entry.dispatch_key() == Some(key) {
