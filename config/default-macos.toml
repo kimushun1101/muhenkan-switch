@@ -35,8 +35,8 @@ Home      = {key = "5", path = "~"}
 # command: 実行コマンド。アプリ未起動時の起動に使用（省略時は process 名で起動）
 [apps]
 "エディタ"    = {key = "a", process = "Visual Studio Code", command = "code"}
-"ブラウザ"    = {key = "f", process = "Safari",             command = "open -a Safari"}
-slack         = {key = "s", process = "Slack",               command = "open -a Slack"}
+"ブラウザ (Firefox)" = {key = "f", process = "firefox",       command = "open -a Firefox"}
+"チャット (Slack)"  = {key = "s", process = "Slack",         command = "open -a Slack"}
 "ターミナル"  = {key = "w", process = "Terminal",            command = "open -a Terminal"}
 Document = {key = "d", process = "Microsoft OneNote",  command = "open -a 'Microsoft OneNote'"}
 # ↓ `d` キーはお好みのアプリに変更できます
