@@ -44,9 +44,15 @@ fn text_edit_label(key: &str, punctuation_style: &str) -> &'static str {
         "N" => "BS",
         "M" => "Del",
         ";" => "Esc",
-        // ,.: 句読点
-        "," => if punctuation_style == "，．" { "，" } else { "、" },
-        "." => if punctuation_style == "，．" { "．" } else { "。" },
+        // ,.: 句読点（4パターン対応）
+        "," => match punctuation_style {
+            "，．" | "，。" => "全角，",
+            _ => "、",
+        },
+        "." => match punctuation_style {
+            "，．" | "、．" => "全角．",
+            _ => "。",
+        },
         _ => "",
     }
 }
