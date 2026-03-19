@@ -182,6 +182,14 @@
         scale = 1; tx = 0; ty = 0; applySvgTransform();
       });
 
+      // Escape → ヘルプウィンドウを閉じる
+      document.addEventListener("keydown", e => {
+        if (e.key === "Escape") {
+          e.preventDefault();
+          window.__TAURI__.window.getCurrentWindow().close();
+        }
+      });
+
       // 初回読み込み
       loadSvg();
       // 設定保存時に自動更新
