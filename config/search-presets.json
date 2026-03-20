@@ -7,7 +7,7 @@
   "翻訳": [
     { "label": "Google 翻訳", "url": "https://translate.google.com/?sl=auto&tl=ja&text={query}&op=translate" },
     { "label": "Bing 翻訳", "url": "https://www.bing.com/translator/?from=en&to=ja&text={query}" },
-    { "label": "ChatGPT 翻訳", "url": "https://chatgpt.com/?q=次の文を翻訳してください。{query}&temporary-chat=true" }
+    { "label": "ChatGPT 翻訳", "url": "https://chatgpt.com/?q=次の文を翻訳してください。%0A{query}&temporary-chat=true" }
   ],
   "AI": [
     { "label": "ChatGPT", "url": "https://chatgpt.com/?q={query}&temporary-chat=true" },
