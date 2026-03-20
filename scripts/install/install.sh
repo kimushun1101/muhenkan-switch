@@ -62,6 +62,15 @@ icon_src="$SCRIPT_DIR/icon-128x128.png"
 if [ -f "$icon_src" ]; then
     mkdir -p "$ICON_DIR"
     cp "$icon_src" "$ICON_FILE"
+    # index.theme がなければシステムからコピー（キャッシュ更新に必要）
+    HICOLOR_DIR="$HOME/.local/share/icons/hicolor"
+    if [ ! -f "$HICOLOR_DIR/index.theme" ] && [ -f /usr/share/icons/hicolor/index.theme ]; then
+        cp /usr/share/icons/hicolor/index.theme "$HICOLOR_DIR/index.theme"
+    fi
+    # アイコンテーマキャッシュを更新
+    if command -v gtk-update-icon-cache &>/dev/null; then
+        gtk-update-icon-cache -f "$HICOLOR_DIR" 2>/dev/null || true
+    fi
     echo "[OK] アイコンをインストールしました"
 else
     echo "[SKIP] icon-128x128.png が見つかりません"
@@ -188,6 +197,7 @@ Categories=Utility;
 Keywords=keyboard;kanata;muhenkan;
 EOF
 
+chmod +x "$APP_DESKTOP_FILE"
 echo "[OK] アプリランチャーに登録しました"
 echo "     $APP_DESKTOP_FILE"
 
