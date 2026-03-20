@@ -15,7 +15,7 @@ punctuation_style = "、。"
 Google     = {key = "g", url = "https://www.google.com/search?q={query}"}
 Question   = {key = "q", url = "https://chatgpt.com/?q={query}&temporary-chat=true"}
 "類語辞典" = {key = "r", url = "https://thesaurus.weblio.jp/content/{query}"}
-Translate  = {key = "t", url = "https://www.deepl.com/translator#auto/ja/{query}"}
+"翻訳 (Google 翻訳)" = {key = "t", url = "https://translate.google.com/?sl=auto&tl=ja&text={query}&op=translate"}
 
 # ── フォルダ ──
 # key: 割当キー（無変換+key で発動）

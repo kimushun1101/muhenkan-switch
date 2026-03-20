@@ -281,7 +281,8 @@ button:disabled {
   font-size: 11px;
 }
 
-.list-row .app-select {
+.list-row .app-select,
+.list-row .search-select {
   flex: 1;
 }
 

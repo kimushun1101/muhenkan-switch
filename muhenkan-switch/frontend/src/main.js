@@ -14,8 +14,9 @@ const DISPATCH_KEYS = [
   "z", "b",
 ];
 
-// ── App presets (loaded from backend) ──
+// ── Presets (loaded from backend) ──
 let APP_PRESETS = {};
+let SEARCH_PRESETS = {};
 
 // ── App select dropdown helper ──
 function createAppSelect(currentProcess = "", currentCommand = "") {
@@ -55,6 +56,42 @@ function createAppSelect(currentProcess = "", currentCommand = "") {
   return select;
 }
 
+// ── Search select dropdown helper ──
+function createSearchSelect(currentUrl = "") {
+  const select = document.createElement("select");
+  select.className = "search-select";
+
+  const noneOpt = document.createElement("option");
+  noneOpt.value = "";
+  noneOpt.textContent = "—";
+  select.appendChild(noneOpt);
+
+  let hasCurrentUrl = !currentUrl;
+
+  for (const [category, services] of Object.entries(SEARCH_PRESETS)) {
+    const group = document.createElement("optgroup");
+    group.label = category;
+    for (const svc of services) {
+      const opt = document.createElement("option");
+      opt.value = svc.url;
+      opt.textContent = svc.label;
+      group.appendChild(opt);
+      if (svc.url === currentUrl) hasCurrentUrl = true;
+    }
+    select.appendChild(group);
+  }
+
+  if (currentUrl && !hasCurrentUrl) {
+    const opt = document.createElement("option");
+    opt.value = currentUrl;
+    opt.textContent = "カスタム URL";
+    select.appendChild(opt);
+  }
+
+  select.value = currentUrl || "";
+  return select;
+}
+
 // ── Tab switching ──
 document.querySelectorAll(".tab").forEach((tab) => {
   tab.addEventListener("click", () => {
@@ -68,9 +105,10 @@ document.querySelectorAll(".tab").forEach((tab) => {
 // ── Load config on startup ──
 async function loadConfig() {
   try {
-    [config, APP_PRESETS] = await Promise.all([
+    [config, APP_PRESETS, SEARCH_PRESETS] = await Promise.all([
       invoke("get_config"),
       invoke("get_app_presets"),
+      invoke("get_search_presets"),
     ]);
     renderConfig();
   } catch (e) {
@@ -235,13 +273,24 @@ function addSearchRow(container, name = "", url = "", dispatchKey = "") {
   const row = document.createElement("div");
   row.className = "list-row";
   row.innerHTML = `
-    <input type="text" class="key-input" placeholder="キー" value="${escapeHtml(name)}">
-    <input type="text" placeholder="URL テンプレート ({query})" value="${escapeHtml(url)}">
+    <input type="text" class="key-input" placeholder="機能名" value="${escapeHtml(name)}">
     <button class="btn-remove" title="削除">&times;</button>
   `;
-  // Insert dispatch key select before the first input
   const keySelect = createDispatchKeySelect(dispatchKey);
   row.insertBefore(keySelect, row.firstChild);
+
+  const searchSelect = createSearchSelect(url);
+  const nameInput = row.querySelector(".key-input");
+  nameInput.insertAdjacentElement("afterend", searchSelect);
+
+  searchSelect.addEventListener("change", () => {
+    const selected = searchSelect.options[searchSelect.selectedIndex];
+    if (selected && selected.parentElement.tagName === "OPTGROUP") {
+      const category = selected.parentElement.label;
+      nameInput.value = `${category} (${selected.textContent})`;
+    }
+  });
+
   row.querySelector(".btn-remove").addEventListener("click", () => row.remove());
   container.appendChild(row);
 }
@@ -453,9 +502,10 @@ function collectConfig() {
   // Search
   for (const row of document.querySelectorAll("#search-list .list-row")) {
     const name = row.querySelector(".key-input").value.trim();
-    const url = row.querySelectorAll("input[type='text']")[1].value.trim();
+    const searchSelect = row.querySelector(".search-select");
+    const url = searchSelect.value;
     const dispatchKey = row.querySelector(".dispatch-key-select").value;
-    if (name) {
+    if (name && url) {
       const entry = { url };
       if (dispatchKey) entry.key = dispatchKey;
       collected.search[name] = entry;

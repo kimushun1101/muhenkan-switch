@@ -1,0 +1,44 @@
+{
+  "英和・和英辞典": [
+    { "label": "Weblio 英和和英", "url": "https://ejje.weblio.jp/content/{query}" },
+    { "label": "英辞郎 on the WEB", "url": "https://eow.alc.co.jp/search?q={query}" },
+    { "label": "Cambridge (EN-JP)", "url": "https://dictionary.cambridge.org/dictionary/english-japanese/{query}" }
+  ],
+  "英英辞典": [
+    { "label": "Cambridge (EN)", "url": "https://dictionary.cambridge.org/dictionary/english/{query}" },
+    { "label": "Oxford (OALD)", "url": "https://www.oxfordlearnersdictionaries.com/definition/english/{query}" },
+    { "label": "Longman (LDOCE)", "url": "https://www.ldoceonline.com/dictionary/{query}" }
+  ],
+  "国語・類語辞典": [
+    { "label": "類語辞典 (Weblio)", "url": "https://thesaurus.weblio.jp/content/{query}" },
+    { "label": "国語辞典 (Weblio)", "url": "https://www.weblio.jp/content/{query}" }
+  ],
+  "検索エンジン": [
+    { "label": "Google", "url": "https://www.google.com/search?q={query}" },
+    { "label": "Bing", "url": "https://www.bing.com/search?q={query}" },
+    { "label": "DuckDuckGo", "url": "https://duckduckgo.com/?q={query}" }
+  ],
+  "翻訳": [
+    { "label": "Google 翻訳", "url": "https://translate.google.com/?sl=auto&tl=ja&text={query}&op=translate" },
+    { "label": "Bing 翻訳", "url": "https://www.bing.com/translator/?from=en&to=ja&text={query}" },
+    { "label": "ChatGPT 翻訳", "url": "https://chatgpt.com/?q=次の文を翻訳してください。{query}&temporary-chat=true" }
+  ],
+  "AI": [
+    { "label": "ChatGPT", "url": "https://chatgpt.com/?q={query}&temporary-chat=true" },
+    { "label": "Perplexity", "url": "https://www.perplexity.ai/?q={query}" }
+  ],
+  "動画・SNS": [
+    { "label": "YouTube", "url": "https://www.youtube.com/results?search_query={query}" },
+    { "label": "X (Twitter)", "url": "https://twitter.com/search?q={query}" }
+  ],
+  "ショッピング": [
+    { "label": "Amazon.co.jp", "url": "https://www.amazon.co.jp/s?k={query}" },
+    { "label": "楽天", "url": "https://search.rakuten.co.jp/search/mall/{query}" },
+    { "label": "ヨドバシ.com", "url": "https://www.yodobashi.com/?word={query}" }
+  ],
+  "その他": [
+    { "label": "GitHub", "url": "https://github.com/search?q={query}&type=repositories" },
+    { "label": "Google Scholar", "url": "https://scholar.google.com/scholar?q={query}" },
+    { "label": "Google マップ", "url": "https://www.google.com/maps/search/{query}" }
+  ]
+}
