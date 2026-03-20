@@ -108,7 +108,6 @@ mod imp {
     use anyhow::Context;
     use std::process::Command;
 
-    /// xdotool の存在を確認し、なければインストール案内付きエラーを返す
     fn run_xdotool(args: &[&str]) -> Result<()> {
         Command::new("xdotool")
             .args(args)
@@ -117,12 +116,29 @@ mod imp {
         Ok(())
     }
 
+    fn run_ydotool(args: &[&str]) -> Result<()> {
+        Command::new("ydotool")
+            .args(args)
+            .output()
+            .context("ydotool が見つかりません。以下のコマンドでインストールしてください:\n  sudo apt install ydotool")?;
+        Ok(())
+    }
+
     pub(super) fn simulate_copy() -> Result<()> {
-        run_xdotool(&["key", "ctrl+c"])
+        if super::super::is_wayland() {
+            // ydotool key: ctrl=29, c=46 (evdev keycodes)
+            run_ydotool(&["key", "29:1", "46:1", "46:0", "29:0"])
+        } else {
+            run_xdotool(&["key", "ctrl+c"])
+        }
     }
 
     pub(super) fn simulate_type(text: &str) -> Result<()> {
-        run_xdotool(&["type", "--clearmodifiers", text])
+        if super::super::is_wayland() {
+            run_ydotool(&["type", text])
+        } else {
+            run_xdotool(&["type", "--clearmodifiers", text])
+        }
     }
 }
 
