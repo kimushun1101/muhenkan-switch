@@ -133,23 +133,23 @@ mod imp {
     }
 
     pub(super) fn simulate_type(text: &str) -> Result<()> {
+        // IME が有効だと xdotool type / ydotool type が全角入力になるため、
+        // クリップボード経由で貼り付ける（X11/Wayland 共通）
+        let mut clipboard = arboard::Clipboard::new()?;
+        let saved = clipboard.get_text().ok();
+        clipboard.set_text(text)?;
+        std::thread::sleep(std::time::Duration::from_millis(50));
         if super::super::is_wayland() {
-            // IME が有効だと ydotool type が全角入力になるため、
-            // クリップボード経由で貼り付ける
-            let mut clipboard = arboard::Clipboard::new()?;
-            let saved = clipboard.get_text().ok();
-            clipboard.set_text(text)?;
-            std::thread::sleep(std::time::Duration::from_millis(50));
             run_ydotool(&["key", "ctrl+v"])?;
-            std::thread::sleep(std::time::Duration::from_millis(100));
-            // クリップボードを復元
-            if let Some(prev) = saved {
-                let _ = clipboard.set_text(prev);
-            }
-            Ok(())
         } else {
-            run_xdotool(&["type", "--clearmodifiers", text])
+            run_xdotool(&["key", "--clearmodifiers", "ctrl+v"])?;
         }
+        std::thread::sleep(std::time::Duration::from_millis(100));
+        // クリップボードを復元
+        if let Some(prev) = saved {
+            let _ = clipboard.set_text(prev);
+        }
+        Ok(())
     }
 }
 
