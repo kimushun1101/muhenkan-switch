@@ -56,42 +56,6 @@ function createAppSelect(currentProcess = "", currentCommand = "") {
   return select;
 }
 
-// ── Search select dropdown helper ──
-function createSearchSelect(currentUrl = "") {
-  const select = document.createElement("select");
-  select.className = "search-select";
-
-  const noneOpt = document.createElement("option");
-  noneOpt.value = "";
-  noneOpt.textContent = "—";
-  select.appendChild(noneOpt);
-
-  let hasCurrentUrl = !currentUrl;
-
-  for (const [category, services] of Object.entries(SEARCH_PRESETS)) {
-    const group = document.createElement("optgroup");
-    group.label = category;
-    for (const svc of services) {
-      const opt = document.createElement("option");
-      opt.value = svc.url;
-      opt.textContent = svc.label;
-      group.appendChild(opt);
-      if (svc.url === currentUrl) hasCurrentUrl = true;
-    }
-    select.appendChild(group);
-  }
-
-  if (currentUrl && !hasCurrentUrl) {
-    const opt = document.createElement("option");
-    opt.value = currentUrl;
-    opt.textContent = "カスタム URL";
-    select.appendChild(opt);
-  }
-
-  select.value = currentUrl || "";
-  return select;
-}
-
 // ── Tab switching ──
 document.querySelectorAll(".tab").forEach((tab) => {
   tab.addEventListener("click", () => {
@@ -274,20 +238,18 @@ function addSearchRow(container, name = "", url = "", dispatchKey = "") {
   row.className = "list-row";
   row.innerHTML = `
     <input type="text" class="key-input" placeholder="機能名" value="${escapeHtml(name)}">
+    <input type="text" class="url-input" placeholder="URL テンプレート ({query})" value="${escapeHtml(url)}">
+    <button class="btn-pick-search" title="プリセットから選択">選択</button>
     <button class="btn-remove" title="削除">&times;</button>
   `;
   const keySelect = createDispatchKeySelect(dispatchKey);
   row.insertBefore(keySelect, row.firstChild);
 
-  const searchSelect = createSearchSelect(url);
-  const nameInput = row.querySelector(".key-input");
-  nameInput.insertAdjacentElement("afterend", searchSelect);
-
-  searchSelect.addEventListener("change", () => {
-    const selected = searchSelect.options[searchSelect.selectedIndex];
-    if (selected && selected.parentElement.tagName === "OPTGROUP") {
-      const category = selected.parentElement.label;
-      nameInput.value = selected.textContent;
+  row.querySelector(".btn-pick-search").addEventListener("click", async () => {
+    const selected = await showSearchPicker();
+    if (selected) {
+      row.querySelector(".key-input").value = selected.label;
+      row.querySelector(".url-input").value = selected.url;
     }
   });
 
@@ -365,7 +327,7 @@ function addAppRow(container, name = "", process = "", command = "", dispatchKey
     const selected = appSelect.options[appSelect.selectedIndex];
     if (selected && selected.parentElement.tagName === "OPTGROUP") {
       const category = selected.parentElement.label;
-      nameInput.value = selected.textContent;
+      nameInput.value = `${category} (${selected.textContent})`;
     }
   });
 
@@ -471,6 +433,72 @@ async function showProcessPicker() {
   });
 }
 
+// ── Search preset picker modal ──
+function showSearchPicker() {
+  return new Promise((resolve) => {
+    const overlay = document.createElement("div");
+    overlay.className = "modal-overlay";
+    overlay.innerHTML = `
+      <div class="modal">
+        <div class="modal-header">検索サービスを選択</div>
+        <div class="modal-body">
+          <input type="text" class="modal-search" placeholder="フィルター...">
+          <ul class="modal-list"></ul>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-cancel">キャンセル</button>
+        </div>
+      </div>
+    `;
+
+    const list = overlay.querySelector(".modal-list");
+    const filterInput = overlay.querySelector(".modal-search");
+
+    function renderList(filter = "") {
+      list.innerHTML = "";
+      const lf = filter.toLowerCase();
+      for (const [category, services] of Object.entries(SEARCH_PRESETS)) {
+        const filtered = services.filter((s) =>
+          s.label.toLowerCase().includes(lf) || category.toLowerCase().includes(lf)
+        );
+        if (filtered.length === 0) continue;
+        const header = document.createElement("li");
+        header.className = "modal-list-header";
+        header.textContent = category;
+        list.appendChild(header);
+        for (const svc of filtered) {
+          const li = document.createElement("li");
+          li.textContent = svc.label;
+          li.addEventListener("click", () => close(svc));
+          list.appendChild(li);
+        }
+      }
+    }
+
+    filterInput.addEventListener("input", (e) => renderList(e.target.value));
+
+    function close(result) {
+      overlay.remove();
+      document.removeEventListener("keydown", onKeydown);
+      resolve(result);
+    }
+
+    overlay.querySelector(".btn-cancel").addEventListener("click", () => close(null));
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) close(null);
+    });
+
+    function onKeydown(e) {
+      if (e.key === "Escape") close(null);
+    }
+    document.addEventListener("keydown", onKeydown);
+
+    renderList();
+    document.body.appendChild(overlay);
+    filterInput.focus();
+  });
+}
+
 // ── Dispatch key duplicate validation ──
 function validateDispatchKeys() {
   const usedKeys = {};
@@ -502,8 +530,7 @@ function collectConfig() {
   // Search
   for (const row of document.querySelectorAll("#search-list .list-row")) {
     const name = row.querySelector(".key-input").value.trim();
-    const searchSelect = row.querySelector(".search-select");
-    const url = searchSelect.value;
+    const url = row.querySelector(".url-input").value.trim();
     const dispatchKey = row.querySelector(".dispatch-key-select").value;
     if (name && url) {
       const entry = { url };

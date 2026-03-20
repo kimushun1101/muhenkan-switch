@@ -276,14 +276,22 @@ button:disabled {
   font-size: 11px;
 }
 
-.list-row .btn-pick-process {
+.list-row .btn-pick-process,
+.list-row .btn-pick-search {
   padding: 4px 10px;
   font-size: 11px;
 }
 
-.list-row .app-select,
-.list-row .search-select {
+.list-row .app-select {
   flex: 1;
+}
+
+.modal-list-header {
+  font-weight: 600;
+  font-size: 11px;
+  color: var(--subtext);
+  padding: 8px 8px 4px;
+  pointer-events: none;
 }
 
 .list-row .dispatch-key-select {
