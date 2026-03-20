@@ -51,7 +51,8 @@
 curl -fsSL https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/main/scripts/install/get.sh | sh
 ```
 
-ターミナルから `muhenkan-switch` を実行してください。
+Linux ではアプリ一覧（Super キー）または Dock から `muhenkan-switch` を起動できます。
+macOS ではターミナルから `muhenkan-switch` を実行してください。
 
 無変換キーを押しながら H/J/K/L でカーソルが移動すれば成功です。
 

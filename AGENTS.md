@@ -71,6 +71,7 @@ Node.js やビルドステップは不要。
 - **PR 作成前にドキュメントの更新が必要か確認する。** 機能追加・変更時は以下を確認:
   - `README.md` — 機能一覧
   - `docs/design.md` — 設計・実装方針
+  - `docs/setup.md` — セットアップ手順・インストールパス
   - `config/default-*.toml` — 設定コメント
   - `muhenkan-switch/frontend/help.html` — ヘルプ画面
 

@@ -49,6 +49,8 @@ curl -fsSL https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/mai
 - kanata のダウンロード（GitHub Releases から）
 - ファイルの配置（下記インストール先）
 - PATH の設定（`~/.local/bin` にシンボリックリンク）
+- アプリランチャー（Dock）への登録（Linux: `~/.local/share/applications/` に `.desktop` ファイルを作成）
+- アイコンのインストール（Linux: `~/.local/share/icons/hicolor/128x128/apps/`）
 - オプション: 自動起動の設定（Linux: XDG autostart、macOS: launchd）
 
 ### インストール先
@@ -63,7 +65,8 @@ curl -fsSL https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/mai
 
 スタートメニューから `muhenkan-switch` を起動してください（Windows）。システムトレイに常駐し、kanata を自動管理します。
 
-Linux/macOS ではターミナルから `muhenkan-switch` を実行してください。
+Linux ではアプリ一覧（Super キー）から `muhenkan-switch` を起動できます。ターミナルから `muhenkan-switch` を実行しても起動できます。
+macOS ではターミナルから `muhenkan-switch` を実行してください。
 
 無変換キーを押しながら H/J/K/L でカーソルが移動すれば成功です。
 
