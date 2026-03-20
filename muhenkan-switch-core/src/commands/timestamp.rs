@@ -297,20 +297,30 @@ mod imp {
     use std::process::Command;
 
     /// Ctrl+C をシミュレートしてクリップボードに選択ファイルの URI をコピーし、
-    /// xclip で text/uri-list として読み取り、file:// URI をパースする。
+    /// text/uri-list として読み取り、file:// URI をパースする。
     pub(super) fn get_selected_paths(_hwnd: isize) -> Result<Vec<PathBuf>> {
         // Ctrl+C でファイルマネージャの選択をクリップボードにコピー
         super::super::keys::simulate_copy()?;
         std::thread::sleep(std::time::Duration::from_millis(100));
 
-        // xclip で text/uri-list を読み取り
-        let output = Command::new("xclip")
-            .args(["-selection", "clipboard", "-t", "text/uri-list", "-o"])
-            .output()
-            .context(
-                "xclip が見つかりません。以下のコマンドでインストールしてください:\n  \
-                 sudo apt install xclip",
-            )?;
+        // text/uri-list を読み取り（Wayland: wl-paste, X11: xclip）
+        let output = if super::super::is_wayland() {
+            Command::new("wl-paste")
+                .args(["--type", "text/uri-list"])
+                .output()
+                .context(
+                    "wl-paste が見つかりません。以下のコマンドでインストールしてください:\n  \
+                     sudo apt install wl-clipboard",
+                )?
+        } else {
+            Command::new("xclip")
+                .args(["-selection", "clipboard", "-t", "text/uri-list", "-o"])
+                .output()
+                .context(
+                    "xclip が見つかりません。以下のコマンドでインストールしてください:\n  \
+                     sudo apt install xclip",
+                )?
+        };
 
         if !output.status.success() {
             return Ok(vec![]);

@@ -108,7 +108,6 @@ mod imp {
     use anyhow::Context;
     use std::process::Command;
 
-    /// xdotool の存在を確認し、なければインストール案内付きエラーを返す
     fn run_xdotool(args: &[&str]) -> Result<()> {
         Command::new("xdotool")
             .args(args)
@@ -117,12 +116,40 @@ mod imp {
         Ok(())
     }
 
+    fn run_ydotool(args: &[&str]) -> Result<()> {
+        Command::new("ydotool")
+            .args(args)
+            .output()
+            .context("ydotool が見つかりません。以下のコマンドでインストールしてください:\n  sudo apt install ydotool")?;
+        Ok(())
+    }
+
     pub(super) fn simulate_copy() -> Result<()> {
-        run_xdotool(&["key", "ctrl+c"])
+        if super::super::is_wayland() {
+            run_ydotool(&["key", "ctrl+c"])
+        } else {
+            run_xdotool(&["key", "ctrl+c"])
+        }
     }
 
     pub(super) fn simulate_type(text: &str) -> Result<()> {
-        run_xdotool(&["type", "--clearmodifiers", text])
+        // IME が有効だと xdotool type / ydotool type が全角入力になるため、
+        // クリップボード経由で貼り付ける（X11/Wayland 共通）
+        let mut clipboard = arboard::Clipboard::new()?;
+        let saved = clipboard.get_text().ok();
+        clipboard.set_text(text)?;
+        std::thread::sleep(std::time::Duration::from_millis(50));
+        if super::super::is_wayland() {
+            run_ydotool(&["key", "ctrl+v"])?;
+        } else {
+            run_xdotool(&["key", "--clearmodifiers", "ctrl+v"])?;
+        }
+        std::thread::sleep(std::time::Duration::from_millis(100));
+        // クリップボードを復元
+        if let Some(prev) = saved {
+            let _ = clipboard.set_text(prev);
+        }
+        Ok(())
     }
 }
 

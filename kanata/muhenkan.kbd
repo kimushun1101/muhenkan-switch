@@ -10,6 +10,9 @@
 (defcfg
   process-unmapped-keys yes
   danger-enable-cmd yes
+  linux-dev-names-exclude (
+    "ydotool virtual device"
+  )
 )
 
 ;; ── ソースキー定義 ──

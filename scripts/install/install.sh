@@ -203,19 +203,34 @@ echo "     $APP_DESKTOP_FILE"
 
 # ── 外部ツールの確認 ──
 missing_tools=""
-for tool in xdotool wmctrl xclip xprop notify-send; do
-    if ! command -v "$tool" &>/dev/null; then
-        missing_tools="$missing_tools $tool"
+if [ "$XDG_SESSION_TYPE" = "wayland" ] || [ -n "$WAYLAND_DISPLAY" ]; then
+    for tool in ydotool wl-paste notify-send; do
+        if ! command -v "$tool" &>/dev/null; then
+            missing_tools="$missing_tools $tool"
+        fi
+    done
+    if [ -n "$missing_tools" ]; then
+        echo ""
+        echo "[WARNING] 以下の推奨ツールがインストールされていません:$missing_tools"
+        echo "          一部の機能（キー入力シミュレーション・タイムスタンプ操作・通知）が動作しません。"
+        echo ""
+        echo "  sudo apt install ydotool wl-clipboard libnotify-bin"
+        echo ""
     fi
-done
-
-if [ -n "$missing_tools" ]; then
-    echo ""
-    echo "[WARNING] 以下の推奨ツールがインストールされていません:$missing_tools"
-    echo "          一部の機能（アプリ切り替え・タイムスタンプ操作・通知）が動作しません。"
-    echo ""
-    echo "  sudo apt install xdotool wmctrl xclip x11-utils libnotify-bin"
-    echo ""
+else
+    for tool in xdotool wmctrl xclip xprop notify-send; do
+        if ! command -v "$tool" &>/dev/null; then
+            missing_tools="$missing_tools $tool"
+        fi
+    done
+    if [ -n "$missing_tools" ]; then
+        echo ""
+        echo "[WARNING] 以下の推奨ツールがインストールされていません:$missing_tools"
+        echo "          一部の機能（アプリ切り替え・タイムスタンプ操作・通知）が動作しません。"
+        echo ""
+        echo "  sudo apt install xdotool wmctrl xclip x11-utils libnotify-bin"
+        echo ""
+    fi
 fi
 
 # ── uinput グループ設定の案内 ──

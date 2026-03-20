@@ -260,12 +260,8 @@ mod imp {
         }
     }
 
-    /// Wayland セッション判定
-    pub(super) fn is_wayland() -> bool {
-        std::env::var("WAYLAND_DISPLAY").is_ok()
-            || std::env::var("XDG_SESSION_TYPE")
-                .map(|v| v == "wayland")
-                .unwrap_or(false)
+    fn is_wayland() -> bool {
+        super::super::is_wayland()
     }
 
     /// Wayland 環境でのウィンドウアクティブ化
@@ -432,7 +428,7 @@ mod tests {
     #[test]
     fn is_wayland_returns_bool() {
         // Wayland 判定がパニックしないことを確認（結果は環境依存）
-        let _ = imp::is_wayland();
+        let _ = super::super::is_wayland();
     }
 
     #[test]
