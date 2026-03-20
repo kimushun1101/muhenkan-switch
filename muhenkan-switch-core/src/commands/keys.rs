@@ -105,20 +105,24 @@ mod imp {
 #[cfg(target_os = "linux")]
 mod imp {
     use super::*;
+    use anyhow::Context;
     use std::process::Command;
 
-    pub(super) fn simulate_copy() -> Result<()> {
+    /// xdotool の存在を確認し、なければインストール案内付きエラーを返す
+    fn run_xdotool(args: &[&str]) -> Result<()> {
         Command::new("xdotool")
-            .args(["key", "ctrl+c"])
-            .output()?;
+            .args(args)
+            .output()
+            .context("xdotool が見つかりません。以下のコマンドでインストールしてください:\n  sudo apt install xdotool")?;
         Ok(())
     }
 
+    pub(super) fn simulate_copy() -> Result<()> {
+        run_xdotool(&["key", "ctrl+c"])
+    }
+
     pub(super) fn simulate_type(text: &str) -> Result<()> {
-        Command::new("xdotool")
-            .args(["type", "--clearmodifiers", text])
-            .output()?;
-        Ok(())
+        run_xdotool(&["type", "--clearmodifiers", text])
     }
 }
 
