@@ -15,7 +15,7 @@ punctuation_style = "、。"
 Google     = {key = "g", url = "https://www.google.com/search?q={query}"}
 Question   = {key = "q", url = "https://chatgpt.com/?q={query}&temporary-chat=true"}
 "類語辞典" = {key = "r", url = "https://thesaurus.weblio.jp/content/{query}"}
-"Translate (Google 翻訳)" = {key = "t", url = "https://translate.google.com/?sl=auto&tl=ja&text={query}&op=translate"}
+"Web翻訳 (Google 翻訳)" = {key = "w", url = "https://translate.google.com/?sl=auto&tl=ja&text={query}&op=translate"}
 
 # ── フォルダ ──
 # key: 割当キー（無変換+key で発動）
@@ -37,7 +37,7 @@ Home      = {key = "5", path = "~"}
 "エディタ" = {key = "a", process = "Code",            command = "code"}
 "ブラウザ (Firefox)" = {key = "f", process = "firefox",  command = "firefox"}
 "チャット (Slack)"  = {key = "s", process = "slack",    command = "slack"}
-WinTerm    = {key = "w", process = "WindowsTerminal", command = "wt"}
+"Terminal (WinTerm)" = {key = "t", process = "WindowsTerminal", command = "wt"}
 Document = {key = "d", process = "OneNote",          command = "onenote"}
 # ↓ `d` キーはお好みのアプリに変更できます
 # Document = {key = "d", process = "Obsidian",       command = "obsidian"}          # ノート（Obsidian）

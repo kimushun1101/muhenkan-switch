@@ -79,11 +79,11 @@ kanata の設定ガイドは [こちら](https://github.com/jtroo/kanata/wiki/Co
 | 5 | フォルダ | ゴミ箱 |
 | q | 検索 | 英辞郎 (Weblio) |
 | r | 検索 | 類語辞典 (Weblio) |
-| w | 検索 | Google 翻訳 |
+| w | 検索 | Web翻訳 (Google 翻訳) |
 | g | 検索 | Google |
 | b | 検索 | ChatGPT |
 | a | アプリ | エディタ (VS Code) |
-| t | アプリ | ターミナル |
+| t | アプリ | Terminal |
 | s | アプリ | Slack |
 | e | アプリ | ファイルマネージャ |
 | f | アプリ | ブラウザ |
