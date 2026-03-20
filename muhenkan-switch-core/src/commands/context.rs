@@ -70,11 +70,48 @@ mod imp {
 
 #[cfg(target_os = "linux")]
 mod imp {
-    /// Linux: ファイルマネージャの前面ウィンドウ検出は未実装。
-    /// Nautilus D-Bus API や xdotool getactivewindow + xprop で実装可能。
-    /// See: https://github.com/kimushun1101/muhenkan-switch-rs/issues/19
+    use std::process::Command;
+
+    /// 既知のファイルマネージャの WM_CLASS 一覧（小文字）
+    const FILE_MANAGERS: &[&str] = &[
+        "nautilus",
+        "org.gnome.nautilus",
+        "thunar",
+        "nemo",
+        "pcmanfm",
+        "pcmanfm-qt",
+        "caja",
+        "dolphin",
+    ];
+
+    /// xdotool + xprop で前面ウィンドウがファイルマネージャか判定する。
+    /// ファイルマネージャならウィンドウ ID を返す（hwnd として使用）。
     pub(super) fn get_foreground_explorer_hwnd() -> Option<isize> {
-        None
+        let wid_output = Command::new("xdotool")
+            .arg("getactivewindow")
+            .output()
+            .ok()?;
+        if !wid_output.status.success() {
+            return None;
+        }
+        let wid = String::from_utf8_lossy(&wid_output.stdout)
+            .trim()
+            .to_string();
+        if wid.is_empty() {
+            return None;
+        }
+
+        let xprop_output = Command::new("xprop")
+            .args(["-id", &wid, "WM_CLASS"])
+            .output()
+            .ok()?;
+        let wm_class = String::from_utf8_lossy(&xprop_output.stdout).to_ascii_lowercase();
+
+        if FILE_MANAGERS.iter().any(|fm| wm_class.contains(fm)) {
+            wid.parse::<isize>().ok()
+        } else {
+            None
+        }
     }
 }
 
