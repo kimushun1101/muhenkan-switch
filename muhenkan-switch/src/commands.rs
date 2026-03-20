@@ -126,6 +126,15 @@ pub fn get_app_presets() -> Result<serde_json::Value, String> {
     Ok(all.get(os_key).cloned().unwrap_or(serde_json::Value::Object(Default::default())))
 }
 
+// ── Search presets ──
+
+/// コンパイル時に埋め込んだ search-presets.json を返す（OS 非依存）。
+#[tauri::command]
+pub fn get_search_presets() -> Result<serde_json::Value, String> {
+    const PRESETS_JSON: &str = include_str!("../../config/search-presets.json");
+    serde_json::from_str(PRESETS_JSON).map_err(|e| e.to_string())
+}
+
 // ── Kanata commands ──
 
 #[derive(Serialize, Clone)]

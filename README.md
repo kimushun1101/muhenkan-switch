@@ -24,7 +24,7 @@
 - **削除**: N → BackSpace、M → Delete
 - **ESC**: ; → Escape
 - **アプリ切り替え**: A/T/S/E/F → 指定アプリを最前面に（デフォルト設定）
-- **Web検索**: Q/R/W/G/B → 選択テキストで辞書・DeepL翻訳・AI検索
+- **Web検索**: Q/R/W/G/B → 選択テキストで辞書・Google翻訳・AI検索
 - **フォルダオープン**: 1/2/3/4/5 → Downloads/Desktop/Documents 等
 - **タイムスタンプ**: V/C/X → エクスプローラー上ではファイル更新日時でリネーム・複製・除去、テキスト入力時は V でタイムスタンプ入力
 - **プレーンテキストコピー**: C → テキスト入力時に選択テキストをプレーンテキストとしてコピー
@@ -79,11 +79,11 @@ kanata の設定ガイドは [こちら](https://github.com/jtroo/kanata/wiki/Co
 | 5 | フォルダ | ゴミ箱 |
 | q | 検索 | 英辞郎 (Weblio) |
 | r | 検索 | 類語辞典 (Weblio) |
-| w | 検索 | DeepL 翻訳 |
+| w | 検索 | Web翻訳 (Google 翻訳) |
 | g | 検索 | Google |
 | b | 検索 | ChatGPT |
 | a | アプリ | エディタ (VS Code) |
-| t | アプリ | ターミナル |
+| t | アプリ | Terminal |
 | s | アプリ | Slack |
 | e | アプリ | ファイルマネージャ |
 | f | アプリ | ブラウザ |

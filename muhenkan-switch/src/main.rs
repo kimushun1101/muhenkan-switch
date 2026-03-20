@@ -48,6 +48,7 @@ fn main() {
             commands::start_kanata,
             commands::stop_kanata,
             commands::get_app_presets,
+            commands::get_search_presets,
             commands::get_running_processes,
             commands::get_autostart_enabled,
             commands::set_autostart_enabled,
