@@ -1,18 +1,4 @@
 {
-  "英和・和英辞典": [
-    { "label": "Weblio 英和和英", "url": "https://ejje.weblio.jp/content/{query}" },
-    { "label": "英辞郎 on the WEB", "url": "https://eow.alc.co.jp/search?q={query}" },
-    { "label": "Cambridge (EN-JP)", "url": "https://dictionary.cambridge.org/dictionary/english-japanese/{query}" }
-  ],
-  "英英辞典": [
-    { "label": "Cambridge (EN)", "url": "https://dictionary.cambridge.org/dictionary/english/{query}" },
-    { "label": "Oxford (OALD)", "url": "https://www.oxfordlearnersdictionaries.com/definition/english/{query}" },
-    { "label": "Longman (LDOCE)", "url": "https://www.ldoceonline.com/dictionary/{query}" }
-  ],
-  "国語・類語辞典": [
-    { "label": "類語辞典 (Weblio)", "url": "https://thesaurus.weblio.jp/content/{query}" },
-    { "label": "国語辞典 (Weblio)", "url": "https://www.weblio.jp/content/{query}" }
-  ],
   "検索エンジン": [
     { "label": "Google", "url": "https://www.google.com/search?q={query}" },
     { "label": "Bing", "url": "https://www.bing.com/search?q={query}" },
@@ -26,6 +12,20 @@
   "AI": [
     { "label": "ChatGPT", "url": "https://chatgpt.com/?q={query}&temporary-chat=true" },
     { "label": "Perplexity", "url": "https://www.perplexity.ai/?q={query}" }
+  ],
+  "英和・和英辞典": [
+    { "label": "Weblio 英和和英", "url": "https://ejje.weblio.jp/content/{query}" },
+    { "label": "英辞郎 on the WEB", "url": "https://eow.alc.co.jp/search?q={query}" },
+    { "label": "Cambridge (EN-JP)", "url": "https://dictionary.cambridge.org/dictionary/english-japanese/{query}" }
+  ],
+  "国語・類語辞典": [
+    { "label": "類語辞典 (Weblio)", "url": "https://thesaurus.weblio.jp/content/{query}" },
+    { "label": "国語辞典 (Weblio)", "url": "https://www.weblio.jp/content/{query}" }
+  ],
+  "英英辞典": [
+    { "label": "Cambridge (EN)", "url": "https://dictionary.cambridge.org/dictionary/english/{query}" },
+    { "label": "Oxford (OALD)", "url": "https://www.oxfordlearnersdictionaries.com/definition/english/{query}" },
+    { "label": "Longman (LDOCE)", "url": "https://www.ldoceonline.com/dictionary/{query}" }
   ],
   "動画・SNS": [
     { "label": "YouTube", "url": "https://www.youtube.com/results?search_query={query}" },

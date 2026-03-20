@@ -287,7 +287,7 @@ function addSearchRow(container, name = "", url = "", dispatchKey = "") {
     const selected = searchSelect.options[searchSelect.selectedIndex];
     if (selected && selected.parentElement.tagName === "OPTGROUP") {
       const category = selected.parentElement.label;
-      nameInput.value = `${category} (${selected.textContent})`;
+      nameInput.value = selected.textContent;
     }
   });
 
@@ -365,7 +365,7 @@ function addAppRow(container, name = "", process = "", command = "", dispatchKey
     const selected = appSelect.options[appSelect.selectedIndex];
     if (selected && selected.parentElement.tagName === "OPTGROUP") {
       const category = selected.parentElement.label;
-      nameInput.value = `${category} (${selected.textContent})`;
+      nameInput.value = selected.textContent;
     }
   });
 
