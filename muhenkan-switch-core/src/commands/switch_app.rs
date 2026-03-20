@@ -24,6 +24,16 @@ fn notify_process_not_found(app: &str) {
     toast.finish(&msg);
 }
 
+/// wmctrl / xdotool の両方が未インストールの場合に警告を出す。
+#[cfg(target_os = "linux")]
+fn warn_no_window_tools() {
+    eprintln!(
+        "Warning: wmctrl / xdotool がインストールされていません。\n\
+         アプリ切り替え機能を使うには以下のコマンドでインストールしてください:\n  \
+         sudo apt install wmctrl xdotool"
+    );
+}
+
 // ── Platform: Windows ──
 
 #[cfg(target_os = "windows")]
@@ -270,6 +280,9 @@ mod imp {
             || try_xdotool(app, "--name");
 
         if !activated {
+            if !has_command("wmctrl") && !has_command("xdotool") {
+                warn_no_window_tools();
+            }
             if let Some(cmd) = launch {
                 if let Err(e) = Command::new("sh").args(["-c", cmd]).spawn() {
                     eprintln!("Warning: failed to launch '{}': {}", cmd, e);
@@ -292,6 +305,9 @@ mod imp {
             || try_xdotool(app, "--name");
 
         if !activated {
+            if !has_command("wmctrl") && !has_command("xdotool") {
+                warn_no_window_tools();
+            }
             if let Some(cmd) = launch {
                 if let Err(e) = Command::new("sh").args(["-c", cmd]).spawn() {
                     eprintln!("Warning: failed to launch '{}': {}", cmd, e);
@@ -302,6 +318,15 @@ mod imp {
         }
 
         Ok(())
+    }
+
+    /// コマンドが PATH 上に存在するか確認する
+    fn has_command(cmd: &str) -> bool {
+        Command::new("which")
+            .arg(cmd)
+            .output()
+            .map(|o| o.status.success())
+            .unwrap_or(false)
     }
 
     pub(super) fn try_wmctrl(app: &str) -> bool {
