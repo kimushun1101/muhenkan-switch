@@ -126,8 +126,7 @@ mod imp {
 
     pub(super) fn simulate_copy() -> Result<()> {
         if super::super::is_wayland() {
-            // ydotool key: ctrl=29, c=46 (evdev keycodes)
-            run_ydotool(&["key", "29:1", "46:1", "46:0", "29:0"])
+            run_ydotool(&["key", "ctrl+c"])
         } else {
             run_xdotool(&["key", "ctrl+c"])
         }
