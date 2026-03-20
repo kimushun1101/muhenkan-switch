@@ -55,6 +55,18 @@ copy_file "muhenkan.kbd" "muhenkan.kbd"
 copy_file "update.sh" "update.sh"
 copy_file "uninstall.sh" "uninstall.sh"
 
+# ── アイコンをインストール ──
+ICON_DIR="$HOME/.local/share/icons/hicolor/128x128/apps"
+ICON_FILE="$ICON_DIR/muhenkan-switch.png"
+icon_src="$SCRIPT_DIR/icon-128x128.png"
+if [ -f "$icon_src" ]; then
+    mkdir -p "$ICON_DIR"
+    cp "$icon_src" "$ICON_FILE"
+    echo "[OK] アイコンをインストールしました"
+else
+    echo "[SKIP] icon-128x128.png が見つかりません"
+fi
+
 # 実行権限を付与
 chmod +x "$INSTALL_DIR/muhenkan-switch" 2>/dev/null || true
 chmod +x "$INSTALL_DIR/muhenkan-switch-core" 2>/dev/null || true
@@ -156,6 +168,28 @@ EOF
     echo "[OK] 自動起動を設定しました"
     echo "     $autostart_dir/muhenkan-switch.desktop"
 fi
+
+# ── アプリランチャー登録 ──
+APP_DESKTOP_DIR="$HOME/.local/share/applications"
+APP_DESKTOP_FILE="$APP_DESKTOP_DIR/muhenkan-switch.desktop"
+mkdir -p "$APP_DESKTOP_DIR"
+
+# Icon= はアイコンがインストールされていればテーマから解決される
+cat > "$APP_DESKTOP_FILE" << EOF
+[Desktop Entry]
+Type=Application
+Name=muhenkan-switch
+GenericName=キーボードカスタマイズ
+Comment=無変換キーを活用するキーボードカスタマイズツール (kanata を自動管理)
+Exec=$INSTALL_DIR/muhenkan-switch
+Icon=muhenkan-switch
+Terminal=false
+Categories=Utility;
+Keywords=keyboard;kanata;muhenkan;
+EOF
+
+echo "[OK] アプリランチャーに登録しました"
+echo "     $APP_DESKTOP_FILE"
 
 # ── uinput グループ設定の案内 ──
 echo ""
