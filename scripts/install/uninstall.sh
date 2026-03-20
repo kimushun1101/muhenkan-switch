@@ -7,6 +7,8 @@ INSTALL_DIR="$HOME/.local/share/muhenkan-switch-rs"
 BIN_DIR="$HOME/.local/bin"
 SERVICE_FILE="$HOME/.config/systemd/user/kanata.service"
 AUTOSTART_FILE="$HOME/.config/autostart/muhenkan-switch.desktop"
+APP_DESKTOP_FILE="$HOME/.local/share/applications/muhenkan-switch.desktop"
+ICON_FILE="$HOME/.local/share/icons/hicolor/128x128/apps/muhenkan-switch.png"
 
 echo ""
 echo "=== muhenkan-switch-rs アンインストーラー (Linux) ==="
@@ -26,6 +28,12 @@ if [ -f "$SERVICE_FILE" ]; then
 fi
 if [ -f "$AUTOSTART_FILE" ]; then
     echo "  - 自動起動: $AUTOSTART_FILE"
+fi
+if [ -f "$APP_DESKTOP_FILE" ]; then
+    echo "  - アプリランチャー: $APP_DESKTOP_FILE"
+fi
+if [ -f "$ICON_FILE" ]; then
+    echo "  - アイコン: $ICON_FILE"
 fi
 echo ""
 
@@ -54,6 +62,22 @@ if [ -f "$AUTOSTART_FILE" ]; then
     echo "[OK] 自動起動設定を削除しました"
 else
     echo "[SKIP] 自動起動設定は存在しません"
+fi
+
+# ── アプリランチャー .desktop ファイル削除 ──
+if [ -f "$APP_DESKTOP_FILE" ]; then
+    rm -f "$APP_DESKTOP_FILE"
+    echo "[OK] アプリランチャー登録を削除しました"
+else
+    echo "[SKIP] アプリランチャー登録は存在しません"
+fi
+
+# ── アイコン削除 ──
+if [ -f "$ICON_FILE" ]; then
+    rm -f "$ICON_FILE"
+    echo "[OK] アイコンを削除しました"
+else
+    echo "[SKIP] アイコンは存在しません"
 fi
 
 # ── シンボリックリンク削除（安全チェック付き）──

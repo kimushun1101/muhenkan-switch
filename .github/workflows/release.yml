@@ -89,6 +89,7 @@ jobs:
               cp scripts/install/install.sh "$RELEASE_DIR/"
               cp scripts/install/uninstall.sh "$RELEASE_DIR/"
               cp scripts/install/update.sh "$RELEASE_DIR/"
+              cp muhenkan-switch/icons/128x128.png "$RELEASE_DIR/icon-128x128.png"
               chmod +x "$RELEASE_DIR/install.sh" "$RELEASE_DIR/uninstall.sh" "$RELEASE_DIR/update.sh"
               ;;
             macos-x64|macos-arm64)
