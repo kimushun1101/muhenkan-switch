@@ -15,20 +15,20 @@ if command -v apt-get >/dev/null 2>&1; then
     libjavascriptcoregtk-4.1-dev build-essential libssl-dev \
     libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev \
     pkexec \
-    wmctrl xdotool libnotify-bin
+    wmctrl xdotool xclip x11-utils libnotify-bin
 elif command -v dnf >/dev/null 2>&1; then
   sudo dnf install -y webkit2gtk4.1-devel libsoup3-devel \
     openssl-devel gtk3-devel libappindicator-gtk3-devel librsvg2-devel \
-    wmctrl xdotool libnotify
+    wmctrl xdotool xclip xorg-x11-utils libnotify
 elif command -v pacman >/dev/null 2>&1; then
   sudo pacman -S --needed webkit2gtk-4.1 libsoup3 \
     openssl gtk3 libayatana-appindicator librsvg \
-    wmctrl xdotool libnotify
+    wmctrl xdotool xclip xorg-xprop libnotify
 else
   echo "ERROR: Unsupported package manager. Please install manually:"
   echo "  libwebkit2gtk-4.1-dev, libsoup-3.0-dev, libgtk-3-dev,"
   echo "  libjavascriptcoregtk-4.1-dev, libssl-dev, librsvg2-dev,"
-  echo "  wmctrl, xdotool, libnotify-bin"
+  echo "  wmctrl, xdotool, xclip, x11-utils, libnotify-bin"
   exit 1
 fi
 

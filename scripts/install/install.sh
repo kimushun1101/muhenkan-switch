@@ -201,6 +201,23 @@ chmod +x "$APP_DESKTOP_FILE"
 echo "[OK] アプリランチャーに登録しました"
 echo "     $APP_DESKTOP_FILE"
 
+# ── 外部ツールの確認 ──
+missing_tools=""
+for tool in xdotool wmctrl xclip xprop notify-send; do
+    if ! command -v "$tool" &>/dev/null; then
+        missing_tools="$missing_tools $tool"
+    fi
+done
+
+if [ -n "$missing_tools" ]; then
+    echo ""
+    echo "[WARNING] 以下の推奨ツールがインストールされていません:$missing_tools"
+    echo "          一部の機能（アプリ切り替え・タイムスタンプ操作・通知）が動作しません。"
+    echo ""
+    echo "  sudo apt install xdotool wmctrl xclip x11-utils libnotify-bin"
+    echo ""
+fi
+
 # ── uinput グループ設定の案内 ──
 echo ""
 echo "── uinput グループ設定 ──"
