@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# muhenkan-switch-rs インストールスクリプト (macOS)
+# muhenkan-switch インストールスクリプト (macOS)
 #
 # muhenkan-switch, config.toml, muhenkan-macos.kbd をインストールし、
 # kanata を GitHub からダウンロードします。
@@ -23,11 +23,11 @@ fi
 
 # ── 設定 ──
 KANATA_VERSION="v1.11.0"
-INSTALL_DIR="$HOME/Library/Application Support/muhenkan-switch-rs"
+INSTALL_DIR="$HOME/Library/Application Support/muhenkan-switch"
 BIN_DIR="$HOME/.local/bin"
 PLIST_DIR="$HOME/Library/LaunchAgents"
-PLIST_NAME="com.muhenkan-switch-rs.kanata.plist"
-LOG_DIR="$HOME/Library/Logs/muhenkan-switch-rs"
+PLIST_NAME="com.muhenkan-switch.kanata.plist"
+LOG_DIR="$HOME/Library/Logs/muhenkan-switch"
 
 # アーキテクチャ判定
 ARCH=$(uname -m)
@@ -49,7 +49,7 @@ esac
 # スクリプトのあるディレクトリ
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-echo "=== muhenkan-switch-rs インストーラー (macOS) ==="
+echo "=== muhenkan-switch インストーラー (macOS) ==="
 echo ""
 echo "アーキテクチャ: $ARCH"
 echo "インストール先: $INSTALL_DIR"
@@ -166,7 +166,7 @@ if [ "$install_agent" = "y" ] || [ "$install_agent" = "Y" ]; then
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.muhenkan-switch-rs.kanata</string>
+    <string>com.muhenkan-switch.kanata</string>
     <key>ProgramArguments</key>
     <array>
         <string>$INSTALL_DIR/muhenkan-switch</string>

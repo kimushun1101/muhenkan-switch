@@ -65,13 +65,13 @@ mise run test       # ユニットテスト
 
 ```powershell
 # 除外に追加
-Add-MpPreference -ExclusionPath "C:\Users\<ユーザー名>\repos\muhenkan-switch-rs"
+Add-MpPreference -ExclusionPath "C:\Users\<ユーザー名>\repos\muhenkan-switch"
 
 # 確認
 Get-MpPreference | Select-Object -ExpandProperty ExclusionPath
 
 # 除外を解除（開発終了後）
-Remove-MpPreference -ExclusionPath "C:\Users\<ユーザー名>\repos\muhenkan-switch-rs"
+Remove-MpPreference -ExclusionPath "C:\Users\<ユーザー名>\repos\muhenkan-switch"
 ```
 
 ## Updater 署名鍵セットアップ
@@ -106,7 +106,7 @@ npx @tauri-apps/cli@2 signer generate -w ~/.tauri/muhenkan-switch.key
     "updater": {
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6...(公開鍵の内容)",
       "endpoints": [
-        "https://github.com/kimushun1101/muhenkan-switch-rs/releases/latest/download/latest.json"
+        "https://github.com/kimushun1101/muhenkan-switch/releases/latest/download/latest.json"
       ]
     }
   }

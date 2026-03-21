@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# muhenkan-switch-rs インストールスクリプト (Linux)
+# muhenkan-switch インストールスクリプト (Linux)
 #
 # muhenkan-switch, config.toml, muhenkan.kbd をインストールし、
 # kanata を GitHub からダウンロードします。
@@ -11,14 +11,14 @@ set -euo pipefail
 KANATA_VERSION="v1.11.0"
 KANATA_ASSET="linux-binaries-x64.zip"
 KANATA_BINARY="kanata_linux_cmd_allowed_x64"
-INSTALL_DIR="$HOME/.local/share/muhenkan-switch-rs"
+INSTALL_DIR="$HOME/.local/share/muhenkan-switch"
 BIN_DIR="$HOME/.local/bin"
 
 # スクリプトのあるディレクトリ（展開した zip のルート）
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 echo ""
-echo "=== muhenkan-switch-rs インストーラー (Linux) ==="
+echo "=== muhenkan-switch インストーラー (Linux) ==="
 echo ""
 echo "インストール先: $INSTALL_DIR"
 echo "シンボリックリンク: $BIN_DIR"

@@ -1,21 +1,21 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# muhenkan-switch-rs アップデートスクリプト (macOS)
+# muhenkan-switch アップデートスクリプト (macOS)
 #
 # GitHub Releases から最新版をダウンロードし、install-macos.sh を実行して更新します。
 
 # ── 設定 ──
-REPO="kimushun1101/muhenkan-switch-rs"
+REPO="kimushun1101/muhenkan-switch"
 
 # アーキテクチャ判定
 ARCH=$(uname -m)
 case "$ARCH" in
     arm64)
-        ASSET_NAME="muhenkan-switch-rs-macos-arm64.tar.gz"
+        ASSET_NAME="muhenkan-switch-macos-arm64.tar.gz"
         ;;
     x86_64)
-        ASSET_NAME="muhenkan-switch-rs-macos-x64.tar.gz"
+        ASSET_NAME="muhenkan-switch-macos-x64.tar.gz"
         ;;
     *)
         echo "[ERROR] 未対応のアーキテクチャです: $ARCH"
@@ -24,7 +24,7 @@ case "$ARCH" in
 esac
 
 echo ""
-echo "=== muhenkan-switch-rs アップデーター (macOS) ==="
+echo "=== muhenkan-switch アップデーター (macOS) ==="
 echo ""
 echo "アーキテクチャ: $ARCH"
 

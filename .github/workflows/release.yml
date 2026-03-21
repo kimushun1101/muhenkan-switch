@@ -62,7 +62,7 @@ jobs:
       - name: Package release
         shell: bash
         run: |
-          RELEASE_DIR="muhenkan-switch-rs-${{ matrix.asset_suffix }}"
+          RELEASE_DIR="muhenkan-switch-${{ matrix.asset_suffix }}"
           mkdir -p "$RELEASE_DIR"
 
           # muhenkan-switch-core バイナリ
@@ -103,13 +103,13 @@ jobs:
       - name: Create archive (Unix)
         if: runner.os != 'Windows'
         run: |
-          tar czf "muhenkan-switch-rs-${{ matrix.asset_suffix }}.tar.gz" \
-            "muhenkan-switch-rs-${{ matrix.asset_suffix }}/"
+          tar czf "muhenkan-switch-${{ matrix.asset_suffix }}.tar.gz" \
+            "muhenkan-switch-${{ matrix.asset_suffix }}/"
 
       - uses: actions/upload-artifact@v7
         with:
           name: release-${{ matrix.asset_suffix }}
-          path: muhenkan-switch-rs-${{ matrix.asset_suffix }}.*
+          path: muhenkan-switch-${{ matrix.asset_suffix }}.*
 
   build-windows-nsis:
     runs-on: windows-latest
@@ -183,7 +183,7 @@ jobs:
           SETUP_SIG="${SETUP_EXE}.sig"
           ARTIFACT_NAME=$(basename "$SETUP_EXE")
           SIGNATURE=$(cat "$SETUP_SIG")
-          DOWNLOAD_URL="https://github.com/kimushun1101/muhenkan-switch-rs/releases/download/v${VERSION}/${ARTIFACT_NAME}"
+          DOWNLOAD_URL="https://github.com/kimushun1101/muhenkan-switch/releases/download/v${VERSION}/${ARTIFACT_NAME}"
           cat > latest.json <<EOF
           {
             "version": "${VERSION}",
@@ -202,11 +202,11 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            muhenkan-switch-rs-*.tar.gz
+            muhenkan-switch-*.tar.gz
             *-setup.exe
             latest.json
           body: |
-            ## muhenkan-switch-rs
+            ## muhenkan-switch
 
             ### Windows インストール（推奨）
 
@@ -218,17 +218,17 @@ jobs:
 
             **Linux / macOS:**
             ```bash
-            curl -fsSL https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/main/scripts/install/get.sh | sh
+            curl -fsSL https://raw.githubusercontent.com/kimushun1101/muhenkan-switch/main/scripts/install/get.sh | sh
             ```
 
             **Windows（上級者向け PowerShell ワンライナー）:**
             ```powershell
-            irm https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/main/scripts/install/get.ps1 | iex
+            irm https://raw.githubusercontent.com/kimushun1101/muhenkan-switch/main/scripts/install/get.ps1 | iex
             ```
 
             ### ダウンロード
             - **Windows (x64)**: `muhenkan-switch_x64-setup.exe`
-            - **Linux (x64)**: `muhenkan-switch-rs-linux-x64.tar.gz`
-            - **macOS (x64)**: `muhenkan-switch-rs-macos-x64.tar.gz` ⚠️ 未検証
-            - **macOS (ARM)**: `muhenkan-switch-rs-macos-arm64.tar.gz` ⚠️ 未検証
+            - **Linux (x64)**: `muhenkan-switch-linux-x64.tar.gz`
+            - **macOS (x64)**: `muhenkan-switch-macos-x64.tar.gz` ⚠️ 未検証
+            - **macOS (ARM)**: `muhenkan-switch-macos-arm64.tar.gz` ⚠️ 未検証
           generate_release_notes: true

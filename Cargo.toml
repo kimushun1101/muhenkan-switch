@@ -10,7 +10,7 @@ members = [
 version = "0.9.0"
 edition = "2021"
 license = "LGPL-3.0-only"
-repository = "https://github.com/kimushun1101/muhenkan-switch-rs"
+repository = "https://github.com/kimushun1101/muhenkan-switch"
 
 [workspace.dependencies]
 muhenkan-switch-config = { path = "muhenkan-switch-config" }

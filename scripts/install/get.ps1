@@ -1,22 +1,22 @@
 <#
 .SYNOPSIS
-    muhenkan-switch-rs ワンライナーインストーラー (Windows)
+    muhenkan-switch ワンライナーインストーラー (Windows)
 .DESCRIPTION
     GitHub Releases から最新の setup.exe をダウンロードし、実行します。
 .NOTES
     使い方:
-    irm https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/main/scripts/install/get.ps1 | iex
+    irm https://raw.githubusercontent.com/kimushun1101/muhenkan-switch/main/scripts/install/get.ps1 | iex
 #>
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 # ── 設定 ──
-$REPO = "kimushun1101/muhenkan-switch-rs"
+$REPO = "kimushun1101/muhenkan-switch"
 $ASSET_NAME = "muhenkan-switch_x64-setup.exe"
 
 Write-Host ""
-Write-Host "=== muhenkan-switch-rs インストーラー (Windows) ===" -ForegroundColor Cyan
+Write-Host "=== muhenkan-switch インストーラー (Windows) ===" -ForegroundColor Cyan
 Write-Host ""
 
 # ── TLS 1.2 を有効化 ──

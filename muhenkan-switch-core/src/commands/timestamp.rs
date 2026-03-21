@@ -350,7 +350,7 @@ mod imp {
 
     /// macOS: Finder の選択ファイル取得は未実装。
     /// osascript で Finder の selection を取得可能。
-    /// See: https://github.com/kimushun1101/muhenkan-switch-rs/issues/19
+    /// See: https://github.com/kimushun1101/muhenkan-switch/issues/19
     pub(super) fn get_selected_paths(_hwnd: isize) -> Result<Vec<PathBuf>> {
         anyhow::bail!("File manager selection is not yet supported on macOS")
     }
