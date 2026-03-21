@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# muhenkan-switch-rs アップデートスクリプト (Linux)
+# muhenkan-switch アップデートスクリプト (Linux)
 #
 # GitHub Releases から最新版をダウンロードし、install.sh を実行して更新します。
 # root 権限は不要です。
 
 # ── 設定 ──
-REPO="kimushun1101/muhenkan-switch-rs"
-ASSET_NAME="muhenkan-switch-rs-linux-x64.tar.gz"
+REPO="kimushun1101/muhenkan-switch"
+ASSET_NAME="muhenkan-switch-linux-x64.tar.gz"
 
 echo ""
-echo "=== muhenkan-switch-rs アップデーター (Linux) ==="
+echo "=== muhenkan-switch アップデーター (Linux) ==="
 echo ""
 
 # ── 最新バージョンを取得 ──

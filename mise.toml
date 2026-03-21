@@ -65,12 +65,12 @@ run = "bash scripts/dev/test-install.sh"
 description = "Run uninstall.sh from the install directory"
 shell = "bash -c"
 run = """
-UNINSTALL="$HOME/.local/share/muhenkan-switch-rs/uninstall.sh"
+UNINSTALL="$HOME/.local/share/muhenkan-switch/uninstall.sh"
 if [ -f "$UNINSTALL" ]; then
   bash "$UNINSTALL"
 else
   echo "[test-uninstall] uninstall.sh not found at $UNINSTALL"
-  echo "[test-uninstall] muhenkan-switch-rs is not installed."
+  echo "[test-uninstall] muhenkan-switch is not installed."
 fi
 """
 

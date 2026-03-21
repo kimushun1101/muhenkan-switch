@@ -1,4 +1,4 @@
-# muhenkan-switch-rs 設定ファイル（共通フォールバック）
+# muhenkan-switch 設定ファイル（共通フォールバック）
 # OS 別の設定は default-windows.toml / default-macos.toml / default-linux.toml を参照してください。
 
 # ── 句読点スタイル ──

@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# muhenkan-switch-rs アンインストールスクリプト (Linux)
+# muhenkan-switch アンインストールスクリプト (Linux)
 
-INSTALL_DIR="$HOME/.local/share/muhenkan-switch-rs"
+INSTALL_DIR="$HOME/.local/share/muhenkan-switch"
 BIN_DIR="$HOME/.local/bin"
 SERVICE_FILE="$HOME/.config/systemd/user/kanata.service"
 AUTOSTART_FILE="$HOME/.config/autostart/muhenkan-switch.desktop"
@@ -11,7 +11,7 @@ APP_DESKTOP_FILE="$HOME/.local/share/applications/muhenkan-switch.desktop"
 ICON_FILE="$HOME/.local/share/icons/hicolor/128x128/apps/muhenkan-switch.png"
 
 echo ""
-echo "=== muhenkan-switch-rs アンインストーラー (Linux) ==="
+echo "=== muhenkan-switch アンインストーラー (Linux) ==="
 echo ""
 
 if [ ! -d "$INSTALL_DIR" ]; then
@@ -91,7 +91,7 @@ remove_symlink() {
             rm -f "$link_path"
             echo "[OK] シンボリックリンクを削除しました: $1"
         else
-            echo "[SKIP] $1 は muhenkan-switch-rs のリンクではありません (-> $target)"
+            echo "[SKIP] $1 は muhenkan-switch のリンクではありません (-> $target)"
         fi
     else
         echo "[SKIP] $1 はシンボリックリンクではないか、存在しません"

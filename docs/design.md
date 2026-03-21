@@ -1,6 +1,6 @@
 ## 概要
 
-現行の `muhenkan-switch`（AutoHotkey v2、Windows専用）をマルチプラットフォーム化する。
+旧版の `muhenkan-switch-ahk`（AutoHotkey v2、Windows専用）をマルチプラットフォーム化する。
 
 **アーキテクチャ:** kanata（既存OSSキーリマッパー）＋ Rust製 muhenkan-switch バイナリ ＋ Tauri v2 GUI
 
@@ -85,7 +85,7 @@ sequenceDiagram
 
 ```mermaid
 graph TB
-    subgraph "muhenkan-switch-rs (Cargo workspace)"
+    subgraph "muhenkan-switch (Cargo workspace)"
         GUI["<b>muhenkan-switch</b><br/>bin (Tauri v2)<br/>設定画面 / kanata 管理 / トレイ常駐"]
         kanata["<b>kanata</b><br/>外部バイナリ (.kbd)<br/>Layer 1: キー入力"]
         CLI["<b>muhenkan-switch-core</b><br/>bin (CLI)<br/>Layer 2: OS 連携<br/>search / switch-app / open-folder 等"]

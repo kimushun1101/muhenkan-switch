@@ -121,7 +121,7 @@ mod imp {
 mod imp {
     /// macOS: Finder の前面ウィンドウ検出は未実装。
     /// osascript で System Events / Finder の frontmost 判定が可能。
-    /// See: https://github.com/kimushun1101/muhenkan-switch-rs/issues/19
+    /// See: https://github.com/kimushun1101/muhenkan-switch/issues/19
     pub(super) fn get_foreground_explorer_hwnd() -> Option<isize> {
         None
     }

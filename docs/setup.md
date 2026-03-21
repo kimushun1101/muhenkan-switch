@@ -4,14 +4,14 @@
 
 ### Windows
 
-1. [最新リリース](https://github.com/kimushun1101/muhenkan-switch-rs/releases/latest) から
+1. [最新リリース](https://github.com/kimushun1101/muhenkan-switch/releases/latest) から
    `muhenkan-switch_x64-setup.exe` をダウンロード
 2. ダブルクリックしてインストール
 3. スタートメニューから `muhenkan-switch` を起動
 
 > **PowerShell ワンライナーでのインストール:**
 > ```powershell
-> irm https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/main/scripts/install/get.ps1 | iex
+> irm https://raw.githubusercontent.com/kimushun1101/muhenkan-switch/main/scripts/install/get.ps1 | iex
 > ```
 
 ### Linux / macOS
@@ -19,12 +19,12 @@
 以下のコマンドをターミナルに貼り付けて実行するだけで、最新版のダウンロードからインストールまで自動で行われます。
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/main/scripts/install/get.sh | sh
+curl -fsSL https://raw.githubusercontent.com/kimushun1101/muhenkan-switch/main/scripts/install/get.sh | sh
 ```
 
 > **セキュリティについて**: スクリプトの内容を事前に確認したい場合は、先にダウンロードしてから実行できます。
 > ```bash
-> curl -fsSL https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/main/scripts/install/get.sh -o get.sh
+> curl -fsSL https://raw.githubusercontent.com/kimushun1101/muhenkan-switch/main/scripts/install/get.sh -o get.sh
 > less get.sh    # 内容を確認
 > bash get.sh    # 実行
 > ```
@@ -32,7 +32,7 @@ curl -fsSL https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/mai
 <details>
 <summary>手動インストール（アーカイブをダウンロードする方法、Linux/macOS）</summary>
 
-[Releases](https://github.com/kimushun1101/muhenkan-switch-rs/releases) から
+[Releases](https://github.com/kimushun1101/muhenkan-switch/releases) から
 お使いの OS 用のアーカイブをダウンロード・展開し、インストールスクリプトを実行してください。
 
 ```bash
@@ -58,8 +58,8 @@ curl -fsSL https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/mai
 | OS | インストール先 |
 |----|--------------|
 | Windows | `%LOCALAPPDATA%\muhenkan-switch` |
-| Linux | `~/.local/share/muhenkan-switch-rs` |
-| macOS | `~/Library/Application Support/muhenkan-switch-rs` |
+| Linux | `~/.local/share/muhenkan-switch` |
+| macOS | `~/Library/Application Support/muhenkan-switch` |
 
 ## 起動
 
@@ -145,17 +145,17 @@ macOS では [Karabiner-VirtualHIDDevice](https://github.com/pqrs-org/Karabiner-
 
 ```bash
 # Linux
-~/.local/share/muhenkan-switch-rs/uninstall.sh
+~/.local/share/muhenkan-switch/uninstall.sh
 
 # macOS
-~/Library/Application\ Support/muhenkan-switch-rs/uninstall-macos.sh
+~/Library/Application\ Support/muhenkan-switch/uninstall-macos.sh
 ```
 
 ## 更新
 
 ### Windows
 
-[最新リリース](https://github.com/kimushun1101/muhenkan-switch-rs/releases/latest) から
+[最新リリース](https://github.com/kimushun1101/muhenkan-switch/releases/latest) から
 新しい `muhenkan-switch_x64-setup.exe` をダウンロードしてダブルクリックするだけで上書き更新されます。
 アプリ起動中に自動更新チェックも行われます。
 
@@ -163,8 +163,8 @@ macOS では [Karabiner-VirtualHIDDevice](https://github.com/pqrs-org/Karabiner-
 
 ```bash
 # Linux
-~/.local/share/muhenkan-switch-rs/update.sh
+~/.local/share/muhenkan-switch/update.sh
 
 # macOS
-~/Library/Application\ Support/muhenkan-switch-rs/update-macos.sh
+~/Library/Application\ Support/muhenkan-switch/update-macos.sh
 ```

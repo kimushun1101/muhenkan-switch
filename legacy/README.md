@@ -2,7 +2,7 @@
 
 ## 概要
 
-`muhenkan-switch-rs` は、AutoHotkey 版 [muhenkan-switch](https://github.com/kimushun1101/muhenkan-switch) をクロスプラットフォーム対応で再実装したものです。
+`muhenkan-switch` は、AutoHotkey 版 [muhenkan-switch-ahk](https://github.com/kimushun1101/muhenkan-switch-ahk) をクロスプラットフォーム対応で再実装したものです。
 
 ## 主な変更点
 
@@ -32,7 +32,7 @@
 
 ## 移行手順
 
-1. [muhenkan-switch-rs のリリースページ](https://github.com/kimushun1101/muhenkan-switch-rs/releases) からダウンロード
+1. [muhenkan-switch のリリースページ](https://github.com/kimushun1101/muhenkan-switch/releases) からダウンロード
 2. `config.toml` を自分の環境に合わせて編集（旧版の設定を手動で転記）
 3. kanata を起動して動作確認
 4. 問題なければ旧版の AutoHotkey スクリプトを無効化

@@ -1,9 +1,8 @@
-# muhenkan-switch-rs
+# muhenkan-switch
 
 無変換キーと同時押しを起点としたクロスプラットフォーム・ショートカットツール。
 
-[muhenkan-switch](https://github.com/kimushun1101/muhenkan-switch)（AutoHotkey版）を
-[kanata](https://github.com/jtroo/kanata) + Rust製バイナリ で再実装したものです。
+[kanata](https://github.com/jtroo/kanata) + Rust製バイナリ で実装しています。
 
 ## 対応環境
 
@@ -36,19 +35,19 @@
 
 ### Windows
 
-[最新リリース](https://github.com/kimushun1101/muhenkan-switch-rs/releases/latest) から
+[最新リリース](https://github.com/kimushun1101/muhenkan-switch/releases/latest) から
 `muhenkan-switch_x64-setup.exe` をダウンロードしてインストール。
 スタートメニューから `muhenkan-switch` を起動してください。
 
 > 上記を自動で実施するスクリプトは以下のとおりです。PowerShellにコマンドを入力してください。
 > ```powershell
-> irm https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/main/scripts/install/get.ps1 | iex
+> irm https://raw.githubusercontent.com/kimushun1101/muhenkan-switch/main/scripts/install/get.ps1 | iex
 > ```
 
 ### Linux / macOS
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/main/scripts/install/get.sh | sh
+curl -fsSL https://raw.githubusercontent.com/kimushun1101/muhenkan-switch/main/scripts/install/get.sh | sh
 ```
 
 Linux ではアプリ一覧（Super キー）または Dock から `muhenkan-switch` を起動できます。
@@ -100,12 +99,8 @@ kanata の設定ガイドは [こちら](https://github.com/jtroo/kanata/wiki/Co
 
 LGPL-3.0-only
 
-本プロジェクト（muhenkan-switch-rs）は Rust によるフルスクラッチ実装です。
-旧版（[muhenkan-switch](https://github.com/kimushun1101/muhenkan-switch) AutoHotkey 版）の仕様を一部継承していますが、
-コードの流用はないため LGPL-3.0 で提供します。
-
 同梱する kanata も LGPL-3.0 です（`LICENSE` 参照）。
 
 ## 旧版（AutoHotkey版）
 
-Windows 専用の AutoHotkey 版は [muhenkan-switch](https://github.com/kimushun1101/muhenkan-switch) にあります。
+Windows 専用の AutoHotkey 版は [muhenkan-switch-ahk](https://github.com/kimushun1101/muhenkan-switch-ahk) にあります。

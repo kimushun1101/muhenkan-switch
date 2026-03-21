@@ -677,7 +677,7 @@ document.getElementById("btn-help").addEventListener("click", async () => {
 
 document.getElementById("btn-github").addEventListener("click", async () => {
   const { open } = window.__TAURI__.shell;
-  await open("https://github.com/kimushun1101/muhenkan-switch-rs");
+  await open("https://github.com/kimushun1101/muhenkan-switch");
 });
 
 document.getElementById("btn-open-dir").addEventListener("click", async () => {

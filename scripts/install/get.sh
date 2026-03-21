@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# muhenkan-switch-rs ワンライナーインストーラー
+# muhenkan-switch ワンライナーインストーラー
 #
 # 使い方:
-#   curl -fsSL https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/main/scripts/install/get.sh | sh
+#   curl -fsSL https://raw.githubusercontent.com/kimushun1101/muhenkan-switch/main/scripts/install/get.sh | sh
 #
 # パイプ実行時は一時ファイルに保存してから bash で実行するため、
 # install スクリプト内の read プロンプトも正常に動作します。
@@ -19,10 +19,10 @@ if [ ! -t 0 ]; then
 fi
 
 # ── 設定 ──
-REPO="kimushun1101/muhenkan-switch-rs"
+REPO="kimushun1101/muhenkan-switch"
 
 echo ""
-echo "=== muhenkan-switch-rs インストーラー ==="
+echo "=== muhenkan-switch インストーラー ==="
 echo ""
 
 # ── OS・アーキテクチャ検出 ──
@@ -32,7 +32,7 @@ ARCH=$(uname -m)
 case "$OS" in
     Linux)
         case "$ARCH" in
-            x86_64) ASSET_NAME="muhenkan-switch-rs-linux-x64.tar.gz" ;;
+            x86_64) ASSET_NAME="muhenkan-switch-linux-x64.tar.gz" ;;
             *) echo "[ERROR] 未対応のアーキテクチャです: $ARCH"; exit 1 ;;
         esac
         INSTALL_SCRIPT="install.sh"
@@ -40,8 +40,8 @@ case "$OS" in
         ;;
     Darwin)
         case "$ARCH" in
-            arm64)  ASSET_NAME="muhenkan-switch-rs-macos-arm64.tar.gz" ;;
-            x86_64) ASSET_NAME="muhenkan-switch-rs-macos-x64.tar.gz" ;;
+            arm64)  ASSET_NAME="muhenkan-switch-macos-arm64.tar.gz" ;;
+            x86_64) ASSET_NAME="muhenkan-switch-macos-x64.tar.gz" ;;
             *) echo "[ERROR] 未対応のアーキテクチャです: $ARCH"; exit 1 ;;
         esac
         INSTALL_SCRIPT="install-macos.sh"
@@ -50,7 +50,7 @@ case "$OS" in
     *)
         echo "[ERROR] 未対応の OS です: $OS"
         echo "        Windows の場合は PowerShell で以下を実行してください:"
-        echo "        irm https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-rs/main/scripts/install/get.ps1 | iex"
+        echo "        irm https://raw.githubusercontent.com/kimushun1101/muhenkan-switch/main/scripts/install/get.ps1 | iex"
         exit 1
         ;;
 esac

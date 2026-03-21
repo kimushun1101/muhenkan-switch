@@ -7,7 +7,7 @@ if [ "$(uname)" != "Linux" ]; then
   exit 1
 fi
 
-STAGING="tmp-test-install/muhenkan-switch-rs-linux-x64"
+STAGING="tmp-test-install/muhenkan-switch-linux-x64"
 rm -rf tmp-test-install
 mkdir -p "$STAGING"
 

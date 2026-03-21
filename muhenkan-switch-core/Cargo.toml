@@ -2,7 +2,7 @@
 name = "muhenkan-switch-core"
 version.workspace = true
 edition.workspace = true
-description = "Companion tool for muhenkan-switch-rs: cross-platform shortcut actions"
+description = "Companion tool for muhenkan-switch: cross-platform shortcut actions"
 license.workspace = true
 repository.workspace = true
 
