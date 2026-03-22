@@ -380,28 +380,35 @@ mod tests {
     use std::path::Path;
 
     #[test]
-    fn file_uri_to_path_ascii() {
-        // /tmp は存在するはず
-        let result = file_uri_to_path("file:///tmp");
-        assert_eq!(result, Some(PathBuf::from("/tmp")));
+    fn file_uri_to_path_existing_file() {
+        let tmp = tempfile::NamedTempFile::new().unwrap();
+        let path = tmp.path().to_owned();
+        let uri = format!("file://{}", path.display());
+        assert_eq!(file_uri_to_path(&uri), Some(path));
     }
 
     #[test]
     fn file_uri_to_path_encoded() {
-        // パーセントエンコードされた /tmp → デコードされて /tmp
-        let result = file_uri_to_path("file://%2Ftmp");
-        // %2F = '/' → "//tmp" — 存在するかは環境依存なので、デコード自体を検証
-        // /tmp はそのままでもテスト可能
-        assert!(result.is_some() || true); // デコードロジックが壊れないことを確認
+        // スペースを含むファイル名でパーセントエンコードを検証
+        let dir = tempfile::tempdir().unwrap();
+        let file_path = dir.path().join("hello world.txt");
+        std::fs::write(&file_path, "").unwrap();
+        let encoded_uri = format!(
+            "file://{}",
+            urlencoding::encode(&file_path.to_string_lossy())
+        );
+        assert_eq!(file_uri_to_path(&encoded_uri), Some(file_path));
+    }
 
-        // 存在しないパスは None
+    #[test]
+    fn file_uri_to_path_nonexistent() {
         let result = file_uri_to_path("file:///nonexistent_path_12345");
         assert_eq!(result, None);
     }
 
     #[test]
     fn file_uri_to_path_no_prefix() {
-        assert_eq!(file_uri_to_path("/tmp/file.txt"), None);
+        assert_eq!(file_uri_to_path("/nonexistent/file.txt"), None);
         assert_eq!(file_uri_to_path("https://example.com"), None);
     }
 
