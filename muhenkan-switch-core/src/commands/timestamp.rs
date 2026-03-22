@@ -360,6 +360,7 @@ mod imp {
 
 /// file:// URI をパーセントデコードして PathBuf に変換する。
 /// パスが存在しない場合は None を返す。
+#[cfg(any(target_os = "linux", test))]
 fn file_uri_to_path(uri: &str) -> Option<PathBuf> {
     let path_encoded = uri.strip_prefix("file://")?;
     let decoded = urlencoding::decode(path_encoded).ok()?;
