@@ -204,7 +204,7 @@ echo "     $APP_DESKTOP_FILE"
 # ── 外部ツールの確認 ──
 missing_tools=""
 if [ "$XDG_SESSION_TYPE" = "wayland" ] || [ -n "$WAYLAND_DISPLAY" ]; then
-    for tool in ydotool wl-paste notify-send; do
+    for tool in wl-paste notify-send; do
         if ! command -v "$tool" &>/dev/null; then
             missing_tools="$missing_tools $tool"
         fi
@@ -214,7 +214,7 @@ if [ "$XDG_SESSION_TYPE" = "wayland" ] || [ -n "$WAYLAND_DISPLAY" ]; then
         echo "[WARNING] 以下の推奨ツールがインストールされていません:$missing_tools"
         echo "          一部の機能（キー入力シミュレーション・タイムスタンプ操作・通知）が動作しません。"
         echo ""
-        echo "  sudo apt install ydotool wl-clipboard libnotify-bin"
+        echo "  sudo apt install wl-clipboard libnotify-bin"
         echo ""
     fi
 else
