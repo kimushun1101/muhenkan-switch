@@ -1,4 +1,4 @@
-use anyhow::{Context, Result};
+use anyhow::Result;
 use arboard::Clipboard;
 use chrono::Local;
 use std::path::{Path, PathBuf};
@@ -84,14 +84,11 @@ fn format_toast_result(result: &Result<Vec<PathBuf>>) -> String {
 
 /// C: 選択テキストをプレーンテキストとしてクリップボードにコピー
 fn plain_copy() -> Result<()> {
-    // Ctrl+C で選択テキストをクリップボードにコピー
-    super::keys::simulate_copy()?;
-    std::thread::sleep(std::time::Duration::from_millis(50));
-    // クリップボードからテキストのみ取得し、プレーンテキストとして再設定
+    let text = super::keys::get_selected_text()?;
+    if text.is_empty() {
+        anyhow::bail!("選択テキストが空です");
+    }
     let mut clipboard = Clipboard::new()?;
-    let text = clipboard
-        .get_text()
-        .context("クリップボードにテキストがありません")?;
     clipboard.set_text(&text)?;
     Ok(())
 }

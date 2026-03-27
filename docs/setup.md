@@ -92,15 +92,17 @@ sudo apt install xdotool wmctrl xclip x11-utils libnotify-bin
 
 | ツール | 用途 | インストール (Ubuntu) |
 |--------|------|----------------------|
-| ydotool | キー入力シミュレーション | `sudo apt install ydotool` |
-| wl-clipboard | ファイルマネージャのタイムスタンプ操作 | `sudo apt install wl-clipboard` |
+| wl-clipboard | 選択テキスト取得、ファイルマネージャ操作 | `sudo apt install wl-clipboard` |
 | notify-send | トースト通知 | `sudo apt install libnotify-bin` |
 
 ```bash
-sudo apt install ydotool wl-clipboard libnotify-bin
+sudo apt install wl-clipboard libnotify-bin
 ```
 
-> **Wayland の制限:** アプリ切り替え（wmctrl/xdotool 依存）とファイルマネージャの前面ウィンドウ検出（xprop 依存）は Wayland では動作しません。これらの機能を使うにはログイン画面で **「Ubuntu on Xorg」** を選択して X11 セッションに切り替えてください。
+> **Wayland の制限:** 以下の機能は Wayland では動作しません。全機能を使うにはログイン画面で **「Ubuntu on Xorg」** を選択して X11 セッションに切り替えてください。
+> - アプリ切り替え（wmctrl/xdotool 依存）
+> - ファイルマネージャの前面ウィンドウ検出（xprop 依存）
+> - タイムスタンプ入力（キー入力シミュレーション依存）
 
 ### Linux の追加設定
 

@@ -8,6 +8,13 @@ pub fn simulate_type(text: &str) -> Result<()> {
     imp::simulate_type(text)
 }
 
+/// 選択中のテキストを取得する。
+/// Wayland: PRIMARY セレクションから直接読み取り（キー入力シミュレーション不要）
+/// X11/Windows/macOS: Ctrl+C シミュレート → CLIPBOARD から取得
+pub fn get_selected_text() -> Result<String> {
+    imp::get_selected_text()
+}
+
 // ── Platform: Windows ──
 
 #[cfg(target_os = "windows")]
@@ -21,6 +28,15 @@ mod imp {
 
     pub(super) fn simulate_copy() -> Result<()> {
         send_ctrl_key(VK_C)
+    }
+
+    pub(super) fn get_selected_text() -> Result<String> {
+        simulate_copy()?;
+        std::thread::sleep(std::time::Duration::from_millis(200));
+        let mut clipboard = arboard::Clipboard::new()?;
+        clipboard
+            .get_text()
+            .map_err(|e| anyhow::anyhow!("{}", e))
     }
 
     pub(super) fn simulate_type(text: &str) -> Result<()> {
@@ -116,40 +132,54 @@ mod imp {
         Ok(())
     }
 
-    fn run_ydotool(args: &[&str]) -> Result<()> {
-        Command::new("ydotool")
-            .args(args)
-            .output()
-            .context("ydotool が見つかりません。以下のコマンドでインストールしてください:\n  sudo apt install ydotool")?;
-        Ok(())
-    }
-
     pub(super) fn simulate_copy() -> Result<()> {
-        if super::super::is_wayland() {
-            run_ydotool(&["key", "ctrl+c"])
-        } else {
-            run_xdotool(&["key", "ctrl+c"])
-        }
+        run_xdotool(&["key", "ctrl+c"])
     }
 
     pub(super) fn simulate_type(text: &str) -> Result<()> {
-        // IME が有効だと xdotool type / ydotool type が全角入力になるため、
-        // クリップボード経由で貼り付ける（X11/Wayland 共通）
+        if super::super::is_wayland() {
+            anyhow::bail!(
+                "Wayland ではタイムスタンプ入力は未対応です。\n\
+                 X11 セッションに切り替えるか、手動で貼り付けてください。"
+            );
+        }
+        // IME が有効だと xdotool type が全角入力になるため、
+        // クリップボード経由で貼り付ける
         let mut clipboard = arboard::Clipboard::new()?;
         let saved = clipboard.get_text().ok();
         clipboard.set_text(text)?;
         std::thread::sleep(std::time::Duration::from_millis(50));
-        if super::super::is_wayland() {
-            run_ydotool(&["key", "ctrl+v"])?;
-        } else {
-            run_xdotool(&["key", "--clearmodifiers", "ctrl+v"])?;
-        }
+        run_xdotool(&["key", "--clearmodifiers", "ctrl+v"])?;
         std::thread::sleep(std::time::Duration::from_millis(100));
-        // クリップボードを復元
         if let Some(prev) = saved {
             let _ = clipboard.set_text(prev);
         }
         Ok(())
+    }
+
+    pub(super) fn get_selected_text() -> Result<String> {
+        if super::super::is_wayland() {
+            // PRIMARY セレクションから選択テキストを直接読み取り
+            let output = Command::new("wl-paste")
+                .args(["--primary", "--no-newline"])
+                .output()
+                .context(
+                    "wl-paste が見つかりません。以下のコマンドでインストールしてください:\n  \
+                     sudo apt install wl-clipboard",
+                )?;
+            if !output.status.success() {
+                anyhow::bail!("選択テキストの取得に失敗しました");
+            }
+            Ok(String::from_utf8_lossy(&output.stdout).into_owned())
+        } else {
+            // X11: Ctrl+C → CLIPBOARD から取得
+            run_xdotool(&["key", "ctrl+c"])?;
+            std::thread::sleep(std::time::Duration::from_millis(200));
+            let mut clipboard = arboard::Clipboard::new()?;
+            clipboard
+                .get_text()
+                .context("クリップボードにテキストがありません")
+        }
     }
 }
 
@@ -168,6 +198,15 @@ mod imp {
             ])
             .output()?;
         Ok(())
+    }
+
+    pub(super) fn get_selected_text() -> Result<String> {
+        simulate_copy()?;
+        std::thread::sleep(std::time::Duration::from_millis(200));
+        let mut clipboard = arboard::Clipboard::new()?;
+        clipboard
+            .get_text()
+            .map_err(|e| anyhow::anyhow!("{}", e))
     }
 
     pub(super) fn simulate_type(text: &str) -> Result<()> {
