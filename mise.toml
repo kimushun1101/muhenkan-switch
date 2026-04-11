@@ -13,7 +13,7 @@
 #   mise run gen-icons   img/icon.svg からアイコン全サイズを生成
 
 [tools]
-rust = "1.93"
+rust = "1.94"
 node = "lts"
 
 [tasks.setup]
