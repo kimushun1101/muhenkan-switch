@@ -6,6 +6,9 @@ on:
     - cron: '0 0 1 * *'
   workflow_dispatch:
 
+permissions:
+  issues: write
+
 jobs:
   check:
     runs-on: ubuntu-latest
@@ -22,8 +25,8 @@ jobs:
       - name: Get latest stable Rust version
         id: latest
         run: |
-          # major.minor のみ取得 (パッチは無視)
-          full=$(curl -sSf https://static.rust-lang.org/dist/channel-rust-stable.toml | grep -m1 '^version' | sed 's/version = "\(.*\)"/\1/')
+          # [pkg.rust] セクションの version を取得 (major.minor のみ)
+          full=$(curl -sSf https://static.rust-lang.org/dist/channel-rust-stable.toml | sed -n '/^\[pkg\.rust\]/,/^\[/p' | grep -m1 '^version' | sed 's/version = "\(.*\)"/\1/')
           version=$(echo "$full" | cut -d. -f1,2)
           echo "version=$version" >> "$GITHUB_OUTPUT"
           echo "full=$full" >> "$GITHUB_OUTPUT"
