@@ -2396,6 +2396,7 @@ dependencies = [
  "indexmap 2.13.0",
  "muhenkan-switch-config",
  "open",
+ "tempfile",
  "urlencoding",
  "webbrowser",
  "windows",
