@@ -266,9 +266,10 @@ mod imp {
 
     /// Wayland 環境でのウィンドウアクティブ化
     /// GNOME Shell の Eval API は制限されているため、以下の順で試行:
-    /// 1. xdotool (XWayland 経由で動く場合がある)
-    /// 2. wmctrl -x (XWayland 経由)
-    /// 3. アプリを起動（既存インスタンスがあれば D-Bus 経由でフォーカスされるアプリもある）
+    /// 1. wmctrl -x (XWayland 経由)
+    /// 2. xdotool --class (XWayland 経由で動く場合がある)
+    /// 3. xdotool --name (XWayland 経由)
+    /// 4. アプリを起動（既存インスタンスがあれば D-Bus 経由でフォーカスされるアプリもある）
     fn activate_window_wayland(app: &str, launch: Option<&str>) -> Result<()> {
         // XWayland 経由で動く可能性があるので X11 ツールを試す
         let activated = try_wmctrl(app)
@@ -295,10 +296,12 @@ mod imp {
     /// 1. wmctrl -x -a (WM_CLASS でマッチ — タイトルより安定)
     /// 2. xdotool search --class (WM_CLASS でマッチ)
     /// 3. xdotool search --name (ウィンドウタイトルでマッチ)
+    /// 4. pgrep + xdotool search --pid (バイナリ名から PID 経由でマッチ)
     fn activate_window_x11(app: &str, launch: Option<&str>) -> Result<()> {
         let activated = try_wmctrl(app)
             || try_xdotool(app, "--class")
-            || try_xdotool(app, "--name");
+            || try_xdotool(app, "--name")
+            || try_activate_by_pid(app);
 
         if !activated {
             if !has_command("wmctrl") && !has_command("xdotool") {
@@ -332,6 +335,43 @@ mod imp {
             .output()
             .map(|o| o.status.success())
             .unwrap_or(false)
+    }
+
+    /// pgrep でバイナリ名から PID を取得し、xdotool search --pid でウィンドウを前面化する。
+    /// WM_CLASS がバイナリ名と異なるアプリ（例: zed-editor → dev.zed.Zed）に有効。
+    pub(super) fn try_activate_by_pid(app: &str) -> bool {
+        let pgrep_output = Command::new("pgrep")
+            .args(["-x", app])
+            .output();
+        let pids = match pgrep_output {
+            Ok(output) if output.status.success() => {
+                String::from_utf8_lossy(&output.stdout)
+                    .lines()
+                    .map(|s| s.to_string())
+                    .collect::<Vec<_>>()
+            }
+            _ => return false,
+        };
+
+        for pid in &pids {
+            let result = Command::new("xdotool")
+                .args(["search", "--onlyvisible", "--pid", pid])
+                .output();
+            if let Ok(output) = result {
+                let stdout = String::from_utf8_lossy(&output.stdout);
+                if let Some(wid) = stdout.lines().next() {
+                    if Command::new("xdotool")
+                        .args(["windowactivate", "--sync", wid])
+                        .output()
+                        .map(|o| o.status.success())
+                        .unwrap_or(false)
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        false
     }
 
     pub(super) fn try_xdotool(app: &str, search_flag: &str) -> bool {
@@ -402,6 +442,14 @@ mod tests {
         assert!(!imp::try_xdotool(
             "__nonexistent_app_muhenkan_test_99999__",
             "--name"
+        ));
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn try_activate_by_pid_nonexistent_returns_false() {
+        assert!(!imp::try_activate_by_pid(
+            "__nonexistent_app_muhenkan_test_99999__"
         ));
     }
 
