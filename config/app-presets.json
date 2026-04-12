@@ -8,6 +8,7 @@
     "ブラウザ": [
       { "label": "Edge", "process": "msedge", "command": "msedge" },
       { "label": "Chrome", "process": "chrome", "command": "chrome" },
+      { "label": "Brave", "process": "brave", "command": "brave" },
       { "label": "Firefox", "process": "firefox", "command": "firefox" },
       { "label": "Zen", "process": "zen", "command": "zen" }
     ],
@@ -36,6 +37,7 @@
     "ブラウザ": [
       { "label": "Safari", "process": "Safari", "command": "open -a Safari" },
       { "label": "Chrome", "process": "Google Chrome", "command": "open -a 'Google Chrome'" },
+      { "label": "Brave", "process": "Brave Browser", "command": "open -a 'Brave Browser'" },
       { "label": "Firefox", "process": "firefox", "command": "open -a Firefox" },
       { "label": "Zen", "process": "zen", "command": "open -a 'Zen Browser'" }
     ],
@@ -53,6 +55,7 @@
     "ターミナル": [
       { "label": "Terminal", "process": "Terminal", "command": "open -a Terminal" },
       { "label": "iTerm2", "process": "iTerm2", "command": "open -a iTerm" },
+      { "label": "Ghostty", "process": "Ghostty", "command": "open -a Ghostty" },
       { "label": "Alacritty", "process": "alacritty", "command": "open -a Alacritty" }
     ]
   },
@@ -60,11 +63,12 @@
     "エディタ": [
       { "label": "VS Code", "process": "code", "command": "code" },
       { "label": "Cursor", "process": "cursor", "command": "cursor" },
-      { "label": "Zed", "process": "zed", "command": "zed" }
+      { "label": "Zed", "process": "zed", "command": "zed-editor" }
     ],
     "ブラウザ": [
       { "label": "Firefox", "process": "firefox", "command": "firefox" },
       { "label": "Chrome", "process": "google-chrome", "command": "google-chrome" },
+      { "label": "Brave", "process": "brave-browser", "command": "brave-browser" },
       { "label": "Zen", "process": "zen", "command": "zen" }
     ],
     "Document": [
@@ -79,8 +83,8 @@
     ],
     "ターミナル": [
       { "label": "GNOME Terminal", "process": "gnome-terminal", "command": "gnome-terminal" },
-      { "label": "Alacritty", "process": "alacritty", "command": "alacritty" },
-      { "label": "Kitty", "process": "kitty", "command": "kitty" }
+      { "label": "Ghostty", "process": "ghostty", "command": "ghostty" },
+      { "label": "Alacritty", "process": "alacritty", "command": "alacritty" }
     ]
   }
 }
