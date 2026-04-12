@@ -60,9 +60,11 @@ fn text_edit_label(key: &str, punctuation_style: &str) -> &'static str {
 /// タイムスタンプキーの固定機能名。
 fn timestamp_label(key: &str) -> &'static str {
     match key {
-        "V" => "付与",
-        "C" => "複製",
+        "Z" => "確認",
         "X" => "除去",
+        "C" => "入力",
+        "V" => "付与",
+        "B" => "切替",
         _ => "",
     }
 }
@@ -142,11 +144,11 @@ fn key_definitions() -> Vec<KeyDef> {
         KeyDef { label: ";", dispatch_key: None, x: r(2,9).0, y: r(2,9).1, category: KeyCategory::TextEdit },
         // ── Z行 / 下行 (row 3) ──
         //   Z(c0) X(c1) C(c2) V(c3) B(c4)  |  N(c5) M(c6) ,(c7) .(c8) /(c9)
-        KeyDef { label: "Z", dispatch_key: Some("z"), x: l(3,0).0, y: l(3,0).1, category: KeyCategory::Dispatch },
+        KeyDef { label: "Z", dispatch_key: None, x: l(3,0).0, y: l(3,0).1, category: KeyCategory::Timestamp },
         KeyDef { label: "X", dispatch_key: None, x: l(3,1).0, y: l(3,1).1, category: KeyCategory::Timestamp },
         KeyDef { label: "C", dispatch_key: None, x: l(3,2).0, y: l(3,2).1, category: KeyCategory::Timestamp },
         KeyDef { label: "V", dispatch_key: None, x: l(3,3).0, y: l(3,3).1, category: KeyCategory::Timestamp },
-        KeyDef { label: "B", dispatch_key: Some("b"), x: l(3,4).0, y: l(3,4).1, category: KeyCategory::Dispatch },
+        KeyDef { label: "B", dispatch_key: None, x: l(3,4).0, y: l(3,4).1, category: KeyCategory::Timestamp },
         KeyDef { label: "N", dispatch_key: None, x: r(3,5).0, y: r(3,5).1, category: KeyCategory::TextEdit },
         KeyDef { label: "M", dispatch_key: None, x: r(3,6).0, y: r(3,6).1, category: KeyCategory::TextEdit },
         KeyDef { label: ",", dispatch_key: None, x: r(3,7).0, y: r(3,7).1, category: KeyCategory::TextEdit },

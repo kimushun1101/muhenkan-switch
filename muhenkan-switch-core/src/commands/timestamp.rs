@@ -1,5 +1,4 @@
 use anyhow::Result;
-use arboard::Clipboard;
 use chrono::Local;
 use std::path::{Path, PathBuf};
 
@@ -13,10 +12,8 @@ pub fn run(action: &str, config: &Config) -> Result<()> {
 
     match (action, explorer_hwnd) {
         // ── V: paste ──
-        ("paste", None) => {
-            let timestamp = Local::now().format(&config.timestamp.format).to_string();
-            super::keys::simulate_type(&timestamp)
-        }
+        // テキストコンテキスト: クリップボードの内容をプレーンテキストとして貼り付け
+        ("paste", None) => super::keys::plain_paste(),
         ("paste", Some(hwnd)) => {
             let toast = Toast::show("処理中...");
             let result = explorer_rename_prepend(
@@ -30,8 +27,11 @@ pub fn run(action: &str, config: &Config) -> Result<()> {
         }
 
         // ── C: copy ──
-        // テキストコンテキスト: 選択テキストをプレーンテキストとしてクリップボードにコピー
-        ("copy", None) => plain_copy(),
+        // テキストコンテキスト: 現在日時のタイムスタンプを入力
+        ("copy", None) => {
+            let timestamp = Local::now().format(&config.timestamp.format).to_string();
+            super::keys::simulate_type(&timestamp)
+        }
         ("copy", Some(hwnd)) => {
             let toast = Toast::show("処理中...");
             let result = explorer_duplicate(
@@ -81,17 +81,6 @@ fn format_toast_result(result: &Result<Vec<PathBuf>>) -> String {
 }
 
 // ── テキスト入力コンテキスト ──
-
-/// C: 選択テキストをプレーンテキストとしてクリップボードにコピー
-fn plain_copy() -> Result<()> {
-    let text = super::keys::get_selected_text()?;
-    if text.is_empty() {
-        anyhow::bail!("選択テキストが空です");
-    }
-    let mut clipboard = Clipboard::new()?;
-    clipboard.set_text(&text)?;
-    Ok(())
-}
 
 // ── Explorer コンテキスト ──
 

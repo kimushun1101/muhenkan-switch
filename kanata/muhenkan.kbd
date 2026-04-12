@@ -21,7 +21,7 @@
   q  r  t  g
   ;; 左手中段（ディスパッチ）
   a  w  e  s  d  f
-  ;; 左手下段（ディスパッチ）
+  ;; 左手下段（固定アクション）
   z  b
   ;; 左手下段（ファイル操作）
   v  c  x
@@ -57,14 +57,15 @@
   dsp-s (cmd muhenkan-switch-core dispatch s)
   dsp-d (cmd muhenkan-switch-core dispatch d)
   dsp-f (cmd muhenkan-switch-core dispatch f)
-  dsp-z (cmd muhenkan-switch-core dispatch z)
-  dsp-b (cmd muhenkan-switch-core dispatch b)
 
   ;; ── 固定アクション ──
   ;; タイムスタンプ操作
   ts-v (cmd muhenkan-switch-core timestamp --action paste)
   ts-c (cmd muhenkan-switch-core timestamp --action copy)
   ts-x (cmd muhenkan-switch-core timestamp --action cut)
+  ;; タイムスタンプ設定
+  ts-toggle (cmd muhenkan-switch-core toggle-timestamp-position)
+  ts-status (cmd muhenkan-switch-core timestamp-status)
 
   ;; GUI 設定ウィンドウを前面に出す
   open-gui (cmd muhenkan-switch-core open-gui)
@@ -95,8 +96,8 @@
   @dsp-q  @dsp-r  @dsp-t  @dsp-g
   ;; 左手中段 → ディスパッチ
   @dsp-a  @dsp-w  @dsp-e  @dsp-s  @dsp-d  @dsp-f
-  ;; 左手下段 → ディスパッチ
-  @dsp-z  @dsp-b
+  ;; 左手下段 → タイムスタンプ設定
+  @ts-status  @ts-toggle
   ;; 左手下段 → タイムスタンプ操作
   @ts-v  @ts-c  @ts-x
   ;; 右手 → Vim風カーソル移動

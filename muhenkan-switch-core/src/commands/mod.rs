@@ -6,6 +6,7 @@ pub mod open_gui;
 pub mod search;
 pub mod switch_app;
 pub mod timestamp;
+pub mod timestamp_settings;
 pub mod toast;
 
 /// Wayland セッション判定

@@ -12,7 +12,6 @@ pub const DISPATCH_KEYS: &[&str] = &[
     "1", "2", "3", "4", "5",
     "q", "w", "e", "r", "t",
     "a", "s", "d", "f", "g",
-    "z", "b",
 ];
 
 // ── Types ──
