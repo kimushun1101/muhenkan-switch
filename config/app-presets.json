@@ -55,6 +55,7 @@
     "ターミナル": [
       { "label": "Terminal", "process": "Terminal", "command": "open -a Terminal" },
       { "label": "iTerm2", "process": "iTerm2", "command": "open -a iTerm" },
+      { "label": "Ghostty", "process": "Ghostty", "command": "open -a Ghostty" },
       { "label": "Alacritty", "process": "alacritty", "command": "open -a Alacritty" }
     ]
   },
@@ -82,9 +83,8 @@
     ],
     "ターミナル": [
       { "label": "GNOME Terminal", "process": "gnome-terminal", "command": "gnome-terminal" },
-      { "label": "Terminator", "process": "terminator", "command": "terminator" },
-      { "label": "Alacritty", "process": "alacritty", "command": "alacritty" },
-      { "label": "Kitty", "process": "kitty", "command": "kitty" }
+      { "label": "Ghostty", "process": "ghostty", "command": "ghostty" },
+      { "label": "Alacritty", "process": "alacritty", "command": "alacritty" }
     ]
   }
 }
