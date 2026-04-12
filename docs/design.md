@@ -107,7 +107,7 @@ graph TB
 | クレート | 種別 | 役割 |
 |---------|------|------|
 | `muhenkan-switch` | bin (Tauri) | **ユーザーが直接起動する唯一のアプリ**。config.toml の閲覧・編集 UI を提供し、kanata を子プロセスとして起動・停止・再起動する。システムトレイに常駐 |
-| `muhenkan-switch-core` | bin | kanata から `cmd` アクションで呼び出される**実行エンジン**。search, switch-app, open-folder, timestamp, screenshot, dispatch サブコマンドを提供。ユーザーが直接起動することはない |
+| `muhenkan-switch-core` | bin | kanata から `cmd` アクションで呼び出される**実行エンジン**。search, switch-app, open-folder, timestamp, dispatch, open-gui, generate-svg サブコマンドを提供。ユーザーが直接起動することはない |
 | `muhenkan-switch-config` | lib | 設定の型定義 (`Config`, `AppEntry` 等)、config.toml の読み書き (`load`/`save`)、バリデーション、割当キー解決。GUI と CLI の**両方から依存される共有ライブラリ** |
 
 **3 つのクレートが独立している理由:**
@@ -123,12 +123,13 @@ graph TB
 muhenkan-switch-core <COMMAND> [OPTIONS]
 
 Commands:
-  dispatch     <KEY>              割当キーに対応するアクションを実行
-  search       --engine <NAME>    選択テキスト（クリップボード）をWeb検索
-  switch-app   --target <NAME>    指定アプリを最前面に
-  open-folder  --target <NAME>    指定フォルダを開く
-  timestamp    --action <ACTION>  タイムスタンプ操作 (paste|copy|cut)
-  open-gui                        GUI 設定ウィンドウを前面に出す
+  dispatch      <KEY>              割当キーに対応するアクションを実行
+  search        --engine <NAME>    選択テキスト（クリップボード）をWeb検索
+  switch-app    --target <NAME>    指定アプリを最前面に
+  open-folder   --target <NAME>    指定フォルダを開く
+  timestamp     --action <ACTION>  タイムスタンプ操作 (paste|copy|cut)
+  open-gui                         GUI 設定ウィンドウを前面に出す
+  generate-svg  [-o FILE] [-c CFG] キーボードレイアウト図を SVG で生成
 ```
 
 設定は実行ファイルと同じディレクトリの `config.toml` から読み込む。
