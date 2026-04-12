@@ -90,19 +90,17 @@ sudo apt install xdotool wmctrl xclip x11-utils libnotify-bin
 
 #### Wayland セッション
 
-| ツール | 用途 | インストール (Ubuntu) |
-|--------|------|----------------------|
-| wl-clipboard | 選択テキスト取得、ファイルマネージャ操作 | `sudo apt install wl-clipboard` |
-| notify-send | トースト通知 | `sudo apt install libnotify-bin` |
+> **Wayland は一部機能が非対応です。** 全機能を使うにはログイン画面で **「Ubuntu on Xorg」** を選択して X11 セッションに切り替えてください。
+> Wayland で動作しない機能:
+> - アプリ切り替え（wmctrl/xdotool 依存 — 標準 API が未整備のため #105）
+> - ファイルマネージャの前面ウィンドウ検出（xprop 依存）
+> - タイムスタンプ入力（キー入力シミュレーション依存）
+>
+> Web検索・フォルダオープン等は Wayland でも動作します（wl-clipboard が必要）。
 
 ```bash
 sudo apt install wl-clipboard libnotify-bin
 ```
-
-> **Wayland の制限:** 以下の機能は Wayland では動作しません。全機能を使うにはログイン画面で **「Ubuntu on Xorg」** を選択して X11 セッションに切り替えてください。
-> - アプリ切り替え（wmctrl/xdotool 依存）
-> - ファイルマネージャの前面ウィンドウ検出（xprop 依存）
-> - タイムスタンプ入力（キー入力シミュレーション依存）
 
 ### Linux の追加設定
 
@@ -121,10 +119,8 @@ sudo udevadm control --reload-rules && sudo udevadm trigger
 ```
 
 > **Wayland をお使いの場合（Ubuntu 22.04 以降のデフォルト）:**
-> アプリ切り替え機能は **X11 セッションでのみ動作** します。
-> Wayland ではセキュリティ上の制約により、外部ツールからのウィンドウ操作が制限されています。
-> ログイン画面で **「Ubuntu on Xorg」** を選択して X11 セッションに切り替えてください。
-> Vim風カーソル移動・Web検索・フォルダオープン等の他の機能は Wayland でも動作します。
+> 全機能を利用するにはログイン画面で **「Ubuntu on Xorg」** を選択して X11 セッションに切り替えてください。
+> 詳細は上記「Wayland セッション」を参照してください。
 
 ## macOS をお使いの方へ
 
