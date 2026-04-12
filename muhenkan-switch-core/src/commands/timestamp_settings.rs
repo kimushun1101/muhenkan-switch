@@ -17,7 +17,7 @@ pub fn toggle_position() -> Result<()> {
     muhenkan_switch_config::save(&path, &config)?;
 
     let msg = format!("Timestamp position: {}", config.timestamp.position);
-    let toast = Toast::show(&msg);
+    let toast = Toast::show("");
     toast.finish(&msg);
 
     Ok(())
@@ -34,7 +34,7 @@ pub fn show_status() -> Result<()> {
         "Timestamp: {} ({})\nposition: {}",
         config.timestamp.format, example, config.timestamp.position
     );
-    let toast = Toast::show(&msg);
+    let toast = Toast::show("");
     toast.finish(&msg);
 
     Ok(())

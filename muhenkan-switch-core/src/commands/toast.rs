@@ -215,13 +215,15 @@ mod imp {
 
     impl Toast {
         pub fn show(initial_message: &str) -> Self {
-            let _ = Command::new("notify-send")
-                .args([
-                    "--app-name=muhenkan-switch",
-                    "muhenkan-switch",
-                    initial_message,
-                ])
-                .spawn();
+            if !initial_message.is_empty() {
+                let _ = Command::new("notify-send")
+                    .args([
+                        "--app-name=muhenkan-switch",
+                        "muhenkan-switch",
+                        initial_message,
+                    ])
+                    .spawn();
+            }
             Toast
         }
 
