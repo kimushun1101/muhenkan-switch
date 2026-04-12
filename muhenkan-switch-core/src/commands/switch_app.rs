@@ -252,52 +252,13 @@ mod imp {
 mod imp {
     use super::*;
 
-    pub(super) fn activate_window(app: &str, launch: Option<&str>) -> Result<()> {
-        if is_wayland() {
-            activate_window_wayland(app, launch)
-        } else {
-            activate_window_x11(app, launch)
-        }
-    }
-
-    fn is_wayland() -> bool {
-        super::super::is_wayland()
-    }
-
-    /// Wayland 環境でのウィンドウアクティブ化
-    /// GNOME Shell の Eval API は制限されているため、以下の順で試行:
-    /// 1. wmctrl -x (XWayland 経由)
-    /// 2. xdotool --class (XWayland 経由で動く場合がある)
-    /// 3. xdotool --name (XWayland 経由)
-    /// 4. アプリを起動（既存インスタンスがあれば D-Bus 経由でフォーカスされるアプリもある）
-    fn activate_window_wayland(app: &str, launch: Option<&str>) -> Result<()> {
-        // XWayland 経由で動く可能性があるので X11 ツールを試す
-        let activated = try_wmctrl(app)
-            || try_xdotool(app, "--class")
-            || try_xdotool(app, "--name");
-
-        if !activated {
-            if !has_command("wmctrl") && !has_command("xdotool") {
-                warn_no_window_tools();
-            }
-            if let Some(cmd) = launch {
-                if let Err(e) = Command::new("sh").args(["-c", cmd]).spawn() {
-                    eprintln!("Warning: failed to launch '{}': {}", cmd, e);
-                }
-            } else {
-                notify_process_not_found(app);
-            }
-        }
-
-        Ok(())
-    }
-
-    /// X11 環境でのウィンドウアクティブ化
+    /// ウィンドウアクティブ化 (X11)
     /// 1. wmctrl -x -a (WM_CLASS でマッチ — タイトルより安定)
     /// 2. xdotool search --class (WM_CLASS でマッチ)
     /// 3. xdotool search --name (ウィンドウタイトルでマッチ)
     /// 4. pgrep + xdotool search --pid (バイナリ名から PID 経由でマッチ)
-    fn activate_window_x11(app: &str, launch: Option<&str>) -> Result<()> {
+    /// NOTE: Wayland でのアプリ切り替えは標準 API が未整備のため非対応 (#105)
+    pub(super) fn activate_window(app: &str, launch: Option<&str>) -> Result<()> {
         let activated = try_wmctrl(app)
             || try_xdotool(app, "--class")
             || try_xdotool(app, "--name")
@@ -470,13 +431,6 @@ mod tests {
             Some("/bin/__nonexistent_command_99999__"),
         );
         assert!(result.is_ok());
-    }
-
-    #[cfg(target_os = "linux")]
-    #[test]
-    fn is_wayland_returns_bool() {
-        // Wayland 判定がパニックしないことを確認（結果は環境依存）
-        let _ = super::super::is_wayland();
     }
 
     #[test]
