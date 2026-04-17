@@ -8,6 +8,12 @@ pub fn simulate_type(text: &str) -> Result<()> {
     imp::simulate_type(text)
 }
 
+/// クリップボードの内容をプレーンテキストとして貼り付ける。
+/// リッチテキストの書式を除去して貼り付けたい場合に使用。
+pub fn plain_paste() -> Result<()> {
+    imp::plain_paste()
+}
+
 /// 選択中のテキストを取得する。
 /// Wayland: PRIMARY セレクションから直接読み取り（キー入力シミュレーション不要）
 /// X11/Windows/macOS: Ctrl+C シミュレート → CLIPBOARD から取得
@@ -23,11 +29,21 @@ mod imp {
     use std::mem;
     use windows::Win32::UI::Input::KeyboardAndMouse::{
         SendInput, INPUT, INPUT_KEYBOARD, KEYBDINPUT, KEYEVENTF_KEYUP, KEYEVENTF_UNICODE,
-        VIRTUAL_KEY, VK_C, VK_CONTROL,
+        VIRTUAL_KEY, VK_C, VK_CONTROL, VK_V,
     };
 
     pub(super) fn simulate_copy() -> Result<()> {
         send_ctrl_key(VK_C)
+    }
+
+    pub(super) fn plain_paste() -> Result<()> {
+        let mut clipboard = arboard::Clipboard::new()?;
+        let text = clipboard
+            .get_text()
+            .map_err(|e| anyhow::anyhow!("クリップボードの読み取りに失敗しました: {}", e))?;
+        clipboard.set_text(&text)?;
+        std::thread::sleep(std::time::Duration::from_millis(50));
+        send_ctrl_key(VK_V)
     }
 
     pub(super) fn get_selected_text() -> Result<String> {
@@ -36,7 +52,7 @@ mod imp {
         let mut clipboard = arboard::Clipboard::new()?;
         clipboard
             .get_text()
-            .map_err(|e| anyhow::anyhow!("{}", e))
+            .map_err(|e| anyhow::anyhow!("クリップボードの読み取りに失敗しました: {}", e))
     }
 
     pub(super) fn simulate_type(text: &str) -> Result<()> {
@@ -63,9 +79,9 @@ mod imp {
             let sent = SendInput(&inputs, mem::size_of::<INPUT>() as i32);
             if sent != inputs.len() as u32 {
                 anyhow::bail!(
-                    "SendInput failed: only {} of {} inputs sent",
-                    sent,
-                    inputs.len()
+                    "SendInput に失敗しました: {} 件中 {} 件のみ送信されました",
+                    inputs.len(),
+                    sent
                 );
             }
         }
@@ -109,7 +125,7 @@ mod imp {
 
             let sent = SendInput(&inputs, mem::size_of::<INPUT>() as i32);
             if sent != 4 {
-                anyhow::bail!("SendInput failed: only {} of 4 inputs sent", sent);
+                anyhow::bail!("SendInput に失敗しました: 4 件中 {} 件のみ送信されました", sent);
             }
         }
         Ok(())
@@ -134,6 +150,22 @@ mod imp {
 
     pub(super) fn simulate_copy() -> Result<()> {
         run_xdotool(&["key", "ctrl+c"])
+    }
+
+    pub(super) fn plain_paste() -> Result<()> {
+        if super::super::is_wayland() {
+            anyhow::bail!(
+                "Wayland ではプレーンテキスト貼り付けは未対応です。\n\
+                 X11 セッションに切り替えてください。"
+            );
+        }
+        let mut clipboard = arboard::Clipboard::new()?;
+        let text = clipboard
+            .get_text()
+            .context("クリップボードにテキストがありません")?;
+        clipboard.set_text(&text)?;
+        std::thread::sleep(std::time::Duration::from_millis(50));
+        run_xdotool(&["key", "--clearmodifiers", "ctrl+v"])
     }
 
     pub(super) fn simulate_type(text: &str) -> Result<()> {
@@ -200,13 +232,29 @@ mod imp {
         Ok(())
     }
 
+    pub(super) fn plain_paste() -> Result<()> {
+        let mut clipboard = arboard::Clipboard::new()?;
+        let text = clipboard
+            .get_text()
+            .map_err(|e| anyhow::anyhow!("クリップボードの読み取りに失敗しました: {}", e))?;
+        clipboard.set_text(&text)?;
+        std::thread::sleep(std::time::Duration::from_millis(50));
+        Command::new("osascript")
+            .args([
+                "-e",
+                r#"tell application "System Events" to keystroke "v" using command down"#,
+            ])
+            .output()?;
+        Ok(())
+    }
+
     pub(super) fn get_selected_text() -> Result<String> {
         simulate_copy()?;
         std::thread::sleep(std::time::Duration::from_millis(200));
         let mut clipboard = arboard::Clipboard::new()?;
         clipboard
             .get_text()
-            .map_err(|e| anyhow::anyhow!("{}", e))
+            .map_err(|e| anyhow::anyhow!("クリップボードの読み取りに失敗しました: {}", e))
     }
 
     pub(super) fn simulate_type(text: &str) -> Result<()> {

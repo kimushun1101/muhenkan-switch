@@ -50,13 +50,13 @@
   dsp-s (cmd muhenkan-switch-core dispatch s)
   dsp-d (cmd muhenkan-switch-core dispatch d)
   dsp-f (cmd muhenkan-switch-core dispatch f)
-  dsp-z (cmd muhenkan-switch-core dispatch z)
   dsp-b (cmd muhenkan-switch-core dispatch b)
 
   ;; 固定アクション
   ts-v (cmd muhenkan-switch-core timestamp --action paste)
   ts-c (cmd muhenkan-switch-core timestamp --action copy)
   ts-x (cmd muhenkan-switch-core timestamp --action cut)
+  ts-toggle (cmd muhenkan-switch-core toggle-timestamp-position)
 
   ;; GUI 設定ウィンドウを前面に出す
   open-gui (cmd muhenkan-switch-core open-gui)
@@ -81,7 +81,7 @@
   @dsp-1  @dsp-2  @dsp-3  @dsp-4  @dsp-5
   @dsp-q  @dsp-r  @dsp-t  @dsp-g
   @dsp-a  @dsp-w  @dsp-e  @dsp-s  @dsp-d  @dsp-f
-  @dsp-z  @dsp-b
+  @ts-toggle  @dsp-b
   @ts-v  @ts-c  @ts-x
   left  down  up  right
   C-left  C-right  home  end

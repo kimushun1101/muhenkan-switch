@@ -12,7 +12,7 @@ pub const DISPATCH_KEYS: &[&str] = &[
     "1", "2", "3", "4", "5",
     "q", "w", "e", "r", "t",
     "a", "s", "d", "f", "g",
-    "z", "b",
+    "b",
 ];
 
 // ── Types ──
@@ -195,9 +195,9 @@ pub fn config_path() -> Option<PathBuf> {
 /// 指定パスから config.toml を読み込む。
 pub fn load_from(path: &std::path::Path) -> Result<Config> {
     let content = std::fs::read_to_string(path)
-        .with_context(|| format!("Failed to read config file: {}", path.display()))?;
+        .with_context(|| format!("設定ファイルの読み込みに失敗しました: {}", path.display()))?;
     let config: Config = toml::from_str(&content)
-        .with_context(|| format!("Failed to parse config file: {}", path.display()))?;
+        .with_context(|| format!("設定ファイルの解析に失敗しました: {}", path.display()))?;
     Ok(config)
 }
 
@@ -206,7 +206,7 @@ pub fn load() -> Result<Config> {
     match config_path() {
         Some(path) => load_from(&path),
         None => {
-            eprintln!("Warning: config.toml not found. Using default values.");
+            eprintln!("警告: config.toml が見つかりません。デフォルト値を使用します。");
             Ok(default_config())
         }
     }
@@ -292,7 +292,7 @@ pub fn save(path: &std::path::Path, config: &Config) -> Result<()> {
         .entry("search")
         .or_insert_with(|| Item::Table(Table::new()))
         .as_table_mut()
-        .context("search section is not a table")?;
+        .context("search セクションがテーブル形式ではありません")?;
     search_table.clear();
     let mut search_entries: Vec<_> = config.search.iter().collect();
     search_entries.sort_by(|(na, a), (nb, b)| {
@@ -312,7 +312,7 @@ pub fn save(path: &std::path::Path, config: &Config) -> Result<()> {
         .entry("folders")
         .or_insert_with(|| Item::Table(Table::new()))
         .as_table_mut()
-        .context("folders section is not a table")?;
+        .context("folders セクションがテーブル形式ではありません")?;
     folders_table.clear();
     let mut folder_entries: Vec<_> = config.folders.iter().collect();
     folder_entries.sort_by(|(na, a), (nb, b)| {
@@ -332,7 +332,7 @@ pub fn save(path: &std::path::Path, config: &Config) -> Result<()> {
         .entry("apps")
         .or_insert_with(|| Item::Table(Table::new()))
         .as_table_mut()
-        .context("apps section is not a table")?;
+        .context("apps セクションがテーブル形式ではありません")?;
     apps_table.clear();
     let mut app_entries: Vec<_> = config.apps.iter().collect();
     app_entries.sort_by(|(na, a), (nb, b)| {
@@ -358,13 +358,13 @@ pub fn save(path: &std::path::Path, config: &Config) -> Result<()> {
         .entry("timestamp")
         .or_insert_with(|| Item::Table(Table::new()))
         .as_table_mut()
-        .context("timestamp section is not a table")?;
+        .context("timestamp セクションがテーブル形式ではありません")?;
     ts_table["format"] = toml_edit::value(&config.timestamp.format);
     ts_table["position"] = toml_edit::value(&config.timestamp.position);
     ts_table["delimiter"] = toml_edit::value(&config.timestamp.delimiter);
 
     std::fs::write(path, doc.to_string())
-        .with_context(|| format!("Failed to write config file: {}", path.display()))?;
+        .with_context(|| format!("設定ファイルの書き込みに失敗しました: {}", path.display()))?;
 
     Ok(())
 }
@@ -377,7 +377,7 @@ pub fn validate(config: &Config) -> Vec<String> {
 
     // timestamp format の検証
     if config.timestamp.format.is_empty() {
-        errors.push("Timestamp format cannot be empty".to_string());
+        errors.push("タイムスタンプのフォーマットを入力してください".to_string());
     }
 
     // timestamp delimiter の検証 (空=区切りなし は許可)
@@ -388,7 +388,7 @@ pub fn validate(config: &Config) -> Vec<String> {
             .contains(&['/', '\\', ':', '*', '?', '"', '<', '>', '|'][..])
     {
         errors.push(format!(
-            "Timestamp delimiter contains forbidden character(s): \"{}\"",
+            "区切り文字に使用できない文字が含まれています: \"{}\"",
             config.timestamp.delimiter
         ));
     }
@@ -396,7 +396,7 @@ pub fn validate(config: &Config) -> Vec<String> {
     // timestamp position の検証
     if config.timestamp.position != "before" && config.timestamp.position != "after" {
         errors.push(format!(
-            "Timestamp position must be \"before\" or \"after\", got \"{}\"",
+            "タイムスタンプの位置は \"before\" か \"after\" を指定してください (現在: \"{}\")",
             config.timestamp.position
         ));
     }
@@ -404,7 +404,7 @@ pub fn validate(config: &Config) -> Vec<String> {
     // punctuation_style の検証
     if !["、。", "，．", "，。", "、．"].contains(&config.punctuation_style.as_str()) {
         errors.push(format!(
-            "punctuation_style must be one of \"、。\", \"，．\", \"，。\", \"、．\", got \"{}\"",
+            "punctuation_style は \"、。\", \"，．\", \"，。\", \"、．\" のいずれかを指定してください (現在: \"{}\")",
             config.punctuation_style
         ));
     }
@@ -413,7 +413,7 @@ pub fn validate(config: &Config) -> Vec<String> {
     for (name, entry) in &config.search {
         if !entry.url().contains("{query}") {
             errors.push(format!(
-                "Search engine '{}' URL must contain {{query}} placeholder",
+                "検索エンジン '{}' の URL には {{query}} プレースホルダを含めてください",
                 name
             ));
         }
@@ -426,7 +426,7 @@ pub fn validate(config: &Config) -> Vec<String> {
             let label = format!("search/{}", name);
             if let Some(prev) = used_keys.get(k) {
                 errors.push(format!(
-                    "Dispatch key '{}' is used by both '{}' and '{}'",
+                    "割当キー '{}' が '{}' と '{}' で重複しています",
                     k, prev, label
                 ));
             } else {
@@ -439,7 +439,7 @@ pub fn validate(config: &Config) -> Vec<String> {
             let label = format!("folders/{}", name);
             if let Some(prev) = used_keys.get(k) {
                 errors.push(format!(
-                    "Dispatch key '{}' is used by both '{}' and '{}'",
+                    "割当キー '{}' が '{}' と '{}' で重複しています",
                     k, prev, label
                 ));
             } else {
@@ -452,7 +452,7 @@ pub fn validate(config: &Config) -> Vec<String> {
             let label = format!("apps/{}", name);
             if let Some(prev) = used_keys.get(k) {
                 errors.push(format!(
-                    "Dispatch key '{}' is used by both '{}' and '{}'",
+                    "割当キー '{}' が '{}' と '{}' で重複しています",
                     k, prev, label
                 ));
             } else {
@@ -469,7 +469,7 @@ pub fn validate(config: &Config) -> Vec<String> {
 /// kbd ファイル内の句読点行を指定スタイルに書き換える。
 pub fn rewrite_kbd_punctuation(kbd_path: &std::path::Path, style: &str) -> Result<()> {
     let content = std::fs::read_to_string(kbd_path)
-        .with_context(|| format!("Failed to read kbd file: {}", kbd_path.display()))?;
+        .with_context(|| format!("kbd ファイルの読み込みに失敗しました: {}", kbd_path.display()))?;
 
     let patterns = [
         "(unicode 、)  (unicode 。)",
@@ -490,7 +490,7 @@ pub fn rewrite_kbd_punctuation(kbd_path: &std::path::Path, style: &str) -> Resul
     }
 
     std::fs::write(kbd_path, new_content)
-        .with_context(|| format!("Failed to write kbd file: {}", kbd_path.display()))?;
+        .with_context(|| format!("kbd ファイルの書き込みに失敗しました: {}", kbd_path.display()))?;
 
     Ok(())
 }
@@ -631,7 +631,7 @@ mod tests {
         let config: Config = toml::from_str(toml_str).unwrap();
         let errors = validate(&config);
         assert_eq!(errors.len(), 1);
-        assert!(errors[0].contains("Dispatch key 'a'"));
+        assert!(errors[0].contains("割当キー 'a'"));
     }
 
     // ── A. パース (追加分) ──
@@ -708,7 +708,7 @@ mod tests {
         config.timestamp.format = String::new();
         let errors = validate(&config);
         assert_eq!(errors.len(), 1);
-        assert!(errors[0].contains("format"));
+        assert!(errors[0].contains("フォーマット"));
     }
 
     #[test]
@@ -733,7 +733,7 @@ mod tests {
         let config: Config = toml::from_str(toml_str).unwrap();
         let errors = validate(&config);
         assert_eq!(errors.len(), 1);
-        assert!(errors[0].contains("Dispatch key 'g'"));
+        assert!(errors[0].contains("割当キー 'g'"));
         assert!(errors[0].contains("search/google"));
         assert!(errors[0].contains("search/ejje"));
     }

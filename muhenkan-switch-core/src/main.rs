@@ -48,6 +48,8 @@ enum Commands {
         /// 割当キー (config.toml の key フィールドに対応)
         key: String,
     },
+    /// タイムスタンプの position (before/after) をトグルする
+    ToggleTimestampPosition,
     /// GUI 設定ウィンドウを前面に出す（未起動なら起動する）
     OpenGui,
     /// キーボードレイアウト図を SVG で生成
@@ -64,9 +66,8 @@ enum Commands {
 fn main() {
     if let Err(e) = run() {
         let msg = format!("{e:#}");
-        eprintln!("Error: {msg}");
-        let toast = Toast::show(&msg);
-        toast.finish(&msg);
+        eprintln!("エラー: {msg}");
+        Toast::notify(&msg);
     }
 }
 
@@ -76,6 +77,9 @@ fn run() -> Result<()> {
     // config 不要なコマンドは先に処理
     if let Commands::OpenGui = cli.command {
         return commands::open_gui::run();
+    }
+    if let Commands::ToggleTimestampPosition = cli.command {
+        return commands::timestamp_settings::toggle_position();
     }
 
     // GenerateSvg は独自の config 読み込みを行う
@@ -104,6 +108,8 @@ fn run() -> Result<()> {
         Commands::OpenFolder { target } => commands::open_folder::run(&target, &config),
         Commands::Timestamp { action } => commands::timestamp::run(&action, &config),
         Commands::Dispatch { key } => commands::dispatch::run(&key, &config),
-        Commands::OpenGui | Commands::GenerateSvg { .. } => unreachable!(),
+        Commands::OpenGui
+        | Commands::GenerateSvg { .. }
+        | Commands::ToggleTimestampPosition => unreachable!(),
     }
 }

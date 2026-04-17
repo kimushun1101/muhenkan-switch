@@ -28,7 +28,7 @@ fn notify_process_not_found(app: &str) {
 #[cfg(target_os = "linux")]
 fn warn_no_window_tools() {
     eprintln!(
-        "Warning: wmctrl / xdotool がインストールされていません。\n\
+        "警告: wmctrl / xdotool がインストールされていません。\n\
          アプリ切り替え機能を使うには以下のコマンドでインストールしてください:\n  \
          sudo apt install wmctrl xdotool"
     );
@@ -270,7 +270,7 @@ mod imp {
             }
             if let Some(cmd) = launch {
                 if let Err(e) = Command::new("sh").args(["-c", cmd]).spawn() {
-                    eprintln!("Warning: failed to launch '{}': {}", cmd, e);
+                    eprintln!("警告: '{}' の起動に失敗しました: {}", cmd, e);
                 }
             } else {
                 notify_process_not_found(app);
