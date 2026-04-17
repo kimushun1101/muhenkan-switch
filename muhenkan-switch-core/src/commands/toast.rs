@@ -53,6 +53,12 @@ mod imp {
             let _ = self.tx.send(message.to_string());
             let _ = self.handle.join();
         }
+
+        /// 1回だけ通知を表示する（show + finish の2段階が不要な場合用）。
+        pub fn notify(message: &str) {
+            let toast = Self::show(message);
+            toast.finish(message);
+        }
     }
 
     fn run_toast_ui(rx: mpsc::Receiver<String>, initial_message: Vec<u16>) {
@@ -215,19 +221,24 @@ mod imp {
 
     impl Toast {
         pub fn show(initial_message: &str) -> Self {
-            if !initial_message.is_empty() {
-                let _ = Command::new("notify-send")
-                    .args([
-                        "--app-name=muhenkan-switch",
-                        "muhenkan-switch",
-                        initial_message,
-                    ])
-                    .spawn();
-            }
+            let _ = Command::new("notify-send")
+                .args([
+                    "--app-name=muhenkan-switch",
+                    "muhenkan-switch",
+                    initial_message,
+                ])
+                .spawn();
             Toast
         }
 
         pub fn finish(self, message: &str) {
+            let _ = Command::new("notify-send")
+                .args(["--app-name=muhenkan-switch", "muhenkan-switch", message])
+                .spawn();
+        }
+
+        /// 1回だけ通知を表示する（show + finish の2段階が不要な場合用）。
+        pub fn notify(message: &str) {
             let _ = Command::new("notify-send")
                 .args(["--app-name=muhenkan-switch", "muhenkan-switch", message])
                 .spawn();
@@ -258,6 +269,19 @@ mod imp {
         }
 
         pub fn finish(self, message: &str) {
+            let _ = Command::new("osascript")
+                .args([
+                    "-e",
+                    &format!(
+                        r#"display notification "{}" with title "muhenkan-switch""#,
+                        message.replace('"', r#"\""#)
+                    ),
+                ])
+                .spawn();
+        }
+
+        /// 1回だけ通知を表示する（show + finish の2段階が不要な場合用）。
+        pub fn notify(message: &str) {
             let _ = Command::new("osascript")
                 .args([
                     "-e",

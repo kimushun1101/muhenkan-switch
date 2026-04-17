@@ -40,7 +40,7 @@ mod imp {
         let mut clipboard = arboard::Clipboard::new()?;
         let text = clipboard
             .get_text()
-            .map_err(|e| anyhow::anyhow!("{}", e))?;
+            .map_err(|e| anyhow::anyhow!("クリップボードの読み取りに失敗しました: {}", e))?;
         clipboard.set_text(&text)?;
         std::thread::sleep(std::time::Duration::from_millis(50));
         send_ctrl_key(VK_V)
@@ -52,7 +52,7 @@ mod imp {
         let mut clipboard = arboard::Clipboard::new()?;
         clipboard
             .get_text()
-            .map_err(|e| anyhow::anyhow!("{}", e))
+            .map_err(|e| anyhow::anyhow!("クリップボードの読み取りに失敗しました: {}", e))
     }
 
     pub(super) fn simulate_type(text: &str) -> Result<()> {
@@ -79,9 +79,9 @@ mod imp {
             let sent = SendInput(&inputs, mem::size_of::<INPUT>() as i32);
             if sent != inputs.len() as u32 {
                 anyhow::bail!(
-                    "SendInput failed: only {} of {} inputs sent",
-                    sent,
-                    inputs.len()
+                    "SendInput に失敗しました: {} 件中 {} 件のみ送信されました",
+                    inputs.len(),
+                    sent
                 );
             }
         }
@@ -125,7 +125,7 @@ mod imp {
 
             let sent = SendInput(&inputs, mem::size_of::<INPUT>() as i32);
             if sent != 4 {
-                anyhow::bail!("SendInput failed: only {} of 4 inputs sent", sent);
+                anyhow::bail!("SendInput に失敗しました: 4 件中 {} 件のみ送信されました", sent);
             }
         }
         Ok(())
@@ -236,7 +236,7 @@ mod imp {
         let mut clipboard = arboard::Clipboard::new()?;
         let text = clipboard
             .get_text()
-            .map_err(|e| anyhow::anyhow!("{}", e))?;
+            .map_err(|e| anyhow::anyhow!("クリップボードの読み取りに失敗しました: {}", e))?;
         clipboard.set_text(&text)?;
         std::thread::sleep(std::time::Duration::from_millis(50));
         Command::new("osascript")
@@ -254,7 +254,7 @@ mod imp {
         let mut clipboard = arboard::Clipboard::new()?;
         clipboard
             .get_text()
-            .map_err(|e| anyhow::anyhow!("{}", e))
+            .map_err(|e| anyhow::anyhow!("クリップボードの読み取りに失敗しました: {}", e))
     }
 
     pub(super) fn simulate_type(text: &str) -> Result<()> {

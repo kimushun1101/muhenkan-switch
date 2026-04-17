@@ -191,7 +191,7 @@ mod imp {
 
         unsafe {
             let snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0)
-                .map_err(|e| anyhow::anyhow!("Failed to create snapshot: {}", e))?;
+                .map_err(|e| anyhow::anyhow!("プロセス一覧のスナップショット取得に失敗しました: {}", e))?;
             let mut entry = PROCESSENTRY32W {
                 dwSize: std::mem::size_of::<PROCESSENTRY32W>() as u32,
                 ..Default::default()

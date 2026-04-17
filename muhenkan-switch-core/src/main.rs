@@ -50,8 +50,6 @@ enum Commands {
     },
     /// タイムスタンプの position (before/after) をトグルする
     ToggleTimestampPosition,
-    /// タイムスタンプの現在設定を Toast で表示する
-    TimestampStatus,
     /// GUI 設定ウィンドウを前面に出す（未起動なら起動する）
     OpenGui,
     /// キーボードレイアウト図を SVG で生成
@@ -68,9 +66,8 @@ enum Commands {
 fn main() {
     if let Err(e) = run() {
         let msg = format!("{e:#}");
-        eprintln!("Error: {msg}");
-        let toast = Toast::show(&msg);
-        toast.finish(&msg);
+        eprintln!("エラー: {msg}");
+        Toast::notify(&msg);
     }
 }
 
@@ -83,9 +80,6 @@ fn run() -> Result<()> {
     }
     if let Commands::ToggleTimestampPosition = cli.command {
         return commands::timestamp_settings::toggle_position();
-    }
-    if let Commands::TimestampStatus = cli.command {
-        return commands::timestamp_settings::show_status();
     }
 
     // GenerateSvg は独自の config 読み込みを行う
@@ -116,7 +110,6 @@ fn run() -> Result<()> {
         Commands::Dispatch { key } => commands::dispatch::run(&key, &config),
         Commands::OpenGui
         | Commands::GenerateSvg { .. }
-        | Commands::ToggleTimestampPosition
-        | Commands::TimestampStatus => unreachable!(),
+        | Commands::ToggleTimestampPosition => unreachable!(),
     }
 }

@@ -10,7 +10,7 @@ pub fn run(engine: &str, config: &Config) -> Result<()> {
     let query = super::keys::get_selected_text()?;
 
     if query.trim().is_empty() {
-        eprintln!("Warning: 選択テキストが空です。");
+        eprintln!("警告: 選択テキストが空です。");
         return Ok(());
     }
 

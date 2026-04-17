@@ -59,7 +59,7 @@ pub fn run(action: &str, config: &Config) -> Result<()> {
         ("cut", None) => Ok(()),
 
         _ => anyhow::bail!(
-            "Unknown timestamp action: '{}'. Use paste, copy, or cut.",
+            "不明なタイムスタンプアクションです: '{}'。paste, copy, cut のいずれかを指定してください",
             action
         ),
     }
@@ -67,7 +67,7 @@ pub fn run(action: &str, config: &Config) -> Result<()> {
 
 fn format_toast_result(result: &Result<Vec<PathBuf>>) -> String {
     match result {
-        Ok(paths) if paths.is_empty() => "(no selection)".to_string(),
+        Ok(paths) if paths.is_empty() => "(選択なし)".to_string(),
         Ok(paths) if paths.len() == 1 => {
             let name = paths[0]
                 .file_name()
@@ -75,7 +75,7 @@ fn format_toast_result(result: &Result<Vec<PathBuf>>) -> String {
                 .unwrap_or_default();
             format!("\u{2713} {}", name)
         }
-        Ok(paths) => format!("\u{2713} {} files", paths.len()),
+        Ok(paths) => format!("\u{2713} {} 件", paths.len()),
         Err(e) => format!("\u{2717} {}", e),
     }
 }
@@ -338,7 +338,7 @@ mod imp {
     /// osascript で Finder の selection を取得可能。
     /// See: https://github.com/kimushun1101/muhenkan-switch/issues/19
     pub(super) fn get_selected_paths(_hwnd: isize) -> Result<Vec<PathBuf>> {
-        anyhow::bail!("File manager selection is not yet supported on macOS")
+        anyhow::bail!("macOS ではファイルマネージャの選択取得は未対応です")
     }
 }
 
