@@ -56,10 +56,13 @@ mise run dev        # debug ビルド + kanata ダウンロード + GUI 起動
 mise run test       # ユニットテスト
 ```
 
-## Windows Defender 除外設定
+## Windows でビルド・実行がブロックされる場合
 
-ビルド後の `.exe` 実行時に、Windows Defender のリアルタイム保護により `Permission denied` が発生することがある。
-新しく生成・コピーされた未署名の `.exe` をスキャンし、一時的にロックするのが原因。
+エラーメッセージで原因と対処が分かれる。
+
+### `Permission denied` — Windows Defender リアルタイム保護
+
+ビルド後の `.exe` 実行時に発生することがある。新しく生成・コピーされた未署名の `.exe` をスキャンし、一時的にロックするのが原因。
 
 リポジトリのルートディレクトリごと除外するのが簡単（管理者権限 PowerShell で実行）:
 
@@ -73,6 +76,32 @@ Get-MpPreference | Select-Object -ExpandProperty ExclusionPath
 # 除外を解除（開発終了後）
 Remove-MpPreference -ExclusionPath "C:\Users\<ユーザー名>\repos\muhenkan-switch"
 ```
+
+### `アプリケーション制御ポリシーによってこのファイルがブロックされました。 (os error 4551)` — Smart App Control
+
+`cargo build` 段階で `target/debug/build/*/build-script-build` の実行が止まる。Windows 11 の **Smart App Control (SAC)** が `target/` 配下の未署名 exe をブロックしているのが原因。Defender のリアルタイム保護とは別機能なので、上記の `Add-MpPreference` では解消しない。
+
+SAC は **パス除外設定が存在しない** ため、SAC 自体をオフにする必要がある。
+
+> ℹ️ かつては「一度オフにすると再オンにはクリーンインストールが必要」だったが、Windows の最近のアップデートで Windows セキュリティから **オン/オフを切り替え可能** になった（[Microsoft 公式 FAQ](https://support.microsoft.com/en-us/windows/smart-app-control-frequently-asked-questions-285ea03d-fa88-4d56-882e-6698afdb7003)）。
+>
+> ただし「オプションの診断データ」を**オフ**にしている環境では、再有効化に PC リセットまたは Windows 再インストールが依然として必要。
+
+#### 状態確認
+
+```powershell
+Get-MpComputerStatus | Select-Object SmartAppControlState, SmartAppControlExpiration
+```
+
+`SmartAppControlState` が `On` または `Eval` のときにブロックが発生する。`Off` なら別原因。
+
+#### 手順
+
+1. 設定 → プライバシーとセキュリティ → Windows セキュリティ → アプリ＆ブラウザー制御
+2. 「スマート アプリ コントロール」→ オフ
+3. 念のためブロック判定された build script のキャッシュを掃除するため `cargo clean` してから `mise run dev` を再実行
+
+開発が終わったら同じ画面からオンに戻せる（診断データを送信する設定であれば）。
 
 ## Updater 署名鍵セットアップ
 
