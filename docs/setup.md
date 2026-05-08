@@ -118,9 +118,13 @@ sudo udevadm control --reload-rules && sudo udevadm trigger
 # 再ログインが必要
 ```
 
-> **Wayland をお使いの場合（Ubuntu 22.04 以降のデフォルト）:**
-> 全機能を利用するにはログイン画面で **「Ubuntu on Xorg」** を選択して X11 セッションに切り替えてください。
-> 詳細は上記「Wayland セッション」を参照してください。
+> **Wayland をお使いの場合:**
+>
+> - **Ubuntu 22.04 / 24.04**: ログイン画面で「Ubuntu on Xorg」を選択して X11 セッションに切り替えてください
+> - **Ubuntu 25.10 / 26.04 以降**: GNOME on Xorg セッションは削除されました。X11 が必要な場合は以下を検討してください:
+>   - Xubuntu / Kubuntu / Ubuntu Cinnamon 等の X11 対応フレーバーを使用
+>   - Ubuntu 24.04 LTS の継続使用 (2029 年 4 月までサポート)
+>   - muhenkan-switch の Wayland 対応待ち ([Issue #105](https://github.com/kimushun1101/muhenkan-switch/issues/105))
 
 ## macOS をお使いの方へ
 
