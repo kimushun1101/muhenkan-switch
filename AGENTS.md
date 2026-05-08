@@ -1,94 +1,50 @@
-# AGENTS.md — AI エージェント向けプロジェクト設定
+# AGENTS.md — muhenkan-switch
 
-## プロジェクト構成
+3-crate Cargo workspace + Tauri v2 GUI + kanata プロセス管理。
+詳細構成は `Cargo.toml` 参照。フロントエンドは `muhenkan-switch/frontend/` (**Vanilla JS — Node.js / ビルドステップ不要**)。
 
-Cargo ワークスペース（3 クレート）:
+## マルチプラットフォーム (Win / Linux / macOS)
 
-- `muhenkan-switch` — GUI（Tauri v2）。設定画面と kanata プロセス管理
-- `muhenkan-switch-core` — CLI ツール。検索・アプリ切替・フォルダ・タイムスタンプ等の実行
-- `muhenkan-switch-config` — 共有ライブラリ。TOML 設定の読み書き・バリデーション
+非自明な落とし穴のみ列挙。
 
-フロントエンド (`muhenkan-switch/frontend/`) は **Vanilla JS**（HTML + CSS + JS のみ）。
-Node.js やビルドステップは不要。
+### シェルスクリプト
 
-## マルチプラットフォーム対応
+- **`sed -i` を直接使わない** — macOS の BSD sed は `sed -i ''` が必要。`scripts/dev/sync-kanata-version.sh` の `sedi()` ヘルパーを使うか、一時ファイル + mv で回避
+- **GNU 拡張オプション禁止** — `readlink -f`, `find -printf`, `grep -P` 等は macOS で動かない。POSIX 互換で書く
 
-このプロジェクトは **Windows / Linux / macOS** の 3 環境で動作する。
-コードやスクリプトを書く際は以下を守ること。
+### Rust
 
-### シェルスクリプト (*.sh)
-
-- **`sed -i` は直接使わない** — macOS の BSD sed は `sed -i ''` が必要。
-  `sedi()` ヘルパー（`scripts/dev/sync-kanata-version.sh` 参照）のようなラッパーを使うか、
-  一時ファイル + mv のパターンで回避する。
-- **改行コードは LF** — `.gitattributes` で `*.sh text eol=lf` を設定済み。
-  新しいシェルスクリプトを追加する場合も同様に LF であることを確認する。
-- **`find`, `grep`, `readlink` 等の GNU 拡張オプションに依存しない** —
-  macOS のデフォルトは BSD 版。POSIX 互換のオプションを使う。
-  例: `readlink -f` → macOS では動かない。`cd "$(dirname "$0")/.." && pwd` を使う。
-
-### Rust / Cargo
-
-- **OS 固有の依存は `[target.'cfg(...)'.dependencies]` で分離** —
-  `windows` クレート等はターゲット条件付きで記述する。
-- **パスセパレータ** — Rust コード内でパスを扱う場合は `std::path::Path` / `PathBuf` を使い、
-  `/` や `\` をハードコードしない。
-- **プラットフォーム分岐は `mod imp` パターン** — 同一ファイル内に
-  `#[cfg(target_os = "windows")] mod imp { ... }` / `#[cfg(target_os = "linux")] mod imp { ... }`
-  のようにまとめる（`muhenkan-switch-core/src/commands/` 参照）。
-- **共有依存はワークスペース経由** — `anyhow`, `serde`, `chrono`, `open`,
-  `muhenkan-switch-config` は `[workspace.dependencies]` で定義済み。
-  各クレートでは `anyhow.workspace = true` のように参照する。
+- **プラットフォーム分岐は `mod imp` パターン** — 同一ファイル内に `#[cfg(target_os = "...")] mod imp { ... }` でまとめる (`muhenkan-switch-core/src/commands/` 参照)
 
 ## コーディング規約
 
-### エラーハンドリング
-
-- `anyhow::Result<T>` を使う。独自エラー型は作らない。
-- `.context()` / `.with_context()` でエラーメッセージに文脈を追加する。
-- 致命的エラーは `anyhow::bail!()`。
-- オプショナルな外部ツール（wmctrl, xdotool, notify-send 等）の失敗は
-  `eprintln!()` で警告して続行する（graceful degradation）。
-
-### テスト
-
-- ファイル末尾に `#[cfg(test)] mod tests { ... }` ブロックを置く。
-- 命名: `test_{対象}_{条件}` または `{関数名}_{シナリオ}`。
-- 実行: `cargo test --workspace`。
-
-### 言語
-
-- **UI テキスト・ユーザー向けメッセージ**: 日本語
-- **コード内コメント**: 英語可（セクション区切りは `// ── Section ──` 形式）
-- **コミットメッセージ**: 日本語（技術用語は英語可）
+- **エラー型**: `anyhow::Result<T>`。独自エラー型は作らない。致命的は `bail!()`、外部ツール (wmctrl/xdotool/notify-send 等) の失敗は `eprintln!` で警告して続行
+- **テスト命名**: `test_{対象}_{条件}` または `{関数名}_{シナリオ}`
+- **言語**: UI 日本語 / コードコメント英語可 / コミット日本語
 
 ## ブランチ・PR 運用
 
-- **Issue に対応する変更は必ずフィーチャーブランチを切って PR で対応する。**
-  ブランチ名は `feat/issue-{番号}` を基本とする。
-- **`main` への直接 push は禁止。** コミットした後に push する前にブランチを確認すること。
-- PR 本文には `Closes #番号` を記載して Issue と紐付ける。
-- **PR 作成前にドキュメントの更新が必要か確認する。** 機能追加・変更時は以下を確認:
-  - `README.md` — 機能一覧
-  - `docs/design.md` — 設計・実装方針
-  - `docs/setup.md` — セットアップ手順・インストールパス
-  - `config/default-*.toml` — 設定コメント
-  - `muhenkan-switch/frontend/help.html` — ヘルプ画面
+- `main` 直 push 禁止。Issue 対応は `feat/issue-{番号}` ブランチ + PR
+- PR 本文に `Closes #番号`
+- **機能追加・変更時は以下のドキュメント更新を確認**:
+  - `README.md` (機能一覧)
+  - `docs/design.md` (設計)
+  - `docs/setup.md` (セットアップ)
+  - `config/default-*.toml` (設定コメント)
+  - `muhenkan-switch/frontend/help.html` (ヘルプ)
 
-## バージョン管理
+## バージョン管理 (single source of truth)
 
-- **Rust クレート**: `Cargo.toml` の `[workspace.package] version` が単一ソース。
-- **kanata**: `kanata-version.txt` が単一ソース。
-  `scripts/dev/sync-kanata-version.sh` で 4 ファイルに同期する。
-- バージョン等の定数を複数ファイルにハードコードしない。
+- **Rust クレート**: `Cargo.toml` の `[workspace.package] version`
+- **kanata**: `kanata-version.txt` → `mise run sync-kanata-version` で 4 ファイルに同期
 
 ## 開発コマンド
 
 ```bash
-mise run build              # debug ビルド → bin/
-mise run test               # cargo test --workspace
-mise run dev                # ビルド + kanata 取得 + GUI 起動
+mise run build                # debug ビルド → bin/
+mise run test                 # cargo test --workspace
+mise run dev                  # ビルド + kanata 取得 + GUI 起動
 mise run sync-kanata-version  # kanata バージョンを全ファイルに同期
-mise run fetch-kanata       # 開発用 kanata バイナリをダウンロード
-mise run gen-icons          # img/icon.svg からアイコン全サイズを生成（Node.js 使用）
+mise run fetch-kanata         # 開発用 kanata バイナリをダウンロード
+mise run gen-icons            # img/icon.svg からアイコン全サイズ生成 (Node.js 使用)
 ```
