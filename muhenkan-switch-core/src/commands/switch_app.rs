@@ -20,8 +20,7 @@ pub fn run(target: &str, config: &Config) -> Result<()> {
 /// プロセスが見つからず launch コマンドも未設定の場合に Toast で通知する。
 fn notify_process_not_found(app: &str) {
     let msg = format!("'{}' が見つかりません — config.toml の command を設定してください", app);
-    let toast = Toast::show(&msg);
-    toast.finish(&msg);
+    Toast::notify(&msg);
 }
 
 /// wmctrl / xdotool の両方が未インストールの場合に警告を出す。

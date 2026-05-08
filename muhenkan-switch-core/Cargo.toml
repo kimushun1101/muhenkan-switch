@@ -25,6 +25,10 @@ dirs = "6"
 indexmap = "2"
 tempfile = "3"
 
+[target.'cfg(target_os = "linux")'.dependencies]
+# zbus バックエンド (純 Rust)。libdbus-1-dev / pkg-config 不要。
+notify-rust = { version = "4", default-features = false, features = ["z"] }
+
 [target.'cfg(windows)'.dependencies]
 windows = { version = "0.61", features = [
     "Win32_System_Com",

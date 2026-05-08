@@ -41,7 +41,6 @@ mise run setup
 | `pkexec` | GUI 権限昇格（uinput 設定用） |
 | `wmctrl` | ウィンドウアクティブ化（アプリ切り替え） |
 | `xdotool` | ウィンドウ検索・操作（アプリ切り替え） |
-| `libnotify-bin` | デスクトップ通知（notify-send） |
 
 Fedora/Arch の場合は `mise.toml` 内の対応コマンドが実行されます。
 </details>
@@ -186,7 +185,7 @@ cargo test --workspace
 - **timestamp** (`test_compose_*`, `test_resolve_*`) — タイムスタンプ結合・アクション解決の純粋ロジック
 - **open_folder** — `expand_home` のチルダ展開、存在しないフォルダのエラー、空パスのエラー
 - **switch_app** — `try_wmctrl`/`try_xdotool` が存在しないアプリでパニックしないこと、`activate_window` のエラーハンドリング
-- **toast** — `Toast::show`/`finish` が notify-send 不在でもパニックしないこと、日本語メッセージ対応
+- **toast** — `Toast::show`/`finish` が D-Bus 不在でもパニックしないこと、日本語メッセージ対応 (Linux では `show`/`finish` は no-op、`notify` のみ `notify-rust` 経由で送信)
 
 #### テスト追加時の規約
 
@@ -202,7 +201,7 @@ cargo test --workspace
 #### 前提条件
 
 ```bash
-sudo apt install wmctrl xdotool libnotify-bin xdg-utils
+sudo apt install wmctrl xdotool xdg-utils
 cargo build --workspace
 ```
 
