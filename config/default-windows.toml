@@ -21,13 +21,12 @@ Question   = {key = "q", url = "https://chatgpt.com/?q={query}&temporary-chat=tr
 # key: 割当キー（無変換+key で発動）
 # path: ~ はホームディレクトリに展開されます
 [folders]
-Downloads = {key = "1", path = "~/Downloads"}
+Home      = {key = "1", path = "~"}
 Desktop   = {key = "2", path = "~/Desktop"}
 Documents = {key = "3", path = "~/Documents"}
+Downloads = {key = "4", path = "~/Downloads"}
 # ↓ よく使うプロジェクトフォルダに変更してお使いください
-Project   = {key = "4", path = "~/repos"}
-# ↓ お好みのフォルダに変更してお使いください
-Home      = {key = "5", path = "~"}
+Project   = {key = "5", path = "~/repos"}
 
 # ── アプリ切り替え ──
 # key: 割当キー（無変換+key で発動）
