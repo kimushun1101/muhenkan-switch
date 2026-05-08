@@ -213,35 +213,31 @@ mod imp {
 
 // ── Platform: Linux ──
 
+// Linux では進捗・完了通知 (`show` / `finish`) を抑制し、`notify` のみ
+// 表示する。理由: GNOME Shell 46 の banner キューイングで「処理中」→
+// 「完了」が順次表示され、完了通知の体感が遅延するため。結果はファイラ
+// に即反映されるので視覚的に確認できる。詳細: #133。
 #[cfg(target_os = "linux")]
 mod imp {
-    use std::process::Command;
+    use notify_rust::Notification;
 
     pub struct Toast;
 
     impl Toast {
-        pub fn show(initial_message: &str) -> Self {
-            let _ = Command::new("notify-send")
-                .args([
-                    "--app-name=muhenkan-switch",
-                    "muhenkan-switch",
-                    initial_message,
-                ])
-                .spawn();
+        pub fn show(_initial_message: &str) -> Self {
             Toast
         }
 
-        pub fn finish(self, message: &str) {
-            let _ = Command::new("notify-send")
-                .args(["--app-name=muhenkan-switch", "muhenkan-switch", message])
-                .spawn();
-        }
+        pub fn finish(self, _message: &str) {}
 
-        /// 1回だけ通知を表示する（show + finish の2段階が不要な場合用）。
+        /// 1回だけ通知を表示する。エラー / 状態フィードバック用。
         pub fn notify(message: &str) {
-            let _ = Command::new("notify-send")
-                .args(["--app-name=muhenkan-switch", "muhenkan-switch", message])
-                .spawn();
+            // appname は GNOME 46+ の発信元アプリ識別に必須 (notify-rust #218)。
+            let _ = Notification::new()
+                .appname("muhenkan-switch")
+                .summary("muhenkan-switch")
+                .body(message)
+                .show();
         }
     }
 }
