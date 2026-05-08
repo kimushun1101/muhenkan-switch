@@ -81,7 +81,7 @@ kanata の設定ガイドは [こちら](https://github.com/jtroo/kanata/wiki/Co
 | 2 | フォルダ | ~/Desktop |
 | 3 | フォルダ | ~/Documents |
 | 4 | フォルダ | ~/Downloads |
-| 5 | フォルダ | ~/repos（カスタマイズ推奨） |
+| 5 | フォルダ | ~/proj（カスタマイズ推奨） |
 | q | 検索 | Question (ChatGPT) |
 | w | 検索 | Web翻訳 (Google 翻訳) |
 | e | 検索 | 英語辞典 (Weblio) |

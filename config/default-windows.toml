@@ -26,7 +26,7 @@ Desktop   = {key = "2", path = "~/Desktop"}
 Documents = {key = "3", path = "~/Documents"}
 Downloads = {key = "4", path = "~/Downloads"}
 # ↓ よく使うプロジェクトフォルダに変更してお使いください
-Project   = {key = "5", path = "~/repos"}
+Project   = {key = "5", path = "~/proj"}
 
 # ── アプリ切り替え ──
 # key: 割当キー（無変換+key で発動）
