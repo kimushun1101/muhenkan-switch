@@ -4,6 +4,7 @@
 
 - [Rust ツールチェーン](https://rustup.rs/)
 - [mise](https://mise.jdx.dev/)（タスクランナーとして使用）
+- Node.js LTS（フロントエンド (Tauri webview) のビルドに必要。`mise.toml` で自動セットアップされる）
 
 ```bash
 # Rust のインストール
@@ -56,6 +57,25 @@ mise run test       # ユニットテスト
 ```
 
 HMR を使った高速開発をする場合は `cd muhenkan-switch && npx --yes @tauri-apps/cli@2 dev --config tauri.conf.dev.json` を使用してください。
+
+### フロントエンド開発タスク
+
+`muhenkan-switch/frontend/` 配下で以下のタスクが利用できる。CI では typecheck / lint / format:check / test / build を全 OS で強制している。
+
+```bash
+cd muhenkan-switch/frontend
+npm run typecheck     # tsc --noEmit (TypeScript strict)
+npm run lint          # eslint .
+npm run lint:fix      # eslint . --fix
+npm run format        # prettier --write .
+npm run format:check  # prettier --check .
+npm run test          # vitest run
+npm run test:watch    # vitest (watch mode)
+npm run test:coverage # vitest run --coverage
+npm run build         # vite build (mise run build からも呼ばれる)
+```
+
+スタイル・lint 規約の詳細は `eslint.config.js` と `.prettierrc.json` を single source of truth として参照。
 
 ## Windows でビルド・実行がブロックされる場合
 
@@ -194,6 +214,28 @@ cargo test --workspace
 - テスト名: `test_{カテゴリ}_{何を検証するか}` または `{関数名}_{条件}_{期待結果}`
 - 場所: 各 `.rs` ファイル内 `#[cfg(test)] mod tests`
 - ファイル I/O を伴うテストは `std::env::temp_dir()` を使用し、末尾で cleanup
+
+### フロントエンド自動テスト（Vitest）
+
+```
+cd muhenkan-switch/frontend
+npm run test            # vitest run
+npm run test:coverage   # vitest run --coverage (coverage/ に出力)
+```
+
+#### テストの場所
+
+`src/{lib,forms}/__tests__/*.test.ts` に集約配置（co-locate しない）。
+
+- `src/lib/__tests__/utils.test.ts` — ユーティリティ関数
+- `src/lib/__tests__/dispatch-key.test.ts` — ディスパッチキー解決
+- `src/forms/__tests__/timestamp.test.ts` — timestamp フォームの collect
+
+#### 規約
+
+- テスト DOM: happy-dom（`vitest.config.ts` で `environment: 'happy-dom'`）
+- vitest globals は `false`。各テストで `import { describe, expect, it } from 'vitest'` を明示
+- Tauri `invoke` を呼ぶモジュールは `vi.mock('../lib/tauri')` で差し替える
 
 ### 手動テスト（Ubuntu 22.04 X11）
 
