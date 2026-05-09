@@ -56,6 +56,16 @@ export function getTimestampDelimiter() {
   return preset;
 }
 
+// Collect timestamp settings into the shared collected object.
+// Mirrors the original logic from lib/config-io.js so behavior is unchanged.
+export function collectTimestamp(collected) {
+  collected.timestamp = {
+    format: getTimestampFormat(),
+    position: document.querySelector('input[name="ts-position"]:checked').value,
+    delimiter: getTimestampDelimiter(),
+  };
+}
+
 export async function updateTimestampPreview() {
   const format = getTimestampFormat();
   const delimiter = getTimestampDelimiter();

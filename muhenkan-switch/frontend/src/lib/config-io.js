@@ -1,16 +1,24 @@
 // ── Config load / render / collect / apply / reset / defaults ──
+//
+// 依存方向: lib/config-io.js は forms/* を直接 import せず、
+// `initConfigIo({ renderers, collectors })` で受け取った関数群へ fan-out する
+// (Issue #140)。Phase 3 TS 化や Phase 4 単体テストでの差し替え/モックを
+// しやすくする目的の純リファクタ。
 import { invoke, message, ask } from "./tauri.js";
 import {
   getConfig, setConfig,
   setAppPresets, setSearchPresets,
 } from "./state.js";
 import { validateDispatchKeys } from "./dispatch-key.js";
-import {
-  renderTimestamp, getTimestampFormat, getTimestampDelimiter,
-} from "../forms/timestamp.js";
-import { renderSearchList } from "../forms/search.js";
-import { renderFoldersList } from "../forms/folders.js";
-import { renderAppsList } from "../forms/apps.js";
+
+// ── Renderer / collector registries (set via initConfigIo) ──
+let renderers = [];
+let collectors = [];
+
+export function initConfigIo({ renderers: r = [], collectors: c = [] } = {}) {
+  renderers = r;
+  collectors = c;
+}
 
 // ── Load config on startup ──
 export async function loadConfig() {
@@ -34,20 +42,11 @@ export function renderConfig() {
   const config = getConfig();
   if (!config) return;
 
-  // Punctuation style
+  // Punctuation style (lib/config-io が直接保持する唯一の DOM 操作)
   document.getElementById("punctuation-style").value = config.punctuation_style || "、。";
 
-  // Timestamp
-  renderTimestamp();
-
-  // Search engines
-  renderSearchList();
-
-  // Folders
-  renderFoldersList();
-
-  // Apps
-  renderAppsList();
+  // Fan out to per-form renderers (順序は main.js の初期化順)
+  for (const render of renderers) render();
 }
 
 // ── Collect config from UI ──
@@ -56,57 +55,12 @@ export function collectConfig() {
     search: {},
     folders: {},
     apps: {},
-    timestamp: {
-      format: getTimestampFormat(),
-      position: document.querySelector('input[name="ts-position"]:checked').value,
-      delimiter: getTimestampDelimiter(),
-    },
+    timestamp: {},
     punctuation_style: document.getElementById("punctuation-style").value || "、。",
   };
 
-  // Search
-  for (const row of document.querySelectorAll("#search-list .list-row")) {
-    const name = row.querySelector(".key-input").value.trim();
-    const url = row.querySelector(".url-input").value.trim();
-    const dispatchKey = row.querySelector(".dispatch-key-select").value;
-    if (name && url) {
-      const entry = { url };
-      if (dispatchKey) entry.key = dispatchKey;
-      collected.search[name] = entry;
-    }
-  }
-
-  // Folders
-  for (const row of document.querySelectorAll("#folders-list .list-row")) {
-    const name = row.querySelector(".key-input").value.trim();
-    const path = row.querySelector(".path-input").value.trim();
-    const dispatchKey = row.querySelector(".dispatch-key-select").value;
-    if (name) {
-      const entry = { path };
-      if (dispatchKey) entry.key = dispatchKey;
-      collected.folders[name] = entry;
-    }
-  }
-
-  // Apps — 機能名の重複を防ぐ（IndexMap のキー重複で上書きされるのを回避）
-  for (const row of document.querySelectorAll("#apps-list .list-row")) {
-    let name = row.querySelector(".key-input").value.trim();
-    const appSelect = row.querySelector(".app-select");
-    const process = appSelect.value;
-    const selectedOpt = appSelect.options[appSelect.selectedIndex];
-    const command = selectedOpt?.dataset?.command || "";
-    const dispatchKey = row.querySelector(".dispatch-key-select").value;
-    if (name && process) {
-      if (collected.apps[name]) {
-        const appLabel = selectedOpt?.textContent || process;
-        name = `${name} (${appLabel})`;
-      }
-      const entry = { process };
-      if (dispatchKey) entry.key = dispatchKey;
-      if (command) entry.command = command;
-      collected.apps[name] = entry;
-    }
-  }
+  // Fan out to per-form collectors
+  for (const collect of collectors) collect(collected);
 
   return collected;
 }

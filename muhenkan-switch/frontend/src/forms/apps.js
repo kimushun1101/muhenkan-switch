@@ -52,6 +52,30 @@ export function renderAppsList() {
   }
 }
 
+// Collect apps-list rows into the shared collected object.
+// Mirrors the original logic from lib/config-io.js so behavior is unchanged.
+// 機能名の重複を防ぐ（IndexMap のキー重複で上書きされるのを回避）
+export function collectApps(collected) {
+  for (const row of document.querySelectorAll("#apps-list .list-row")) {
+    let name = row.querySelector(".key-input").value.trim();
+    const appSelect = row.querySelector(".app-select");
+    const process = appSelect.value;
+    const selectedOpt = appSelect.options[appSelect.selectedIndex];
+    const command = selectedOpt?.dataset?.command || "";
+    const dispatchKey = row.querySelector(".dispatch-key-select").value;
+    if (name && process) {
+      if (collected.apps[name]) {
+        const appLabel = selectedOpt?.textContent || process;
+        name = `${name} (${appLabel})`;
+      }
+      const entry = { process };
+      if (dispatchKey) entry.key = dispatchKey;
+      if (command) entry.command = command;
+      collected.apps[name] = entry;
+    }
+  }
+}
+
 export function addAppRow(container, name = "", process = "", command = "", dispatchKey = "") {
   const row = document.createElement("div");
   row.className = "list-row";

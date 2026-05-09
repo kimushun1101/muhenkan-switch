@@ -12,6 +12,21 @@ export function renderSearchList() {
   }
 }
 
+// Collect search-list rows into the shared collected object.
+// Mirrors the original logic from lib/config-io.js so behavior is unchanged.
+export function collectSearch(collected) {
+  for (const row of document.querySelectorAll("#search-list .list-row")) {
+    const name = row.querySelector(".key-input").value.trim();
+    const url = row.querySelector(".url-input").value.trim();
+    const dispatchKey = row.querySelector(".dispatch-key-select").value;
+    if (name && url) {
+      const entry = { url };
+      if (dispatchKey) entry.key = dispatchKey;
+      collected.search[name] = entry;
+    }
+  }
+}
+
 export function addSearchRow(container, name = "", url = "", dispatchKey = "") {
   const row = document.createElement("div");
   row.className = "list-row";

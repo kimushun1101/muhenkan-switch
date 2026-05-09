@@ -13,6 +13,21 @@ export function renderFoldersList() {
   }
 }
 
+// Collect folders-list rows into the shared collected object.
+// Mirrors the original logic from lib/config-io.js so behavior is unchanged.
+export function collectFolders(collected) {
+  for (const row of document.querySelectorAll("#folders-list .list-row")) {
+    const name = row.querySelector(".key-input").value.trim();
+    const path = row.querySelector(".path-input").value.trim();
+    const dispatchKey = row.querySelector(".dispatch-key-select").value;
+    if (name) {
+      const entry = { path };
+      if (dispatchKey) entry.key = dispatchKey;
+      collected.folders[name] = entry;
+    }
+  }
+}
+
 export function addFolderRow(container, name = "", path = "", dispatchKey = "") {
   const row = document.createElement("div");
   row.className = "list-row";
