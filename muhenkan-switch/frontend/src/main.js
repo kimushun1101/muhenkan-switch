@@ -6,11 +6,21 @@
 import { invoke } from "./lib/tauri.js";
 import { initTabs } from "./lib/tabs.js";
 import { initShortcuts } from "./lib/shortcuts.js";
-import { loadConfig, renderConfig, initConfigActions } from "./lib/config-io.js";
-import { initTimestampForm } from "./forms/timestamp.js";
-import { initSearchForm } from "./forms/search.js";
-import { initFoldersForm } from "./forms/folders.js";
-import { initAppsForm } from "./forms/apps.js";
+import {
+  loadConfig, renderConfig, initConfigActions, initConfigIo,
+} from "./lib/config-io.js";
+import {
+  initTimestampForm, renderTimestamp, collectTimestamp,
+} from "./forms/timestamp.js";
+import {
+  initSearchForm, renderSearchList, collectSearch,
+} from "./forms/search.js";
+import {
+  initFoldersForm, renderFoldersList, collectFolders,
+} from "./forms/folders.js";
+import {
+  initAppsForm, renderAppsList, collectApps,
+} from "./forms/apps.js";
 import {
   initGeneralForm, refreshKanataStatus, loadAutostart, initUpdater,
 } from "./forms/general.js";
@@ -24,6 +34,12 @@ async function init() {
   initFoldersForm();
   initAppsForm();
   initGeneralForm({ renderConfig });
+  // forms/* の render/collect を config-io に注入 (Issue #140 で依存方向を逆転)
+  // 順序は元の renderConfig() / collectConfig() の呼び出し順を保つこと
+  initConfigIo({
+    renderers: [renderTimestamp, renderSearchList, renderFoldersList, renderAppsList],
+    collectors: [collectTimestamp, collectSearch, collectFolders, collectApps],
+  });
   initConfigActions();
   initShortcuts();
 
