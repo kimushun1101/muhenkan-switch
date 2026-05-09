@@ -14,6 +14,14 @@ echo "Prepared externalBin: muhenkan-switch-core-${TRIPLE}${EXT}"
 cp "./bin/kanata_cmd_allowed${EXT}" "muhenkan-switch/binaries/kanata_cmd_allowed-${TRIPLE}${EXT}"
 echo "Prepared externalBin: kanata_cmd_allowed-${TRIPLE}${EXT}"
 
+# ── フロントエンド (Vite) のビルド ──
+# Tauri の beforeBuildCommand は `tauri build` 経由でのみ発火するため、
+# `cargo build` を直接呼ぶ本スクリプトでは frontend/dist/ が生成されず白画面になる。
+# muhenkan-switch (GUI) のビルドに先立って明示的に Vite ビルドを走らせる。
+echo "[*] Building frontend (Vite)..."
+npm --prefix muhenkan-switch/frontend ci
+npm --prefix muhenkan-switch/frontend run build
+
 # ── ワークスペース全体をビルド ──
 cargo build --workspace --release
 
