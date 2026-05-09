@@ -46,6 +46,9 @@ jobs:
       - name: Install frontend dependencies
         run: npm --prefix muhenkan-switch/frontend ci
 
+      - name: Typecheck frontend (tsc)
+        run: npm --prefix muhenkan-switch/frontend run typecheck
+
       - name: Build frontend (Vite)
         run: npm --prefix muhenkan-switch/frontend run build
 
@@ -141,6 +144,9 @@ jobs:
 
       - name: Install frontend dependencies
         run: npm --prefix muhenkan-switch/frontend ci
+
+      - name: Typecheck frontend (tsc)
+        run: npm --prefix muhenkan-switch/frontend run typecheck
 
       - name: Build frontend (Vite)
         run: npm --prefix muhenkan-switch/frontend run build
