@@ -60,7 +60,7 @@ HMR を使った高速開発をする場合は `cd muhenkan-switch && npx --yes 
 
 ### フロントエンド開発タスク
 
-`muhenkan-switch/frontend/` 配下で以下のタスクが利用できる。CI (PR トリガー) では typecheck / lint / format:check / test / build を全 OS で強制している。
+`muhenkan-switch/frontend/` 配下で以下のタスクが利用できる。CI では typecheck / lint / format:check / test / build を全 OS で強制している。
 
 ```bash
 cd muhenkan-switch/frontend
@@ -75,7 +75,7 @@ npm run test:coverage # vitest run --coverage
 npm run build         # vite build (mise run build からも呼ばれる)
 ```
 
-スタイル・lint 規約の詳細は `eslint.config.js` と `.prettierrc` を single source of truth として参照。
+スタイル・lint 規約の詳細は `eslint.config.js` と `.prettierrc.json` を single source of truth として参照。
 
 ## Windows でビルド・実行がブロックされる場合
 

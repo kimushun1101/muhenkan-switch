@@ -21,11 +21,11 @@
 - **エラー型 (Rust)**: `anyhow::Result<T>`。独自エラー型は作らない。致命的は `bail!()`、外部ツール (wmctrl/xdotool/notify-send 等) の失敗は `eprintln!` で警告して続行
 - **テスト命名 (Rust)**: `test_{対象}_{条件}` または `{関数名}_{シナリオ}`
 - **言語**: UI 日本語 / コードコメント英語可 / コミット日本語
-- **フロントエンド**: スタイル・lint 規約は `muhenkan-switch/frontend/eslint.config.js` と `.prettierrc` が single source of truth。AGENTS.md には書かず、`npm run lint` / `npm run format:check` で検証する
+- **フロントエンド**: スタイル・lint 規約は `muhenkan-switch/frontend/eslint.config.js` と `.prettierrc.json` が single source of truth。AGENTS.md には書かず、`npm run lint` / `npm run format:check` で検証する
 
 ## フロントエンド (TypeScript + Vite + Vitest)
 
-`muhenkan-switch/frontend/` 配下で実行。CI (PR トリガー) で typecheck / lint / format:check / test / build を全 OS で強制している。
+`muhenkan-switch/frontend/` 配下で実行。CI で typecheck / lint / format:check / test / build を全 OS で強制している。
 
 ```bash
 cd muhenkan-switch/frontend
@@ -40,7 +40,7 @@ npm run build         # vite build (mise run build からも呼ばれる)
 - **vitest 設定**: `vitest.config.ts` を独立配置 (vite.config.js には統合しない)
 - **DOM env**: happy-dom (jsdom より軽量。足りない API に当たったら jsdom 切替を検討)
 - **vitest globals**: `false`。各テストで `import { describe, expect, it } from 'vitest'` を明示
-- **改行コード**: Prettier `endOfLine: 'lf'` のため `.gitattributes` で対象拡張子を `eol=lf` 指定済 (Windows checkout 時の CRLF で format:check が落ちるのを回避)
+- **改行コード**: Prettier `endOfLine: 'lf'` (`.prettierrc.json`) のため `.gitattributes` で対象拡張子を `eol=lf` 指定済 (Windows checkout 時の CRLF で format:check が落ちるのを回避)
 
 ## ブランチ・PR 運用
 
