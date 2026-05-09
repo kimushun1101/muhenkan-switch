@@ -1,5 +1,5 @@
 // ── General tab: autostart / export-import / help / github / open-dir / quit / kanata status / updater ──
-import { invoke, listen, message, ask } from "../lib/tauri.js";
+import { invoke, listen, message, ask, shellOpen } from "../lib/tauri.js";
 import { setConfig } from "../lib/state.js";
 
 // ── Kanata status ──
@@ -87,8 +87,7 @@ export function initGeneralForm({ renderConfig }) {
   });
 
   document.getElementById("btn-github").addEventListener("click", async () => {
-    const { open } = window.__TAURI__.shell;
-    await open("https://github.com/kimushun1101/muhenkan-switch");
+    await shellOpen("https://github.com/kimushun1101/muhenkan-switch");
   });
 
   document.getElementById("btn-open-dir").addEventListener("click", async () => {
