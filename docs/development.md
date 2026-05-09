@@ -55,6 +55,8 @@ mise run dev        # debug ビルド + kanata ダウンロード + GUI 起動
 mise run test       # ユニットテスト
 ```
 
+HMR を使った高速開発をする場合は `cd muhenkan-switch && npx --yes @tauri-apps/cli@2 dev --config tauri.conf.dev.json` を使用してください。
+
 ## Windows でビルド・実行がブロックされる場合
 
 エラーメッセージで原因と対処が分かれる。

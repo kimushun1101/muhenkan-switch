@@ -37,6 +37,18 @@ jobs:
         with:
           targets: ${{ matrix.target }}
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: 'npm'
+          cache-dependency-path: muhenkan-switch/frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        run: npm --prefix muhenkan-switch/frontend ci
+
+      - name: Build frontend (Vite)
+        run: npm --prefix muhenkan-switch/frontend run build
+
       - name: Install system dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
@@ -120,6 +132,18 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: x86_64-pc-windows-msvc
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: 'npm'
+          cache-dependency-path: muhenkan-switch/frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        run: npm --prefix muhenkan-switch/frontend ci
+
+      - name: Build frontend (Vite)
+        run: npm --prefix muhenkan-switch/frontend run build
 
       # 1. muhenkan-switch-core をビルド
       - name: Build muhenkan-switch-core
