@@ -1,157 +1,170 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>muhenkan-switch 設定</title>
-  <link rel="stylesheet" href="styles/main.css">
-</head>
-<body>
-  <div class="app">
-    <!-- Tab bar -->
-    <nav class="tabs">
-      <button class="tab active" data-tab="general">全般</button>
-      <button class="tab" data-tab="timestamp">タイムスタンプ</button>
-      <button class="tab" data-tab="folders">フォルダ</button>
-      <button class="tab" data-tab="apps">アプリ</button>
-      <button class="tab" data-tab="search">検索</button>
-    </nav>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>muhenkan-switch 設定</title>
+    <link rel="stylesheet" href="styles/main.css" />
+  </head>
+  <body>
+    <div class="app">
+      <!-- Tab bar -->
+      <nav class="tabs">
+        <button class="tab active" data-tab="general">全般</button>
+        <button class="tab" data-tab="timestamp">タイムスタンプ</button>
+        <button class="tab" data-tab="folders">フォルダ</button>
+        <button class="tab" data-tab="apps">アプリ</button>
+        <button class="tab" data-tab="search">検索</button>
+      </nav>
 
-    <!-- Tab panels -->
-    <div class="panels">
+      <!-- Tab panels -->
+      <div class="panels">
+        <!-- General -->
+        <div class="panel active" id="panel-general">
+          <h2>全般</h2>
 
-      <!-- General -->
-      <div class="panel active" id="panel-general">
-        <h2>全般</h2>
-
-        <fieldset>
-          <legend>起動</legend>
-          <label class="checkbox-label">
-            <input type="checkbox" id="opt-autostart">
-            ログイン時に自動起動（トレイ常駐）
-          </label>
-        </fieldset>
-
-        <fieldset>
-          <legend>句読点</legend>
-          <p class="hint">無変換+「,」「.」で入力される句読点スタイル</p>
-          <select id="punctuation-style">
-            <option value="、。">、。（読点・句点）</option>
-            <option value="，．">，．（コンマ・ピリオド）</option>
-            <option value="，。">，。（コンマ・句点）</option>
-            <option value="、．">、．（読点・ピリオド）</option>
-          </select>
-        </fieldset>
-
-        <fieldset>
-          <legend>設定管理</legend>
-          <div class="button-row">
-            <button id="btn-export-config">エクスポート</button>
-            <button id="btn-import-config">インポート</button>
-          </div>
-        </fieldset>
-
-        <fieldset>
-          <legend>ヘルプ</legend>
-          <div class="button-row">
-            <button id="btn-help">使い方</button>
-            <button id="btn-github">GitHub</button>
-            <button id="btn-open-dir">インストール先を開く</button>
-            <button id="btn-quit" class="btn-danger">終了</button>
-          </div>
-        </fieldset>
-
-      </div>
-
-      <!-- Timestamp -->
-      <div class="panel" id="panel-timestamp">
-        <h2>タイムスタンプ</h2>
-        <p class="hint">選択しているファイルやフォルダの名前にタイムスタンプを付与・除去します。<br>無変換+<code>V</code> 付与 / <code>C</code> 付与(コピー) / <code>X</code> 除去</p>
-
-        <div class="form-group">
-          <label for="ts-format">フォーマット</label>
-          <select id="ts-format-preset">
-            <option value="%Y%m%d">%Y%m%d (20260216) - 最も一般的</option>
-            <option value="%y%m%d">%y%m%d (260216) - コンパクト</option>
-            <option value="%Y-%m-%d">%Y-%m-%d (2026-02-16) - 視認性重視</option>
-            <option value="%Y%m%d_%H%M%S">%Y%m%d_%H%M%S (20260216_142530) - 日時付き</option>
-            <option value="custom">カスタム...</option>
-          </select>
-          <input type="text" id="ts-format-custom" placeholder="%Y%m%d" class="hidden">
-        </div>
-
-        <div class="form-group">
-          <label for="ts-delimiter">区切り文字</label>
-          <select id="ts-delimiter-preset">
-            <option value="_">_ (アンダースコア)</option>
-            <option value="-">- (ハイフン)</option>
-            <option value="">なし</option>
-            <option value="custom">カスタム...</option>
-          </select>
-          <input type="text" id="ts-delimiter-custom" placeholder="_" class="hidden" maxlength="3">
-        </div>
-
-        <div class="form-group">
-          <label>位置</label>
-          <div class="radio-group">
-            <label class="radio-label">
-              <input type="radio" name="ts-position" value="before" checked>
-              前 (タイムスタンプ＋ファイル名)
+          <fieldset>
+            <legend>起動</legend>
+            <label class="checkbox-label">
+              <input type="checkbox" id="opt-autostart" />
+              ログイン時に自動起動（トレイ常駐）
             </label>
-            <label class="radio-label">
-              <input type="radio" name="ts-position" value="after">
-              後 (ファイル名＋タイムスタンプ)
-            </label>
+          </fieldset>
+
+          <fieldset>
+            <legend>句読点</legend>
+            <p class="hint">無変換+「,」「.」で入力される句読点スタイル</p>
+            <select id="punctuation-style">
+              <option value="、。">、。（読点・句点）</option>
+              <option value="，．">，．（コンマ・ピリオド）</option>
+              <option value="，。">，。（コンマ・句点）</option>
+              <option value="、．">、．（読点・ピリオド）</option>
+            </select>
+          </fieldset>
+
+          <fieldset>
+            <legend>設定管理</legend>
+            <div class="button-row">
+              <button id="btn-export-config">エクスポート</button>
+              <button id="btn-import-config">インポート</button>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>ヘルプ</legend>
+            <div class="button-row">
+              <button id="btn-help">使い方</button>
+              <button id="btn-github">GitHub</button>
+              <button id="btn-open-dir">インストール先を開く</button>
+              <button id="btn-quit" class="btn-danger">終了</button>
+            </div>
+          </fieldset>
+        </div>
+
+        <!-- Timestamp -->
+        <div class="panel" id="panel-timestamp">
+          <h2>タイムスタンプ</h2>
+          <p class="hint">
+            選択しているファイルやフォルダの名前にタイムスタンプを付与・除去します。<br />無変換+<code
+              >V</code
+            >
+            付与 / <code>C</code> 付与(コピー) / <code>X</code> 除去
+          </p>
+
+          <div class="form-group">
+            <label for="ts-format">フォーマット</label>
+            <select id="ts-format-preset">
+              <option value="%Y%m%d">%Y%m%d (20260216) - 最も一般的</option>
+              <option value="%y%m%d">%y%m%d (260216) - コンパクト</option>
+              <option value="%Y-%m-%d">%Y-%m-%d (2026-02-16) - 視認性重視</option>
+              <option value="%Y%m%d_%H%M%S">%Y%m%d_%H%M%S (20260216_142530) - 日時付き</option>
+              <option value="custom">カスタム...</option>
+            </select>
+            <input type="text" id="ts-format-custom" placeholder="%Y%m%d" class="hidden" />
+          </div>
+
+          <div class="form-group">
+            <label for="ts-delimiter">区切り文字</label>
+            <select id="ts-delimiter-preset">
+              <option value="_">_ (アンダースコア)</option>
+              <option value="-">- (ハイフン)</option>
+              <option value="">なし</option>
+              <option value="custom">カスタム...</option>
+            </select>
+            <input
+              type="text"
+              id="ts-delimiter-custom"
+              placeholder="_"
+              class="hidden"
+              maxlength="3"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>位置</label>
+            <div class="radio-group">
+              <label class="radio-label">
+                <input type="radio" name="ts-position" value="before" checked />
+                前 (タイムスタンプ＋ファイル名)
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="ts-position" value="after" />
+                後 (ファイル名＋タイムスタンプ)
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>プレビュー</label>
+            <div class="preview-box" id="ts-preview">-</div>
           </div>
         </div>
 
-        <div class="form-group">
-          <label>プレビュー</label>
-          <div class="preview-box" id="ts-preview">-</div>
+        <!-- Search -->
+        <div class="panel" id="panel-search">
+          <h2>検索エンジン</h2>
+          <p class="hint">
+            「選択」ボタンでプリセットから選べます。URL は直接編集も可能です。<code>{query}</code>
+            が選択テキストに置換されます。
+          </p>
+          <div class="dynamic-list" id="search-list"></div>
+          <button class="btn-add" id="btn-add-search">+ 追加</button>
+        </div>
+
+        <!-- Folders -->
+        <div class="panel" id="panel-folders">
+          <h2>フォルダ</h2>
+          <p class="hint"><code>~</code> はホームディレクトリに展開されます。</p>
+          <div class="dynamic-list" id="folders-list"></div>
+          <button class="btn-add" id="btn-add-folder">+ 追加</button>
+        </div>
+
+        <!-- Apps -->
+        <div class="panel" id="panel-apps">
+          <h2>アプリ切り替え</h2>
+          <p class="hint">
+            リストにないアプリや機能の追加は「選択」ボタンで実行中のプロセスから登録できます。
+          </p>
+          <div class="dynamic-list" id="apps-list"></div>
+          <button class="btn-add" id="btn-add-app">+ 追加</button>
         </div>
       </div>
 
-      <!-- Search -->
-      <div class="panel" id="panel-search">
-        <h2>検索エンジン</h2>
-        <p class="hint">「選択」ボタンでプリセットから選べます。URL は直接編集も可能です。<code>{query}</code> が選択テキストに置換されます。</p>
-        <div class="dynamic-list" id="search-list"></div>
-        <button class="btn-add" id="btn-add-search">+ 追加</button>
-      </div>
-
-      <!-- Folders -->
-      <div class="panel" id="panel-folders">
-        <h2>フォルダ</h2>
-        <p class="hint"><code>~</code> はホームディレクトリに展開されます。</p>
-        <div class="dynamic-list" id="folders-list"></div>
-        <button class="btn-add" id="btn-add-folder">+ 追加</button>
-      </div>
-
-      <!-- Apps -->
-      <div class="panel" id="panel-apps">
-        <h2>アプリ切り替え</h2>
-        <p class="hint">リストにないアプリや機能の追加は「選択」ボタンで実行中のプロセスから登録できます。</p>
-        <div class="dynamic-list" id="apps-list"></div>
-        <button class="btn-add" id="btn-add-app">+ 追加</button>
-      </div>
-
+      <!-- Status bar -->
+      <footer class="status-bar">
+        <div class="status-left">
+          <span id="footer-version">-</span>
+          <span class="status-dot" id="footer-kanata-dot"></span>
+          <span id="footer-kanata-text">キー割当: 停止中</span>
+        </div>
+        <div class="status-right">
+          <button id="btn-apply" class="btn-primary">適用</button>
+          <button id="btn-reset">リセット</button>
+          <button id="btn-defaults">初期値</button>
+        </div>
+      </footer>
     </div>
 
-    <!-- Status bar -->
-    <footer class="status-bar">
-      <div class="status-left">
-        <span id="footer-version">-</span>
-        <span class="status-dot" id="footer-kanata-dot"></span>
-        <span id="footer-kanata-text">キー割当: 停止中</span>
-      </div>
-      <div class="status-right">
-        <button id="btn-apply" class="btn-primary">適用</button>
-        <button id="btn-reset">リセット</button>
-        <button id="btn-defaults">初期値</button>
-      </div>
-    </footer>
-  </div>
-
-  <script type="module" src="src/main.ts"></script>
-</body>
+    <script type="module" src="src/main.ts"></script>
+  </body>
 </html>

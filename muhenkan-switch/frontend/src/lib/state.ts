@@ -3,7 +3,7 @@
 // ESM の `let` 直 export は import 側で再代入できないので、
 // getter / setter 関数経由でアクセスする (振る舞いは元コードと同一)。
 
-import type { Config } from "./config";
+import type { Config } from './config';
 
 /** App プリセット 1 件 (config/app-presets.json の各エントリ) */
 export interface AppPreset {
@@ -52,8 +52,21 @@ export function setSearchPresets(next: SearchPresetMap): void {
 
 // ── Available dispatch keys (must match kbd file) ──
 export const DISPATCH_KEYS: readonly string[] = [
-  "1", "2", "3", "4", "5",
-  "q", "w", "e", "r", "t",
-  "a", "s", "d", "f", "g",
-  "z", "b",
+  '1',
+  '2',
+  '3',
+  '4',
+  '5',
+  'q',
+  'w',
+  'e',
+  'r',
+  't',
+  'a',
+  's',
+  'd',
+  'f',
+  'g',
+  'z',
+  'b',
 ];

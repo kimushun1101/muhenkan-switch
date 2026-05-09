@@ -1,5 +1,7 @@
 /* ── Reset & Base ── */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -19,8 +21,8 @@
   --yellow: #f9e2af;
   --border: #45475a;
   --radius: 6px;
-  --font: "Segoe UI", system-ui, -apple-system, sans-serif;
-  --font-mono: "Cascadia Code", "Consolas", monospace;
+  --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Cascadia Code', 'Consolas', monospace;
 }
 
 body {
@@ -121,7 +123,7 @@ legend {
   letter-spacing: 0.5px;
 }
 
-input[type="text"],
+input[type='text'],
 select {
   width: 100%;
   padding: 7px 10px;
@@ -135,12 +137,12 @@ select {
   transition: border-color 0.15s;
 }
 
-input[type="text"]:focus,
+input[type='text']:focus,
 select:focus {
   border-color: var(--accent);
 }
 
-input[type="text"][readonly] {
+input[type='text'][readonly] {
   opacity: 0.7;
   cursor: default;
 }
@@ -249,7 +251,7 @@ button:disabled {
   align-items: center;
 }
 
-.list-row input[type="text"] {
+.list-row input[type='text'] {
   flex: 1;
 }
 
