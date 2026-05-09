@@ -4,10 +4,7 @@
   "version": "0.9.1",
   "identifier": "com.muhenkan-switch",
   "build": {
-    "frontendDist": "./frontend/dist",
-    "devUrl": "http://localhost:5173",
-    "beforeDevCommand": "npm --prefix frontend run dev",
-    "beforeBuildCommand": "npm --prefix frontend run build"
+    "frontendDist": "./frontend/dist"
   },
   "app": {
     "withGlobalTauri": true,
