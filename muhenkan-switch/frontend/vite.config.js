@@ -6,6 +6,8 @@ const host = process.env.TAURI_DEV_HOST;
 // Vite config for Tauri v2 (Phase 1: Vanilla JS, no @tauri-apps/api yet)
 // See: https://v2.tauri.app/start/frontend/vite/
 export default defineConfig({
+  // Tauri 環境で相対パス解決するため (defensive)
+  base: './',
   // Tauri CLI が出力をパースしやすくするため画面クリアを抑制
   clearScreen: false,
   server: {
