@@ -1,8 +1,8 @@
 // ── Dispatch key dropdown helper + duplicate validation ──
 // Search / Folders / Apps の各フォームで共有される。
-import { DISPATCH_KEYS } from "./state.js";
+import { DISPATCH_KEYS } from "./state";
 
-export function createDispatchKeySelect(selectedKey = "") {
+export function createDispatchKeySelect(selectedKey: string = ""): HTMLSelectElement {
   const select = document.createElement("select");
   select.className = "dispatch-key-select";
   select.title = "無変換+キー";
@@ -23,9 +23,9 @@ export function createDispatchKeySelect(selectedKey = "") {
   return select;
 }
 
-export function validateDispatchKeys() {
-  const usedKeys = {};
-  for (const select of document.querySelectorAll(".dispatch-key-select")) {
+export function validateDispatchKeys(): string | null {
+  const usedKeys: Record<string, boolean> = {};
+  for (const select of document.querySelectorAll<HTMLSelectElement>(".dispatch-key-select")) {
     const key = select.value;
     if (!key) continue;
     if (usedKeys[key]) {
