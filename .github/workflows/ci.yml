@@ -43,10 +43,24 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: 'npm'
+          cache-dependency-path: muhenkan-switch/frontend/package-lock.json
+
       - name: Install system dependencies (Linux)
         run: |
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+      # tauri::generate_context! が frontendDist (./frontend/dist) の実在を要求するため、
+      # cargo check 前に frontend を build しておく
+      - name: Install frontend dependencies
+        run: npm --prefix muhenkan-switch/frontend ci
+
+      - name: Build frontend (Vite)
+        run: npm --prefix muhenkan-switch/frontend run build
 
       # tauri-build がビルド時に externalBin の実在を確認するため、
       # ダミー sidecar ファイルを用意する (CI では実バイナリ不要、空ファイルで十分)
