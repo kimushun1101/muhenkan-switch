@@ -5,7 +5,7 @@ import eslintConfigPrettier from 'eslint-config-prettier/flat';
 import globals from 'globals';
 
 export default tseslint.config(
-  { ignores: ['dist/', 'node_modules/', '*.config.js'] },
+  { ignores: ['dist/**', 'node_modules/**', '**/*.config.js'] },
 
   js.configs.recommended,
   ...tseslint.configs.strict,
