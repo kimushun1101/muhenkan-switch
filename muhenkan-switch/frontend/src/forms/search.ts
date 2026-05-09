@@ -1,29 +1,29 @@
 // ── Search engines form ──
-import { getConfig, getSearchPresets } from "../lib/state";
-import type { SearchPreset } from "../lib/state";
-import { createDispatchKeySelect } from "../lib/dispatch-key";
-import { escapeHtml } from "../lib/utils";
-import type { SearchEntry } from "../lib/config";
-import type { CollectedConfig } from "../lib/config-io";
+import { getConfig, getSearchPresets } from '../lib/state';
+import type { SearchPreset } from '../lib/state';
+import { createDispatchKeySelect } from '../lib/dispatch-key';
+import { escapeHtml } from '../lib/utils';
+import type { SearchEntry } from '../lib/config';
+import type { CollectedConfig } from '../lib/config-io';
 
 export function renderSearchList(): void {
   const config = getConfig();
   if (!config) return;
-  const container = document.getElementById("search-list");
+  const container = document.getElementById('search-list');
   if (!container) return;
-  container.innerHTML = "";
+  container.innerHTML = '';
   for (const [name, entry] of Object.entries(config.search ?? {})) {
-    addSearchRow(container, name, entry.url, entry.key ?? "");
+    addSearchRow(container, name, entry.url, entry.key ?? '');
   }
 }
 
 // Collect search-list rows into the shared collected object.
 // Mirrors the original logic from lib/config-io.ts so behavior is unchanged.
 export function collectSearch(collected: CollectedConfig): void {
-  for (const row of document.querySelectorAll<HTMLElement>("#search-list .list-row")) {
-    const nameInput = row.querySelector<HTMLInputElement>(".key-input");
-    const urlInput = row.querySelector<HTMLInputElement>(".url-input");
-    const keySelect = row.querySelector<HTMLSelectElement>(".dispatch-key-select");
+  for (const row of document.querySelectorAll<HTMLElement>('#search-list .list-row')) {
+    const nameInput = row.querySelector<HTMLInputElement>('.key-input');
+    const urlInput = row.querySelector<HTMLInputElement>('.url-input');
+    const keySelect = row.querySelector<HTMLSelectElement>('.dispatch-key-select');
     if (!nameInput || !urlInput || !keySelect) continue;
     const name = nameInput.value.trim();
     const url = urlInput.value.trim();
@@ -36,14 +36,9 @@ export function collectSearch(collected: CollectedConfig): void {
   }
 }
 
-export function addSearchRow(
-  container: HTMLElement,
-  name: string = "",
-  url: string = "",
-  dispatchKey: string = "",
-): void {
-  const row = document.createElement("div");
-  row.className = "list-row";
+export function addSearchRow(container: HTMLElement, name = '', url = '', dispatchKey = ''): void {
+  const row = document.createElement('div');
+  row.className = 'list-row';
   row.innerHTML = `
     <input type="text" class="key-input" placeholder="機能名" value="${escapeHtml(name)}">
     <input type="text" class="url-input" placeholder="URL テンプレート ({query})" value="${escapeHtml(url)}">
@@ -53,19 +48,19 @@ export function addSearchRow(
   const keySelect = createDispatchKeySelect(dispatchKey);
   row.insertBefore(keySelect, row.firstChild);
 
-  const btnPick = row.querySelector<HTMLButtonElement>(".btn-pick-search");
-  btnPick?.addEventListener("click", async () => {
+  const btnPick = row.querySelector<HTMLButtonElement>('.btn-pick-search');
+  btnPick?.addEventListener('click', async () => {
     const selected = await showSearchPicker();
     if (selected) {
-      const nameInput = row.querySelector<HTMLInputElement>(".key-input");
-      const urlInput = row.querySelector<HTMLInputElement>(".url-input");
+      const nameInput = row.querySelector<HTMLInputElement>('.key-input');
+      const urlInput = row.querySelector<HTMLInputElement>('.url-input');
       if (nameInput) nameInput.value = selected.label;
       if (urlInput) urlInput.value = selected.url;
     }
   });
 
-  const btnRemove = row.querySelector<HTMLButtonElement>(".btn-remove");
-  btnRemove?.addEventListener("click", () => row.remove());
+  const btnRemove = row.querySelector<HTMLButtonElement>('.btn-remove');
+  btnRemove?.addEventListener('click', () => row.remove());
   container.appendChild(row);
 }
 
@@ -73,8 +68,8 @@ export function addSearchRow(
 export function showSearchPicker(): Promise<SearchPreset | null> {
   return new Promise<SearchPreset | null>((resolve) => {
     const SEARCH_PRESETS = getSearchPresets();
-    const overlay = document.createElement("div");
-    overlay.className = "modal-overlay";
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
     overlay.innerHTML = `
       <div class="modal">
         <div class="modal-header">検索サービスを選択</div>
@@ -88,55 +83,57 @@ export function showSearchPicker(): Promise<SearchPreset | null> {
       </div>
     `;
 
-    const list = overlay.querySelector<HTMLUListElement>(".modal-list");
-    const filterInput = overlay.querySelector<HTMLInputElement>(".modal-search");
+    const list = overlay.querySelector<HTMLUListElement>('.modal-list');
+    const filterInput = overlay.querySelector<HTMLInputElement>('.modal-search');
     if (!list || !filterInput) {
       resolve(null);
       return;
     }
 
-    function renderList(filter: string = ""): void {
+    function renderList(filter = ''): void {
       if (!list) return;
-      list.innerHTML = "";
+      list.innerHTML = '';
       const lf = filter.toLowerCase();
       for (const [category, services] of Object.entries(SEARCH_PRESETS)) {
-        const filtered = services.filter((s) =>
-          s.label.toLowerCase().includes(lf) || category.toLowerCase().includes(lf)
+        const filtered = services.filter(
+          (s) => s.label.toLowerCase().includes(lf) || category.toLowerCase().includes(lf),
         );
         if (filtered.length === 0) continue;
-        const header = document.createElement("li");
-        header.className = "modal-list-header";
+        const header = document.createElement('li');
+        header.className = 'modal-list-header';
         header.textContent = category;
         list.appendChild(header);
         for (const svc of filtered) {
-          const li = document.createElement("li");
+          const li = document.createElement('li');
           li.textContent = svc.label;
-          li.addEventListener("click", () => close(svc));
+          li.addEventListener('click', () => close(svc));
           list.appendChild(li);
         }
       }
     }
 
-    filterInput.addEventListener("input", (e) => {
+    filterInput.addEventListener('input', (e) => {
       const target = e.target as HTMLInputElement;
       renderList(target.value);
     });
 
     function close(result: SearchPreset | null): void {
       overlay.remove();
-      document.removeEventListener("keydown", onKeydown);
+      document.removeEventListener('keydown', onKeydown);
       resolve(result);
     }
 
-    overlay.querySelector<HTMLButtonElement>(".btn-cancel")?.addEventListener("click", () => close(null));
-    overlay.addEventListener("click", (e) => {
+    overlay
+      .querySelector<HTMLButtonElement>('.btn-cancel')
+      ?.addEventListener('click', () => close(null));
+    overlay.addEventListener('click', (e) => {
       if (e.target === overlay) close(null);
     });
 
     function onKeydown(e: KeyboardEvent): void {
-      if (e.key === "Escape") close(null);
+      if (e.key === 'Escape') close(null);
     }
-    document.addEventListener("keydown", onKeydown);
+    document.addEventListener('keydown', onKeydown);
 
     renderList();
     document.body.appendChild(overlay);
@@ -145,10 +142,10 @@ export function showSearchPicker(): Promise<SearchPreset | null> {
 }
 
 export function initSearchForm(): void {
-  const btn = document.getElementById("btn-add-search");
-  const list = document.getElementById("search-list");
+  const btn = document.getElementById('btn-add-search');
+  const list = document.getElementById('search-list');
   if (!btn || !list) return;
-  btn.addEventListener("click", () => {
+  btn.addEventListener('click', () => {
     addSearchRow(list);
   });
 }

@@ -2,3 +2,10 @@
 *.sh text eol=lf
 # kanata-version.txt はシェルスクリプトから読まれるため LF
 kanata-version.txt text eol=lf
+# Prettier 整形対象ファイルは LF 統一 (.prettierrc.json の endOfLine: 'lf' との整合、
+# Windows checkout 時の CRLF 変換による format:check 失敗を防止)
+*.ts text eol=lf
+*.js text eol=lf
+*.json text eol=lf
+*.html text eol=lf
+*.css text eol=lf

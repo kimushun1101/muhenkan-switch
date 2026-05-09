@@ -1,10 +1,10 @@
 // ── Apps form ──
-import { invoke } from "../lib/tauri";
-import { getConfig, getAppPresets } from "../lib/state";
-import { createDispatchKeySelect } from "../lib/dispatch-key";
-import { escapeHtml } from "../lib/utils";
-import type { AppEntry } from "../lib/config";
-import type { CollectedConfig } from "../lib/config-io";
+import { invoke } from '../lib/tauri';
+import { getConfig, getAppPresets } from '../lib/state';
+import { createDispatchKeySelect } from '../lib/dispatch-key';
+import { escapeHtml } from '../lib/utils';
+import type { AppEntry } from '../lib/config';
+import type { CollectedConfig } from '../lib/config-io';
 
 /** Tauri 側 ProcessInfo (commands.rs) と対応 */
 interface ProcessInfo {
@@ -13,26 +13,26 @@ interface ProcessInfo {
 }
 
 // ── App select dropdown helper ──
-export function createAppSelect(currentProcess: string = "", currentCommand: string = ""): HTMLSelectElement {
+export function createAppSelect(currentProcess = '', currentCommand = ''): HTMLSelectElement {
   const APP_PRESETS = getAppPresets();
-  const select = document.createElement("select");
-  select.className = "app-select";
+  const select = document.createElement('select');
+  select.className = 'app-select';
 
-  const noneOpt = document.createElement("option");
-  noneOpt.value = "";
-  noneOpt.textContent = "—";
+  const noneOpt = document.createElement('option');
+  noneOpt.value = '';
+  noneOpt.textContent = '—';
   select.appendChild(noneOpt);
 
   let hasCurrentProcess = !currentProcess;
 
   for (const [category, apps] of Object.entries(APP_PRESETS)) {
-    const group = document.createElement("optgroup");
+    const group = document.createElement('optgroup');
     group.label = category;
     for (const app of apps) {
-      const opt = document.createElement("option");
+      const opt = document.createElement('option');
       opt.value = app.process;
       opt.textContent = app.label;
-      opt.dataset["command"] = app.command;
+      opt.dataset['command'] = app.command;
       group.appendChild(opt);
       if (app.process === currentProcess) hasCurrentProcess = true;
     }
@@ -40,25 +40,25 @@ export function createAppSelect(currentProcess: string = "", currentCommand: str
   }
 
   if (currentProcess && !hasCurrentProcess) {
-    const opt = document.createElement("option");
+    const opt = document.createElement('option');
     opt.value = currentProcess;
     opt.textContent = `${currentProcess}（カスタム）`;
-    opt.dataset["command"] = currentCommand || currentProcess.toLowerCase();
+    opt.dataset['command'] = currentCommand || currentProcess.toLowerCase();
     select.appendChild(opt);
   }
 
-  select.value = currentProcess || "";
+  select.value = currentProcess || '';
   return select;
 }
 
 export function renderAppsList(): void {
   const config = getConfig();
   if (!config) return;
-  const container = document.getElementById("apps-list");
+  const container = document.getElementById('apps-list');
   if (!container) return;
-  container.innerHTML = "";
+  container.innerHTML = '';
   for (const [name, entry] of Object.entries(config.apps ?? {})) {
-    addAppRow(container, name, entry.process, entry.command ?? "", entry.key ?? "");
+    addAppRow(container, name, entry.process, entry.command ?? '', entry.key ?? '');
   }
 }
 
@@ -66,15 +66,15 @@ export function renderAppsList(): void {
 // Mirrors the original logic from lib/config-io.ts so behavior is unchanged.
 // 機能名の重複を防ぐ（IndexMap のキー重複で上書きされるのを回避）
 export function collectApps(collected: CollectedConfig): void {
-  for (const row of document.querySelectorAll<HTMLElement>("#apps-list .list-row")) {
-    const nameInput = row.querySelector<HTMLInputElement>(".key-input");
-    const appSelect = row.querySelector<HTMLSelectElement>(".app-select");
-    const keySelect = row.querySelector<HTMLSelectElement>(".dispatch-key-select");
+  for (const row of document.querySelectorAll<HTMLElement>('#apps-list .list-row')) {
+    const nameInput = row.querySelector<HTMLInputElement>('.key-input');
+    const appSelect = row.querySelector<HTMLSelectElement>('.app-select');
+    const keySelect = row.querySelector<HTMLSelectElement>('.dispatch-key-select');
     if (!nameInput || !appSelect || !keySelect) continue;
     let name = nameInput.value.trim();
     const process = appSelect.value;
     const selectedOpt = appSelect.options[appSelect.selectedIndex] as HTMLOptionElement | undefined;
-    const command = selectedOpt?.dataset?.["command"] ?? "";
+    const command = selectedOpt?.dataset?.['command'] ?? '';
     const dispatchKey = keySelect.value;
     if (name && process) {
       if (collected.apps[name]) {
@@ -91,13 +91,13 @@ export function collectApps(collected: CollectedConfig): void {
 
 export function addAppRow(
   container: HTMLElement,
-  name: string = "",
-  process: string = "",
-  command: string = "",
-  dispatchKey: string = "",
+  name = '',
+  process = '',
+  command = '',
+  dispatchKey = '',
 ): void {
-  const row = document.createElement("div");
-  row.className = "list-row";
+  const row = document.createElement('div');
+  row.className = 'list-row';
   row.innerHTML = `
     <input type="text" class="key-input" placeholder="機能名" value="${escapeHtml(name)}">
     <button class="btn-pick-process" title="実行中のプロセスから選択">選択</button>
@@ -107,32 +107,37 @@ export function addAppRow(
   row.insertBefore(keySelect, row.firstChild);
 
   const appSelect = createAppSelect(process, command);
-  const nameInput = row.querySelector<HTMLInputElement>(".key-input");
+  const nameInput = row.querySelector<HTMLInputElement>('.key-input');
   if (!nameInput) return;
-  nameInput.insertAdjacentElement("afterend", appSelect);
+  nameInput.insertAdjacentElement('afterend', appSelect);
 
-  appSelect.addEventListener("change", () => {
+  appSelect.addEventListener('change', () => {
     const selected = appSelect.options[appSelect.selectedIndex] as HTMLOptionElement | undefined;
-    if (selected && selected.parentElement?.tagName === "OPTGROUP") {
+    if (selected && selected.parentElement?.tagName === 'OPTGROUP') {
       const parent = selected.parentElement as HTMLOptGroupElement;
       const category = parent.label;
-      nameInput.value = `${category} (${selected.textContent ?? ""})`;
+      nameInput.value = `${category} (${selected.textContent ?? ''})`;
     }
   });
 
-  row.querySelector<HTMLButtonElement>(".btn-remove")?.addEventListener("click", () => row.remove());
-  row.querySelector<HTMLButtonElement>(".btn-pick-process")?.addEventListener("click", async () => {
+  row
+    .querySelector<HTMLButtonElement>('.btn-remove')
+    ?.addEventListener('click', () => row.remove());
+  row.querySelector<HTMLButtonElement>('.btn-pick-process')?.addEventListener('click', async () => {
     const selected = await showProcessPicker();
     if (selected) {
       let found = false;
       for (const opt of appSelect.options) {
-        if (opt.value === selected) { found = true; break; }
+        if (opt.value === selected) {
+          found = true;
+          break;
+        }
       }
       if (!found) {
-        const opt = document.createElement("option");
+        const opt = document.createElement('option');
         opt.value = selected;
         opt.textContent = `${selected}（カスタム）`;
-        opt.dataset["command"] = selected.toLowerCase();
+        opt.dataset['command'] = selected.toLowerCase();
         appSelect.appendChild(opt);
       }
       appSelect.value = selected;
@@ -143,18 +148,17 @@ export function addAppRow(
 
 // ── Process picker modal ──
 export async function showProcessPicker(): Promise<string | null> {
-  return new Promise<string | null>(async (resolve) => {
-    let processes: ProcessInfo[] = [];
-    try {
-      processes = await invoke<ProcessInfo[]>("get_running_processes");
-    } catch (e) {
-      console.error("プロセス一覧の取得に失敗:", e);
-      resolve(null);
-      return;
-    }
+  let processes: ProcessInfo[] = [];
+  try {
+    processes = await invoke<ProcessInfo[]>('get_running_processes');
+  } catch (e) {
+    console.error('プロセス一覧の取得に失敗:', e);
+    return null;
+  }
 
-    const overlay = document.createElement("div");
-    overlay.className = "modal-overlay";
+  return new Promise<string | null>((resolve) => {
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
     overlay.innerHTML = `
       <div class="modal">
         <div class="modal-header">プロセスを選択</div>
@@ -168,26 +172,24 @@ export async function showProcessPicker(): Promise<string | null> {
       </div>
     `;
 
-    const list = overlay.querySelector<HTMLUListElement>(".modal-list");
-    const searchInput = overlay.querySelector<HTMLInputElement>(".modal-search");
+    const list = overlay.querySelector<HTMLUListElement>('.modal-list');
+    const searchInput = overlay.querySelector<HTMLInputElement>('.modal-search');
     if (!list || !searchInput) {
       resolve(null);
       return;
     }
 
-    function renderProcessList(filter: string = ""): void {
+    function renderProcessList(filter = ''): void {
       if (!list) return;
-      list.innerHTML = "";
-      const filtered = processes.filter((p) =>
-        p.name.toLowerCase().includes(filter.toLowerCase())
-      );
+      list.innerHTML = '';
+      const filtered = processes.filter((p) => p.name.toLowerCase().includes(filter.toLowerCase()));
       for (const p of filtered) {
-        const li = document.createElement("li");
+        const li = document.createElement('li');
         li.textContent = p.name;
-        li.addEventListener("click", () => {
+        li.addEventListener('click', () => {
           // Remove .exe extension
           let name = p.name;
-          if (name.toLowerCase().endsWith(".exe")) {
+          if (name.toLowerCase().endsWith('.exe')) {
             name = name.slice(0, -4);
           }
           close(name);
@@ -196,27 +198,29 @@ export async function showProcessPicker(): Promise<string | null> {
       }
     }
 
-    searchInput.addEventListener("input", (e) => {
+    searchInput.addEventListener('input', (e) => {
       const target = e.target as HTMLInputElement;
       renderProcessList(target.value);
     });
 
     function close(result: string | null): void {
       overlay.remove();
-      document.removeEventListener("keydown", onKeydown);
+      document.removeEventListener('keydown', onKeydown);
       resolve(result);
     }
 
-    overlay.querySelector<HTMLButtonElement>(".btn-cancel")?.addEventListener("click", () => close(null));
+    overlay
+      .querySelector<HTMLButtonElement>('.btn-cancel')
+      ?.addEventListener('click', () => close(null));
 
-    overlay.addEventListener("click", (e) => {
+    overlay.addEventListener('click', (e) => {
       if (e.target === overlay) close(null);
     });
 
     function onKeydown(e: KeyboardEvent): void {
-      if (e.key === "Escape") close(null);
+      if (e.key === 'Escape') close(null);
     }
-    document.addEventListener("keydown", onKeydown);
+    document.addEventListener('keydown', onKeydown);
 
     renderProcessList();
     document.body.appendChild(overlay);
@@ -225,10 +229,10 @@ export async function showProcessPicker(): Promise<string | null> {
 }
 
 export function initAppsForm(): void {
-  const btn = document.getElementById("btn-add-app");
-  const list = document.getElementById("apps-list");
+  const btn = document.getElementById('btn-add-app');
+  const list = document.getElementById('apps-list');
   if (!btn || !list) return;
-  btn.addEventListener("click", () => {
+  btn.addEventListener('click', () => {
     addAppRow(list);
   });
 }

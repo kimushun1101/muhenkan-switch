@@ -1,143 +1,319 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>使い方 — muhenkan-switch</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
-      font-size: 13px;
-      color: #cdd6f4;
-      background: #1e1e2e;
-      line-height: 1.6;
-    }
-    .help { max-width: 800px; margin: 0 auto; padding: 20px 24px; }
-    h1 { font-size: 18px; font-weight: 700; margin-bottom: 16px; color: #89b4fa; }
-    h2 { font-size: 14px; font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-    section { margin-bottom: 20px; }
-    p { margin-bottom: 8px; }
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    th, td { text-align: left; padding: 6px 10px; border: 1px solid #45475a; }
-    th { background: #282840; font-weight: 600; color: #8888aa; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
-    td { background: #1a1a2e; }
-    td:first-child { white-space: nowrap; }
-    kbd {
-      display: inline-block; padding: 1px 6px;
-      font-family: "Cascadia Code", "Consolas", monospace; font-size: 12px;
-      background: #282840; border: 1px solid #45475a; border-radius: 3px; color: #f9e2af;
-    }
-    ol { padding-left: 20px; }
-    ol li { margin-bottom: 4px; }
-    code { font-family: "Cascadia Code", "Consolas", monospace; font-size: 12px; color: #8888aa; }
-    #keyboard-svg { overflow: hidden; cursor: grab; border-radius: 6px; }
-    #keyboard-svg.dragging { cursor: grabbing; }
-    #keyboard-svg svg { display: block; transform-origin: 0 0; }
-    #keyboard-svg-hint { font-size: 11px; color: #8888aa; margin-top: 4px; }
-    .legend { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 12px; }
-    .legend-item { display: flex; align-items: center; gap: 4px; }
-    .legend-color { display: inline-block; width: 14px; height: 14px; min-width: 14px; min-height: 14px; border: 1px solid #45475a; border-radius: 2px; flex-shrink: 0; overflow: hidden; font-size: 0; }
-    .lc-folder   { background-color: #fff2cc !important; }
-    .lc-search   { background-color: #ffe6cc !important; }
-    .lc-app      { background-color: #f8cecc !important; }
-    .lc-ts       { background-color: #e1d5e7 !important; }
-    .lc-edit     { background-color: #dae8fc !important; }
-    .lc-unset    { background-color: #f5f5f5 !important; }
-    .lc-unused   { background-color: #d9d9d9 !important; }
-  </style>
-</head>
-<body>
-  <div class="help">
-    <h1>muhenkan-switch 使い方</h1>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>使い方 — muhenkan-switch</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family:
+          'Segoe UI',
+          system-ui,
+          -apple-system,
+          sans-serif;
+        font-size: 13px;
+        color: #cdd6f4;
+        background: #1e1e2e;
+        line-height: 1.6;
+      }
+      .help {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px 24px;
+      }
+      h1 {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 16px;
+        color: #89b4fa;
+      }
+      h2 {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      section {
+        margin-bottom: 20px;
+      }
+      p {
+        margin-bottom: 8px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 6px 10px;
+        border: 1px solid #45475a;
+      }
+      th {
+        background: #282840;
+        font-weight: 600;
+        color: #8888aa;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      td {
+        background: #1a1a2e;
+      }
+      td:first-child {
+        white-space: nowrap;
+      }
+      kbd {
+        display: inline-block;
+        padding: 1px 6px;
+        font-family: 'Cascadia Code', 'Consolas', monospace;
+        font-size: 12px;
+        background: #282840;
+        border: 1px solid #45475a;
+        border-radius: 3px;
+        color: #f9e2af;
+      }
+      ol {
+        padding-left: 20px;
+      }
+      ol li {
+        margin-bottom: 4px;
+      }
+      code {
+        font-family: 'Cascadia Code', 'Consolas', monospace;
+        font-size: 12px;
+        color: #8888aa;
+      }
+      #keyboard-svg {
+        overflow: hidden;
+        cursor: grab;
+        border-radius: 6px;
+      }
+      #keyboard-svg.dragging {
+        cursor: grabbing;
+      }
+      #keyboard-svg svg {
+        display: block;
+        transform-origin: 0 0;
+      }
+      #keyboard-svg-hint {
+        font-size: 11px;
+        color: #8888aa;
+        margin-top: 4px;
+      }
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 16px;
+        font-size: 12px;
+      }
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .legend-color {
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        min-width: 14px;
+        min-height: 14px;
+        border: 1px solid #45475a;
+        border-radius: 2px;
+        flex-shrink: 0;
+        overflow: hidden;
+        font-size: 0;
+      }
+      .lc-folder {
+        background-color: #fff2cc !important;
+      }
+      .lc-search {
+        background-color: #ffe6cc !important;
+      }
+      .lc-app {
+        background-color: #f8cecc !important;
+      }
+      .lc-ts {
+        background-color: #e1d5e7 !important;
+      }
+      .lc-edit {
+        background-color: #dae8fc !important;
+      }
+      .lc-unset {
+        background-color: #f5f5f5 !important;
+      }
+      .lc-unused {
+        background-color: #d9d9d9 !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="help">
+      <h1>muhenkan-switch 使い方</h1>
 
-    <section>
-      <h2>キーボード配列</h2>
-      <p>無変換キーを押しながら使うキーの一覧です。色はカテゴリを表します。</p>
-      <div id="keyboard-svg" style="margin: 12px 0;"></div>
-      <p id="keyboard-svg-hint">ホイールで拡大縮小 / ドラッグで移動 / ダブルクリックでリセット</p>
-      <div class="legend">
-        <span class="legend-item"><span class="legend-color lc-folder">&nbsp;</span>フォルダ</span>
-        <span class="legend-item"><span class="legend-color lc-search">&nbsp;</span>検索</span>
-        <span class="legend-item"><span class="legend-color lc-app">&nbsp;</span>アプリ</span>
-        <span class="legend-item"><span class="legend-color lc-ts">&nbsp;</span>タイムスタンプ</span>
-        <span class="legend-item"><span class="legend-color lc-edit">&nbsp;</span>テキスト編集</span>
-        <span class="legend-item"><span class="legend-color lc-unset">&nbsp;</span>未設定</span>
-        <span class="legend-item"><span class="legend-color lc-unused">&nbsp;</span>未使用</span>
-      </div>
-    </section>
+      <section>
+        <h2>キーボード配列</h2>
+        <p>無変換キーを押しながら使うキーの一覧です。色はカテゴリを表します。</p>
+        <div id="keyboard-svg" style="margin: 12px 0"></div>
+        <p id="keyboard-svg-hint">ホイールで拡大縮小 / ドラッグで移動 / ダブルクリックでリセット</p>
+        <div class="legend">
+          <span class="legend-item"
+            ><span class="legend-color lc-folder">&nbsp;</span>フォルダ</span
+          >
+          <span class="legend-item"><span class="legend-color lc-search">&nbsp;</span>検索</span>
+          <span class="legend-item"><span class="legend-color lc-app">&nbsp;</span>アプリ</span>
+          <span class="legend-item"
+            ><span class="legend-color lc-ts">&nbsp;</span>タイムスタンプ</span
+          >
+          <span class="legend-item"
+            ><span class="legend-color lc-edit">&nbsp;</span>テキスト編集</span
+          >
+          <span class="legend-item"><span class="legend-color lc-unset">&nbsp;</span>未設定</span>
+          <span class="legend-item"><span class="legend-color lc-unused">&nbsp;</span>未使用</span>
+        </div>
+      </section>
 
-    <section>
-      <h2>概要</h2>
-      <p>
-        <strong>muhenkan-switch</strong> は、無変換キーをモディファイアキーとして活用するツールです。<br>
-        無変換キーを押しながら割り当てられたキーを押すことで、さまざまな操作をすばやく実行できます。
-      </p>
-    </section>
+      <section>
+        <h2>概要</h2>
+        <p>
+          <strong>muhenkan-switch</strong>
+          は、無変換キーをモディファイアキーとして活用するツールです。<br />
+          無変換キーを押しながら割り当てられたキーを押すことで、さまざまな操作をすばやく実行できます。
+        </p>
+      </section>
 
-    <section>
-      <h2>キー操作一覧</h2>
-      <table>
-        <thead>
-          <tr><th>キー</th><th>機能</th></tr>
-        </thead>
-        <tbody>
-          <tr><td><kbd>無変換</kbd> + <kbd>割当キー</kbd></td><td>各タブで設定された操作を実行</td></tr>
-          <tr><td><kbd>無変換</kbd> + <kbd>V</kbd></td><td>テキスト入力時: プレーンテキスト貼り付け<br>エクスプローラー上: ファイル更新日時でリネーム</td></tr>
-          <tr><td><kbd>無変換</kbd> + <kbd>C</kbd></td><td>テキスト入力時: タイムスタンプ入力<br>エクスプローラー上: タイムスタンプ付きで複製</td></tr>
-          <tr><td><kbd>無変換</kbd> + <kbd>X</kbd></td><td>エクスプローラー上: ファイル名からタイムスタンプを除去</td></tr>
-          <tr><td><kbd>無変換</kbd> + <kbd>Z</kbd></td><td>タイムスタンプ位置を切替（前 ↔ 後）。例を Toast 表示</td></tr>
-        </tbody>
-      </table>
-    </section>
+      <section>
+        <h2>キー操作一覧</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>キー</th>
+              <th>機能</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><kbd>無変換</kbd> + <kbd>割当キー</kbd></td>
+              <td>各タブで設定された操作を実行</td>
+            </tr>
+            <tr>
+              <td><kbd>無変換</kbd> + <kbd>V</kbd></td>
+              <td>
+                テキスト入力時: プレーンテキスト貼り付け<br />エクスプローラー上:
+                ファイル更新日時でリネーム
+              </td>
+            </tr>
+            <tr>
+              <td><kbd>無変換</kbd> + <kbd>C</kbd></td>
+              <td>
+                テキスト入力時: タイムスタンプ入力<br />エクスプローラー上: タイムスタンプ付きで複製
+              </td>
+            </tr>
+            <tr>
+              <td><kbd>無変換</kbd> + <kbd>X</kbd></td>
+              <td>エクスプローラー上: ファイル名からタイムスタンプを除去</td>
+            </tr>
+            <tr>
+              <td><kbd>無変換</kbd> + <kbd>Z</kbd></td>
+              <td>タイムスタンプ位置を切替（前 ↔ 後）。例を Toast 表示</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
 
-    <section>
-      <h2>設定画面のショートカット</h2>
-      <table>
-        <thead>
-          <tr><th>キー</th><th>機能</th></tr>
-        </thead>
-        <tbody>
-          <tr><td><kbd>Ctrl</kbd> + <kbd>S</kbd></td><td>設定を適用（保存）</td></tr>
-          <tr><td><kbd>Ctrl</kbd> + <kbd>Q</kbd></td><td>アプリを終了</td></tr>
-          <tr><td><kbd>F1</kbd></td><td>この画面を表示</td></tr>
-          <tr><td><kbd>Escape</kbd></td><td>設定画面をトレイに格納 / ヘルプを閉じる</td></tr>
-        </tbody>
-      </table>
-    </section>
+      <section>
+        <h2>設定画面のショートカット</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>キー</th>
+              <th>機能</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><kbd>Ctrl</kbd> + <kbd>S</kbd></td>
+              <td>設定を適用（保存）</td>
+            </tr>
+            <tr>
+              <td><kbd>Ctrl</kbd> + <kbd>Q</kbd></td>
+              <td>アプリを終了</td>
+            </tr>
+            <tr>
+              <td><kbd>F1</kbd></td>
+              <td>この画面を表示</td>
+            </tr>
+            <tr>
+              <td><kbd>Escape</kbd></td>
+              <td>設定画面をトレイに格納 / ヘルプを閉じる</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
 
-    <section>
-      <h2>設定タブ</h2>
-      <table>
-        <thead>
-          <tr><th>タブ</th><th>説明</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>タイムスタンプ</td><td>エクスプローラー上でファイル名に付与するタイムスタンプの設定（ファイル更新日時を使用）</td></tr>
-          <tr><td>フォルダ</td><td>無変換+キーでフォルダを開く設定</td></tr>
-          <tr><td>アプリ</td><td>無変換+キーでアプリを切り替え／起動する設定</td></tr>
-          <tr><td>検索</td><td>無変換+キーで選択テキストを検索エンジンで検索する設定</td></tr>
-        </tbody>
-      </table>
-    </section>
+      <section>
+        <h2>設定タブ</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>タブ</th>
+              <th>説明</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>タイムスタンプ</td>
+              <td>
+                エクスプローラー上でファイル名に付与するタイムスタンプの設定（ファイル更新日時を使用）
+              </td>
+            </tr>
+            <tr>
+              <td>フォルダ</td>
+              <td>無変換+キーでフォルダを開く設定</td>
+            </tr>
+            <tr>
+              <td>アプリ</td>
+              <td>無変換+キーでアプリを切り替え／起動する設定</td>
+            </tr>
+            <tr>
+              <td>検索</td>
+              <td>無変換+キーで選択テキストを検索エンジンで検索する設定</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
 
-    <section>
-      <h2>更新方法</h2>
-      <p data-install="installer">
-        起動時に自動でアップデートを確認します。新しいバージョンがある場合は通知が表示され、ワンクリックで更新できます。<br>
-        トレイアイコンの「アップデートを確認...」から手動で確認することもできます。</p>
-      <p data-install="script">
-        インストール先フォルダの更新スクリプトを実行してください。最新版のダウンロードとインストールが自動で行われます。</p>
-    </section>
+      <section>
+        <h2>更新方法</h2>
+        <p data-install="installer">
+          起動時に自動でアップデートを確認します。新しいバージョンがある場合は通知が表示され、ワンクリックで更新できます。<br />
+          トレイアイコンの「アップデートを確認...」から手動で確認することもできます。
+        </p>
+        <p data-install="script">
+          インストール先フォルダの更新スクリプトを実行してください。最新版のダウンロードとインストールが自動で行われます。
+        </p>
+      </section>
 
-    <section>
-      <h2>アンインストール</h2>
-      <p data-install="installer">
-        「設定  &gt; アプリ &gt; インストールされているアプリ」から muhenkan-switch を削除してください。</p>
-      <p data-install="script">
-        インストール先フォルダのアンインストールスクリプトを実行してください。</p>
-    </section>
-  </div>
-  <script type="module" src="/src/help.ts"></script>
-</body>
+      <section>
+        <h2>アンインストール</h2>
+        <p data-install="installer">
+          「設定 &gt; アプリ &gt; インストールされているアプリ」から muhenkan-switch
+          を削除してください。
+        </p>
+        <p data-install="script">
+          インストール先フォルダのアンインストールスクリプトを実行してください。
+        </p>
+      </section>
+    </div>
+    <script type="module" src="/src/help.ts"></script>
+  </body>
 </html>

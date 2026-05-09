@@ -4,11 +4,11 @@
 // Phase 3-A で `.ts` 化し、`invoke<T>(...)` の戻り値型を呼び出し側で
 // 受け取れる薄い wrapper に発展させる。
 
-import { invoke as tauriInvoke } from "@tauri-apps/api/core";
-import { listen } from "@tauri-apps/api/event";
-import { getCurrentWindow } from "@tauri-apps/api/window";
-import { open as shellOpen } from "@tauri-apps/plugin-shell";
-import { message, ask } from "@tauri-apps/plugin-dialog";
+import { invoke as tauriInvoke } from '@tauri-apps/api/core';
+import { listen } from '@tauri-apps/api/event';
+import { getCurrentWindow } from '@tauri-apps/api/window';
+import { open as shellOpen } from '@tauri-apps/plugin-shell';
+import { message, ask } from '@tauri-apps/plugin-dialog';
 
 /**
  * Tauri コマンドを呼び出す型付きファサード。

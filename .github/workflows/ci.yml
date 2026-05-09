@@ -36,6 +36,12 @@ jobs:
       - name: Typecheck frontend (tsc)
         run: npm --prefix muhenkan-switch/frontend run typecheck
 
+      - name: Lint frontend (ESLint)
+        run: npm --prefix muhenkan-switch/frontend run lint
+
+      - name: Format check (Prettier)
+        run: npm --prefix muhenkan-switch/frontend run format:check
+
       - name: Build frontend (Vite)
         run: npm --prefix muhenkan-switch/frontend run build
 

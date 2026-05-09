@@ -3,27 +3,15 @@
 // `@tauri-apps/api` 採用 + Tauri グローバル直叩きは廃止済み、`withGlobalTauri: false`)。
 // Phase 3-B で全 .js を .ts 化し strict 設定で typecheck を pass させた。
 
-import { invoke } from "./lib/tauri";
-import { initTabs } from "./lib/tabs";
-import { initShortcuts } from "./lib/shortcuts";
-import {
-  loadConfig, renderConfig, initConfigActions, initConfigIo,
-} from "./lib/config-io";
-import {
-  initTimestampForm, renderTimestamp, collectTimestamp,
-} from "./forms/timestamp";
-import {
-  initSearchForm, renderSearchList, collectSearch,
-} from "./forms/search";
-import {
-  initFoldersForm, renderFoldersList, collectFolders,
-} from "./forms/folders";
-import {
-  initAppsForm, renderAppsList, collectApps,
-} from "./forms/apps";
-import {
-  initGeneralForm, refreshKanataStatus, loadAutostart, initUpdater,
-} from "./forms/general";
+import { invoke } from './lib/tauri';
+import { initTabs } from './lib/tabs';
+import { initShortcuts } from './lib/shortcuts';
+import { loadConfig, renderConfig, initConfigActions, initConfigIo } from './lib/config-io';
+import { initTimestampForm, renderTimestamp, collectTimestamp } from './forms/timestamp';
+import { initSearchForm, renderSearchList, collectSearch } from './forms/search';
+import { initFoldersForm, renderFoldersList, collectFolders } from './forms/folders';
+import { initAppsForm, renderAppsList, collectApps } from './forms/apps';
+import { initGeneralForm, refreshKanataStatus, loadAutostart, initUpdater } from './forms/general';
 
 // ── Initialize ──
 async function init(): Promise<void> {
@@ -49,11 +37,11 @@ async function init(): Promise<void> {
 
   // フッターにバージョン表示
   try {
-    const version = await invoke<string>("get_app_version");
-    const footerVersion = document.getElementById("footer-version");
-    if (footerVersion) footerVersion.textContent = "v" + version;
+    const version = await invoke<string>('get_app_version');
+    const footerVersion = document.getElementById('footer-version');
+    if (footerVersion) footerVersion.textContent = 'v' + version;
   } catch (e) {
-    console.error("バージョン情報の取得に失敗:", e);
+    console.error('バージョン情報の取得に失敗:', e);
   }
 
   // インストーラー版のみ自動更新チェック
