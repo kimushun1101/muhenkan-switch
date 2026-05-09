@@ -3,6 +3,7 @@
 // ESM の `let` 直 export は import 側で再代入できないので、
 // getter / setter 関数経由でアクセスする (振る舞いは元コードと同一)。
 
+/** @type {import('./config').Config | null} */
 let config = null; // Current config from backend
 let APP_PRESETS = {};
 let SEARCH_PRESETS = {};
