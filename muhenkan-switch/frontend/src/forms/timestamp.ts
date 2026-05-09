@@ -78,7 +78,7 @@ export function collectTimestamp(collected: CollectedConfig): void {
   const positionEl = document.querySelector<HTMLInputElement>('input[name="ts-position"]:checked');
   collected.timestamp = {
     format: getTimestampFormat(),
-    position: positionEl?.value ?? "",
+    position: positionEl?.value ?? "before",
     delimiter: getTimestampDelimiter(),
   };
 }
@@ -87,7 +87,7 @@ export async function updateTimestampPreview(): Promise<void> {
   const format = getTimestampFormat();
   const delimiter = getTimestampDelimiter();
   const positionEl = document.querySelector<HTMLInputElement>('input[name="ts-position"]:checked');
-  const position = positionEl?.value ?? "";
+  const position = positionEl?.value ?? "before";
   const previewEl = requireEl<HTMLElement>("ts-preview");
   try {
     const preview = await invoke<string>("validate_timestamp_format", { format, delimiter, position });
