@@ -1,7 +1,7 @@
 # AGENTS.md — muhenkan-switch
 
 3-crate Cargo workspace + Tauri v2 GUI + kanata プロセス管理。
-詳細構成は `Cargo.toml` 参照。フロントエンドは `muhenkan-switch/frontend/` (**Vanilla JS — Node.js / ビルドステップ不要**)。
+詳細構成は `Cargo.toml` 参照。フロントエンドは `muhenkan-switch/frontend/` (Vanilla JS + Vite。`frontend/package.json` で依存管理、`mise run build` で自動ビルドされる)。
 
 ## マルチプラットフォーム (Win / Linux / macOS)
 

@@ -14,7 +14,7 @@
 - kanata を外部バイナリとして利用（クレート組み込みはしない）
 - kanata と muhenkan-switch は `cmd` アクション（プロセス起動）で疎結合に接続
 - muhenkan-switch は非同期なし・ライフタイム注釈なしのシンプルな Rust コード（Windows の Win32 API 呼び出しのみ unsafe を使用）
-- GUI は Tauri v2 + vanilla JS（Node.js ビルドステップなし）で設定の閲覧・編集を提供
+- GUI は Tauri v2 + Vanilla JS + Vite（Node.js LTS が必要、`mise run build` で frontend/dist を自動生成）で設定の閲覧・編集を提供
 
 ---
 
