@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  frontend-check:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: 'npm'
+          cache-dependency-path: muhenkan-switch/frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        run: npm --prefix muhenkan-switch/frontend ci
+
+      - name: Typecheck frontend (tsc)
+        run: npm --prefix muhenkan-switch/frontend run typecheck
+
+      - name: Build frontend (Vite)
+        run: npm --prefix muhenkan-switch/frontend run build
+
+  rust-check:
+    # Tauri GUI のクロス OS ビルドは重いので release.yml に委ね、CI では Linux のみ
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install system dependencies (Linux)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+      # tauri-build がビルド時に externalBin の実在を確認するため、
+      # ダミー sidecar ファイルを用意する (CI では実バイナリ不要、空ファイルで十分)
+      - name: Prepare sidecar placeholders
+        shell: bash
+        run: |
+          mkdir -p muhenkan-switch/binaries
+          touch muhenkan-switch/binaries/muhenkan-switch-core-x86_64-unknown-linux-gnu
+          touch muhenkan-switch/binaries/kanata_cmd_allowed-x86_64-unknown-linux-gnu
+
+      - name: cargo check
+        run: cargo check --workspace
+
+      - name: cargo test
+        run: cargo test --workspace
