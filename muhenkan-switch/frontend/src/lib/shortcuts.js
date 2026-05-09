@@ -1,5 +1,5 @@
 // ── Keyboard shortcuts ──
-import { invoke } from "./tauri.js";
+import { invoke, getCurrentWindow } from "./tauri.js";
 
 export function initShortcuts() {
   document.addEventListener("keydown", (e) => {
@@ -32,7 +32,7 @@ export function initShortcuts() {
     // Escape → ウィンドウを隠す（トレイ格納）
     if (e.key === "Escape") {
       e.preventDefault();
-      window.__TAURI__.window.getCurrentWindow().hide();
+      getCurrentWindow().hide();
       return;
     }
   });

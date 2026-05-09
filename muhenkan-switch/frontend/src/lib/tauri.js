@@ -1,12 +1,13 @@
-// ── Tauri global APIs (Phase 1: keep `window.__TAURI__.*` access) ──
-// Phase 2 で `@tauri-apps/api` に置換予定。本ファイルがその時の差し替えポイントになる。
+// ── Tauri API facade (Phase 2: `@tauri-apps/api` + plugins, no global) ──
+// Phase 1 では Tauri グローバルを本ファイルへ集約しただけだったが、
+// Phase 2 で `@tauri-apps/api` を npm 経由 import し、`withGlobalTauri: false`
+// でグローバル汚染を完全排除した。本ファイルが Tauri runtime への唯一の窓口。
+// Phase 3 で `.ts` 化し `invoke<T>(...)` の型ファサードに発展させる予定。
 
-const { invoke } = window.__TAURI__.core;
-const { listen } = window.__TAURI__.event;
-const { message, ask } = window.__TAURI__.dialog;
+import { invoke } from "@tauri-apps/api/core";
+import { listen } from "@tauri-apps/api/event";
+import { getCurrentWindow } from "@tauri-apps/api/window";
+import { open as shellOpen } from "@tauri-apps/plugin-shell";
+import { message, ask } from "@tauri-apps/plugin-dialog";
 
-export { invoke, listen, message, ask };
-
-// `shell.open` / `window.getCurrentWindow()` は使用箇所が限定的なので
-// 都度 `window.__TAURI__.shell` / `window.__TAURI__.window` を呼び出す
-// (元 main.js と同じ振る舞い)。
+export { invoke, listen, getCurrentWindow, shellOpen, message, ask };
