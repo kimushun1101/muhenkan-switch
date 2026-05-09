@@ -1,5 +1,5 @@
 // ── Keyboard shortcuts ──
-import { invoke, getCurrentWindow } from "./tauri.js";
+import { invoke, getCurrentWindow } from "./tauri";
 
 export function initShortcuts() {
   document.addEventListener("keydown", (e) => {

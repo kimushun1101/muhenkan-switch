@@ -1,9 +1,9 @@
 // ── Help window entrypoint ──
 // Phase 2 で help.html の inline script から切り出し、`@tauri-apps/api` を bundle 化。
 // 従来 inline で持っていた zoom / drag / SVG load / Escape close ロジックを完全保持。
-// 共通化のため Tauri API は `lib/tauri.js` facade 経由で取得する。
+// 共通化のため Tauri API は `lib/tauri.ts` facade 経由で取得する。
 
-import { invoke, listen, getCurrentWindow } from "./lib/tauri.js";
+import { invoke, listen, getCurrentWindow } from "./lib/tauri";
 
 // インストール種別 (installer / script) によって表示を切り替え
 const install = new URLSearchParams(location.search).get("install");
