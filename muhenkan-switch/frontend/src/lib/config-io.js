@@ -4,7 +4,7 @@
 // `initConfigIo({ renderers, collectors })` で受け取った関数群へ fan-out する
 // (Issue #140)。Phase 3 TS 化や Phase 4 単体テストでの差し替え/モックを
 // しやすくする目的の純リファクタ。
-import { invoke, message, ask } from "./tauri.js";
+import { invoke, message, ask } from "./tauri";
 import {
   getConfig, setConfig,
   setAppPresets, setSearchPresets,

@@ -1,5 +1,5 @@
 // ── General tab: autostart / export-import / help / github / open-dir / quit / kanata status / updater ──
-import { invoke, listen, message, ask, shellOpen } from "../lib/tauri.js";
+import { invoke, listen, message, ask, shellOpen } from "../lib/tauri";
 import { setConfig } from "../lib/state.js";
 
 // ── Kanata status ──

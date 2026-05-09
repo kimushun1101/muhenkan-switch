@@ -1,9 +1,9 @@
 // ── muhenkan-switch frontend entrypoint ──
-// Vanilla JS + ESM. Tauri API は `lib/tauri.js` facade に集約 (Phase 2 で
+// Vanilla JS + ESM. Tauri API は `lib/tauri.ts` facade に集約 (Phase 2 で
 // `@tauri-apps/api` 採用 + Tauri グローバル直叩きは廃止済み、`withGlobalTauri: false`)。
-// Phase 3 で `lib/tauri.js` を `.ts` 化し型ファサードに発展予定。
+// Phase 3-A で `lib/tauri.ts` 化済み (typed `invoke<T>`)。
 
-import { invoke } from "./lib/tauri.js";
+import { invoke } from "./lib/tauri";
 import { initTabs } from "./lib/tabs.js";
 import { initShortcuts } from "./lib/shortcuts.js";
 import {

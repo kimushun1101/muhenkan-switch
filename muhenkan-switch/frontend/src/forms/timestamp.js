@@ -1,5 +1,5 @@
 // ── Timestamp form ──
-import { invoke } from "../lib/tauri.js";
+import { invoke } from "../lib/tauri";
 import { getConfig } from "../lib/state.js";
 
 export function renderTimestamp() {

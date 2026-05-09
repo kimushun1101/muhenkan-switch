@@ -1,5 +1,5 @@
 // ── Apps form ──
-import { invoke } from "../lib/tauri.js";
+import { invoke } from "../lib/tauri";
 import { getConfig, getAppPresets } from "../lib/state.js";
 import { createDispatchKeySelect } from "../lib/dispatch-key.js";
 import { escapeHtml } from "../lib/utils.js";
