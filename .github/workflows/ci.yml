@@ -75,6 +75,20 @@ jobs:
       - name: Install frontend dependencies
         run: npm --prefix muhenkan-switch/frontend ci
 
+      # ts-rs で Rust 型から再生成した config.ts が commit 済みファイルと一致するか確認。
+      # zure があれば「mise run gen-ts && commit」を促してエラー (#172)。
+      - name: Verify ts-rs bindings are up-to-date
+        shell: bash
+        run: |
+          TS_RS_EXPORT_DIR="$(pwd)/muhenkan-switch/frontend/src/lib" \
+            cargo test -p muhenkan-switch-config --lib export_bindings_
+          ( cd muhenkan-switch/frontend
+            npx --no-install eslint --fix src/lib/config.ts
+            npx --no-install prettier --write src/lib/config.ts
+          )
+          git diff --exit-code muhenkan-switch/frontend/src/lib/config.ts \
+            || { echo "::error::config.ts is out of sync with Rust types. Run 'mise run gen-ts' and commit the result."; exit 1; }
+
       - name: Build frontend (Vite)
         run: npm --prefix muhenkan-switch/frontend run build
 

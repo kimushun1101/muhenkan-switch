@@ -2,6 +2,7 @@ use anyhow::{Context, Result};
 use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
+use ts_rs::TS;
 
 pub mod svg;
 
@@ -17,9 +18,11 @@ pub const DISPATCH_KEYS: &[&str] = &[
 
 // ── Types ──
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone, TS)]
+#[ts(export, export_to = "config.ts")]
 pub struct SearchEntry {
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub key: Option<String>,
     pub url: String,
 }
@@ -34,9 +37,11 @@ impl SearchEntry {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone, TS)]
+#[ts(export, export_to = "config.ts")]
 pub struct FolderEntry {
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub key: Option<String>,
     pub path: String,
 }
@@ -51,12 +56,15 @@ impl FolderEntry {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone, TS)]
+#[ts(export, export_to = "config.ts")]
 pub struct AppEntry {
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub key: Option<String>,
     pub process: String,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
     pub command: Option<String>,
 }
 
@@ -82,7 +90,8 @@ pub enum DispatchAction {
     SwitchApp { target: String },
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone, TS)]
+#[ts(export, export_to = "config.ts")]
 pub struct Config {
     #[serde(default)]
     pub search: IndexMap<String, SearchEntry>,
@@ -93,6 +102,7 @@ pub struct Config {
     #[serde(default)]
     pub timestamp: TimestampConfig,
     #[serde(default = "default_punctuation_style")]
+    #[ts(type = "\"、。\" | \"，．\" | \"，。\" | \"、．\"")]
     pub punctuation_style: String,
 }
 
@@ -128,7 +138,8 @@ impl Config {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone, TS)]
+#[ts(export, export_to = "config.ts")]
 pub struct TimestampConfig {
     #[serde(default = "default_format")]
     pub format: String,

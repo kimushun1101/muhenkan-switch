@@ -11,6 +11,7 @@
 #   mise run test-install ローカルでインストールスクリプトをテスト
 #   mise run reset-uinput uinput 設定をリセット（再テスト用）
 #   mise run gen-icons   img/icon.svg からアイコン全サイズを生成
+#   mise run gen-ts      Rust の Config 系 type から frontend/src/lib/config.ts を生成 (build 依存に組込済)
 
 [tools]
 rust = "1.95"
@@ -32,14 +33,30 @@ run = "bash scripts/dev/sync-kanata-version.sh"
 description = "Download kanata binary for development"
 run = "bash scripts/dev/fetch-kanata.sh"
 
+[tasks.gen-ts]
+description = "Generate TypeScript bindings from Rust types via ts-rs (#172)"
+shell = "bash -c"
+run = """
+set -euo pipefail
+TS_RS_EXPORT_DIR="$(pwd)/muhenkan-switch/frontend/src/lib" \
+  cargo test -p muhenkan-switch-config --lib export_bindings_
+# ts-rs の生成 TS は ESLint/Prettier の規約に合わないため自動整形する
+# (Record<string,T> / interface / 1 行 1 フィールド)。
+# node_modules が無い場合のみ npm ci で揃える (CI 初回 / 新規 worktree 想定)。
+cd muhenkan-switch/frontend
+[ -x node_modules/.bin/eslint ] || npm ci
+npx --no-install eslint --fix src/lib/config.ts
+npx --no-install prettier --write src/lib/config.ts
+"""
+
 [tasks.build]
 description = "Build workspace (debug)"
-depends = ["check-deps", "fetch-kanata"]
+depends = ["check-deps", "fetch-kanata", "gen-ts"]
 run = "bash scripts/dev/build.sh"
 
 [tasks.release]
 description = "Build workspace (release)"
-depends = ["check-deps", "fetch-kanata"]
+depends = ["check-deps", "fetch-kanata", "gen-ts"]
 run = "bash scripts/dev/release.sh"
 
 [tasks.dev]
