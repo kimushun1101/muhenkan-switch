@@ -2,18 +2,7 @@
 import { invoke, listen, message, ask, shellOpen } from '../lib/tauri';
 import { setConfig } from '../lib/state';
 import type { Config } from '../lib/config';
-
-/** Tauri 側 KanataStatus (commands.rs) と対応 */
-interface KanataStatus {
-  running: boolean;
-  pid: number | null;
-}
-
-/** Tauri 側 UpdateInfo (commands.rs) と対応 */
-interface UpdateInfo {
-  version: string;
-  body: string | null;
-}
+import type { KanataStatus, UpdateInfo } from '../lib/ipc-types';
 
 // ── Kanata status ──
 export async function refreshKanataStatus(): Promise<void> {

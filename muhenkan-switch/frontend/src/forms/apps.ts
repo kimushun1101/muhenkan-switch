@@ -5,12 +5,7 @@ import { createDispatchKeySelect } from '../lib/dispatch-key';
 import { escapeHtml } from '../lib/utils';
 import type { AppEntry } from '../lib/config';
 import type { CollectedConfig } from '../lib/config-io';
-
-/** Tauri 側 ProcessInfo (commands.rs) と対応 */
-interface ProcessInfo {
-  name: string;
-  pid: number;
-}
+import type { ProcessInfo } from '../lib/ipc-types';
 
 // ── App select dropdown helper ──
 export function createAppSelect(currentProcess = '', currentCommand = ''): HTMLSelectElement {
