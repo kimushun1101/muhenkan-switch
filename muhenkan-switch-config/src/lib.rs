@@ -117,13 +117,40 @@ pub struct Config {
     #[serde(default)]
     pub timestamp: TimestampConfig,
     /// 句読点スタイル。kanata の kbd ファイルに反映される。
-    #[serde(default = "default_punctuation_style")]
-    #[ts(type = "\"、。\" | \"，．\" | \"，。\" | \"、．\"")]
-    pub punctuation_style: String,
+    #[serde(default)]
+    pub punctuation_style: PunctuationStyle,
 }
 
-fn default_punctuation_style() -> String {
-    "、。".to_string()
+/// 句読点スタイル。kanata の kbd ファイルに反映される 4 種類。
+/// TOML / JSON 上は `"、。"` のような文字列リテラルで表現される。
+#[derive(Debug, Deserialize, Serialize, Clone, Copy, PartialEq, Eq, Default, TS)]
+#[ts(export, export_to = "config.ts")]
+pub enum PunctuationStyle {
+    /// 「、」「。」（デフォルト）
+    #[serde(rename = "、。")]
+    #[default]
+    TenMaru,
+    /// 「，」「．」
+    #[serde(rename = "，．")]
+    CommaPeriod,
+    /// 「，」「。」
+    #[serde(rename = "，。")]
+    CommaMaru,
+    /// 「、」「．」
+    #[serde(rename = "、．")]
+    TenPeriod,
+}
+
+impl PunctuationStyle {
+    /// kbd ファイル等で使う文字列表現（TOML / TS 上のリテラル値と一致）。
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            PunctuationStyle::TenMaru => "、。",
+            PunctuationStyle::CommaPeriod => "，．",
+            PunctuationStyle::CommaMaru => "，。",
+            PunctuationStyle::TenPeriod => "、．",
+        }
+    }
 }
 
 impl Config {
@@ -274,7 +301,7 @@ pub fn default_config() -> Config {
         folders: IndexMap::new(),
         apps: IndexMap::new(),
         timestamp: TimestampConfig::default(),
-        punctuation_style: default_punctuation_style(),
+        punctuation_style: PunctuationStyle::default(),
     }
 }
 
@@ -382,7 +409,7 @@ pub fn save(path: &std::path::Path, config: &Config) -> Result<()> {
     }
 
     // punctuation_style（トップレベル）
-    doc["punctuation_style"] = toml_edit::value(&config.punctuation_style);
+    doc["punctuation_style"] = toml_edit::value(config.punctuation_style.as_str());
 
     // [timestamp] セクション
     let ts_table = doc
@@ -432,13 +459,7 @@ pub fn validate(config: &Config) -> Vec<String> {
         ));
     }
 
-    // punctuation_style の検証
-    if !["、。", "，．", "，。", "、．"].contains(&config.punctuation_style.as_str()) {
-        errors.push(format!(
-            "punctuation_style は \"、。\", \"，．\", \"，。\", \"、．\" のいずれかを指定してください (現在: \"{}\")",
-            config.punctuation_style
-        ));
-    }
+    // punctuation_style は enum で型ガード済（serde が無効値を deserialize 段階で reject）。
 
     // search URL テンプレートの検証
     for (name, entry) in &config.search {
@@ -498,7 +519,10 @@ pub fn validate(config: &Config) -> Vec<String> {
 // ── kbd punctuation rewrite ──
 
 /// kbd ファイル内の句読点行を指定スタイルに書き換える。
-pub fn rewrite_kbd_punctuation(kbd_path: &std::path::Path, style: &str) -> Result<()> {
+pub fn rewrite_kbd_punctuation(
+    kbd_path: &std::path::Path,
+    style: &PunctuationStyle,
+) -> Result<()> {
     let content = std::fs::read_to_string(kbd_path)
         .with_context(|| format!("kbd ファイルの読み込みに失敗しました: {}", kbd_path.display()))?;
 
@@ -509,10 +533,10 @@ pub fn rewrite_kbd_punctuation(kbd_path: &std::path::Path, style: &str) -> Resul
         "(unicode 、)  (unicode ．)",
     ];
     let new_fragment = match style {
-        "，．" => "(unicode ，)  (unicode ．)",
-        "，。" => "(unicode ，)  (unicode 。)",
-        "、．" => "(unicode 、)  (unicode ．)",
-        _ => "(unicode 、)  (unicode 。)",
+        PunctuationStyle::TenMaru => "(unicode 、)  (unicode 。)",
+        PunctuationStyle::CommaPeriod => "(unicode ，)  (unicode ．)",
+        PunctuationStyle::CommaMaru => "(unicode ，)  (unicode 。)",
+        PunctuationStyle::TenPeriod => "(unicode 、)  (unicode ．)",
     };
 
     let mut new_content = content.clone();
@@ -792,7 +816,7 @@ mod tests {
             folders: IndexMap::new(),
             apps: IndexMap::new(),
             timestamp: TimestampConfig::default(),
-            punctuation_style: default_punctuation_style(),
+            punctuation_style: PunctuationStyle::default(),
         };
         // Assign all 15 dispatch keys across sections
         let keys = DISPATCH_KEYS;
@@ -967,6 +991,46 @@ mod tests {
         let result = get_folder_path(&folders, "nonexistent");
         assert!(result.is_err());
         assert!(result.unwrap_err().to_string().contains("nonexistent"));
+    }
+
+    // ── F. PunctuationStyle (enum 化に伴うシリアライズ確認) ──
+
+    #[test]
+    fn test_punctuation_style_serde_all_variants() {
+        // TOML 文字列リテラル ⇄ enum の双方向変換を全 4 variant で確認
+        let cases = [
+            ("、。", PunctuationStyle::TenMaru),
+            ("，．", PunctuationStyle::CommaPeriod),
+            ("，。", PunctuationStyle::CommaMaru),
+            ("、．", PunctuationStyle::TenPeriod),
+        ];
+        for (literal, expected) in cases {
+            let toml_str = format!("punctuation_style = \"{}\"\n", literal);
+            let config: Config = toml::from_str(&toml_str).unwrap();
+            assert_eq!(config.punctuation_style, expected, "deserialize: {}", literal);
+            let dumped = toml::to_string(&config).unwrap();
+            assert!(
+                dumped.contains(&format!("punctuation_style = \"{}\"", literal)),
+                "serialize round-trip should keep literal {}: actual = {}",
+                literal,
+                dumped
+            );
+        }
+    }
+
+    #[test]
+    fn test_punctuation_style_default_when_missing() {
+        // punctuation_style が省略された TOML はデフォルト値 (「、。」) を採用
+        let config: Config = toml::from_str("[search]\n").unwrap();
+        assert_eq!(config.punctuation_style, PunctuationStyle::TenMaru);
+    }
+
+    #[test]
+    fn test_punctuation_style_invalid_rejected() {
+        // 4 variant 以外の文字列は deserialize 時点で reject される（型ガード）
+        let toml_str = "punctuation_style = \"invalid\"\n";
+        let result: Result<Config, _> = toml::from_str(toml_str);
+        assert!(result.is_err(), "invalid punctuation_style should fail to parse");
     }
 
     #[test]
