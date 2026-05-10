@@ -83,7 +83,9 @@ export function collectConfig(): CollectedConfig {
     apps: {},
     // collectTimestamp が必須フィールドを埋める前提で空オブジェクトで開始
     timestamp: {} as TimestampConfig,
-    punctuation_style: punc?.value || '、。',
+    // ts-rs で literal union に強化された型に合わせるためのキャスト。
+    // 不正値は Rust 側の `validate()` で検出される。
+    punctuation_style: (punc?.value || '、。') as Config['punctuation_style'],
   };
 
   // Fan out to per-form collectors

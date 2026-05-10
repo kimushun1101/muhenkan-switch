@@ -12,3 +12,4 @@ anyhow.workspace = true
 indexmap = { version = "2", features = ["serde"] }
 toml = "0.8"
 toml_edit = "0.22"
+ts-rs = { version = "12", features = ["indexmap-impl"] }

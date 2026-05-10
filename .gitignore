@@ -32,6 +32,10 @@ Thumbs.db
 /muhenkan-switch/gen/
 /muhenkan-switch/muhenkan-switch
 /muhenkan-switch/binaries/
+# ts-rs default export 先 (本来は mise run gen-ts 経由で TS_RS_EXPORT_DIR を指定して
+# muhenkan-switch/frontend/src/lib/config.ts に出すが、未指定で cargo test
+# export_bindings_ を直接叩いた場合の保険)
+/muhenkan-switch-config/bindings/
 
 # Test install staging
 /tmp-test-install/
