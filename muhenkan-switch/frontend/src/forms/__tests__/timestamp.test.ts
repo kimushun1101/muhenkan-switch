@@ -4,7 +4,7 @@
 // Tauri バックエンドのモック無しでも純粋に DOM だけで検証できる。
 // renderTimestamp / initTimestampForm / updateTimestampPreview は
 // `../lib/tauri` の `invoke` を経由するので vi.mock で差し替える。
-import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   collectTimestamp,
   getTimestampDelimiter,
@@ -65,11 +65,11 @@ function makeConfig(timestamp: TimestampConfig): Config {
 
 beforeEach(() => {
   setupTimestampDom();
-  (invoke as unknown as Mock).mockReset();
+  vi.mocked(invoke).mockReset();
   // renderTimestamp の末尾 (`void updateTimestampPreview()`) で invoke が呼ばれるため、
   // 既定値を返さないと unhandled rejection 警告が出る。個別テストで mockResolvedValueOnce
   // / mockRejectedValueOnce で上書きする想定。
-  (invoke as unknown as Mock).mockResolvedValue('preview-default');
+  vi.mocked(invoke).mockResolvedValue('preview-default');
 });
 
 afterEach(() => {
@@ -239,7 +239,7 @@ describe('renderTimestamp', () => {
 
 describe('updateTimestampPreview', () => {
   it('writes the invoke result into #ts-preview and clears the color on success', async () => {
-    (invoke as unknown as Mock).mockResolvedValueOnce('20251231');
+    vi.mocked(invoke).mockResolvedValueOnce('20251231');
     (document.getElementById('ts-format-preset') as HTMLSelectElement).value = '%Y%m%d';
     (document.getElementById('ts-delimiter-preset') as HTMLSelectElement).value = '_';
 
@@ -257,7 +257,7 @@ describe('updateTimestampPreview', () => {
   });
 
   it('writes the error string and a red color when invoke rejects', async () => {
-    (invoke as unknown as Mock).mockRejectedValueOnce(new Error('bad format'));
+    vi.mocked(invoke).mockRejectedValueOnce(new Error('bad format'));
     (document.getElementById('ts-format-preset') as HTMLSelectElement).value = '%Y%m%d';
     (document.getElementById('ts-delimiter-preset') as HTMLSelectElement).value = '_';
 
@@ -300,8 +300,8 @@ describe('initTimestampForm', () => {
 
   it('triggers a preview update when format-custom receives input', () => {
     initTimestampForm();
-    (invoke as unknown as Mock).mockClear();
-    (invoke as unknown as Mock).mockResolvedValue('preview-format-custom');
+    vi.mocked(invoke).mockClear();
+    vi.mocked(invoke).mockResolvedValue('preview-format-custom');
 
     // format は preset='custom' のときだけ custom input が読まれる
     // (実コード getTimestampFormat 参照)。両方を準備した上で input 発火。
@@ -321,8 +321,8 @@ describe('initTimestampForm', () => {
 
   it('triggers a preview update when delimiter-custom receives input', () => {
     initTimestampForm();
-    (invoke as unknown as Mock).mockClear();
-    (invoke as unknown as Mock).mockResolvedValue('preview-delim-custom');
+    vi.mocked(invoke).mockClear();
+    vi.mocked(invoke).mockResolvedValue('preview-delim-custom');
 
     // delimiter は preset='custom' のときだけ custom input が読まれるので
     // 両方を準備した上で input イベントを発火させる。
@@ -340,8 +340,8 @@ describe('initTimestampForm', () => {
 
   it('triggers a preview update when a position radio changes', () => {
     initTimestampForm();
-    (invoke as unknown as Mock).mockClear();
-    (invoke as unknown as Mock).mockResolvedValue('preview-position');
+    vi.mocked(invoke).mockClear();
+    vi.mocked(invoke).mockResolvedValue('preview-position');
 
     const afterRadio = document.querySelector<HTMLInputElement>(
       'input[name="ts-position"][value="after"]',
