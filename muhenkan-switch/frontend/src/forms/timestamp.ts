@@ -2,16 +2,7 @@
 import { invoke } from '../lib/tauri';
 import { getConfig } from '../lib/state';
 import type { CollectedConfig } from '../lib/config-io';
-
-/**
- * 必須 DOM 要素を取得するヘルパー (見つからなければ throw)。
- * 元 .js では non-null 前提で書かれていたので strict 化後も例外で fail-fast する。
- */
-function requireEl<T extends HTMLElement>(id: string): T {
-  const el = document.getElementById(id) as T | null;
-  if (!el) throw new Error(`Required element #${id} not found`);
-  return el;
-}
+import { requireEl } from '../lib/dom-utils';
 
 export function renderTimestamp(): void {
   const config = getConfig();

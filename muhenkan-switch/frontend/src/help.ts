@@ -5,6 +5,7 @@
 // Phase 3-B で `.ts` 化 (strict)。
 
 import { invoke, listen, getCurrentWindow } from './lib/tauri';
+import { requireEl } from './lib/dom-utils';
 
 // インストール種別 (installer / script) によって表示を切り替え
 const install = new URLSearchParams(location.search).get('install');
@@ -15,15 +16,7 @@ if (install) {
 }
 
 // キーボード配列 SVG を Tauri 経由で取得して埋め込む
-function requireContainer(): HTMLElement {
-  const el = document.getElementById('keyboard-svg');
-  if (!el) {
-    // help.html では必ず存在する想定。strict 化のため明示 fail-fast。
-    throw new Error('Required element #keyboard-svg not found');
-  }
-  return el;
-}
-const container = requireContainer();
+const container = requireEl<HTMLElement>('keyboard-svg');
 let scale = 1;
 let tx = 0;
 let ty = 0;
