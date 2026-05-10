@@ -18,12 +18,15 @@ pub const DISPATCH_KEYS: &[&str] = &[
 
 // ── Types ──
 
+/// 検索エンジンエントリ。割当キーで起動し、URL テンプレートにクエリを差し込んで検索する。
 #[derive(Debug, Deserialize, Serialize, Clone, TS)]
 #[ts(export, export_to = "config.ts")]
 pub struct SearchEntry {
+    /// ディスパッチキー（無指定可）。`DISPATCH_KEYS` から選ぶ。
     #[serde(skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
     pub key: Option<String>,
+    /// 検索 URL テンプレート。`{query}` プレースホルダがクエリ文字列に置換される。
     pub url: String,
 }
 
@@ -37,12 +40,15 @@ impl SearchEntry {
     }
 }
 
+/// フォルダエントリ。割当キーでファイルマネージャから対象フォルダを開く。
 #[derive(Debug, Deserialize, Serialize, Clone, TS)]
 #[ts(export, export_to = "config.ts")]
 pub struct FolderEntry {
+    /// ディスパッチキー（無指定可）。
     #[serde(skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
     pub key: Option<String>,
+    /// フォルダパス。`~/` 表記でホーム展開対応。
     pub path: String,
 }
 
@@ -56,13 +62,17 @@ impl FolderEntry {
     }
 }
 
+/// アプリエントリ。割当キーで対象プロセスのウィンドウを最前面化、未起動なら `command` で起動する。
 #[derive(Debug, Deserialize, Serialize, Clone, TS)]
 #[ts(export, export_to = "config.ts")]
 pub struct AppEntry {
+    /// ディスパッチキー（無指定可）。
     #[serde(skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
     pub key: Option<String>,
+    /// 対象プロセス名（ウィンドウ検索に使用）。
     pub process: String,
+    /// 起動コマンド（省略時は `process` をフォールバックとして使用）。
     #[serde(skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
     pub command: Option<String>,
@@ -90,17 +100,23 @@ pub enum DispatchAction {
     SwitchApp { target: String },
 }
 
+/// muhenkan-switch のトップレベル設定（`config.toml` のルート）。
 #[derive(Debug, Deserialize, Serialize, Clone, TS)]
 #[ts(export, export_to = "config.ts")]
 pub struct Config {
+    /// 検索エンジン一覧（割当キーで起動）。
     #[serde(default)]
     pub search: IndexMap<String, SearchEntry>,
+    /// フォルダ一覧（割当キーで開く）。
     #[serde(default)]
     pub folders: IndexMap<String, FolderEntry>,
+    /// アプリ一覧（割当キーでウィンドウ切替・起動）。
     #[serde(default)]
     pub apps: IndexMap<String, AppEntry>,
+    /// タイムスタンプ挿入設定。
     #[serde(default)]
     pub timestamp: TimestampConfig,
+    /// 句読点スタイル。kanata の kbd ファイルに反映される。
     #[serde(default = "default_punctuation_style")]
     #[ts(type = "\"、。\" | \"，．\" | \"，。\" | \"、．\"")]
     pub punctuation_style: String,
@@ -138,13 +154,17 @@ impl Config {
     }
 }
 
+/// タイムスタンプ挿入設定。ファイル名等にタイムスタンプを付与するときの形式を制御する。
 #[derive(Debug, Deserialize, Serialize, Clone, TS)]
 #[ts(export, export_to = "config.ts")]
 pub struct TimestampConfig {
+    /// フォーマット文字列（chrono strftime 互換、例: `%Y%m%d`）。
     #[serde(default = "default_format")]
     pub format: String,
+    /// 挿入位置: `"before"` | `"after"`。
     #[serde(default = "default_position")]
     pub position: String,
+    /// 区切り文字。空文字で区切りなし。
     #[serde(default = "default_delimiter")]
     pub delimiter: String,
 }
