@@ -33,6 +33,14 @@ describe('createDispatchKeySelect', () => {
     const select = createDispatchKeySelect();
     expect(select.value).toBe('');
   });
+
+  it('falls back to empty value when the preselect key is not in DISPATCH_KEYS', () => {
+    // WHATWG HTML 仕様 (HTMLSelectElement.value setter) により、マッチする option が
+    // 無い value をセットすると selectedIndex=-1 となり、value getter は空文字を返す
+    // (= 最初の '—' option ではなく "選択なし")。happy-dom も同仕様に従うことを pin する。
+    const select = createDispatchKeySelect('qqqqqqq');
+    expect(select.value).toBe('');
+  });
 });
 
 describe('validateDispatchKeys', () => {
