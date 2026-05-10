@@ -34,6 +34,12 @@ export function setConfig(next: Config): void {
   config = next;
 }
 
+// テスト専用: 初期状態 (config==null) の早期 return 分岐を pin するため、
+// `setConfig(null as unknown as Config)` で API 契約を破らずに状態を戻すための API。
+export function resetConfig(): void {
+  config = null;
+}
+
 export function getAppPresets(): AppPresetMap {
   return APP_PRESETS;
 }

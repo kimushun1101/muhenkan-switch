@@ -14,7 +14,7 @@ import {
   updateTimestampPreview,
 } from '../timestamp';
 import { invoke } from '../../lib/tauri';
-import { setConfig } from '../../lib/state';
+import { resetConfig, setConfig } from '../../lib/state';
 import type { Config, TimestampConfig } from '../../lib/config';
 import type { CollectedConfig } from '../../lib/config-io';
 
@@ -229,10 +229,9 @@ describe('renderTimestamp', () => {
   });
 
   it('returns early without throwing when no config is set', () => {
-    // setConfig は型上 Config 必須だが、初期状態 (config==null) の早期 return 分岐
-    // (timestamp.ts:9 `if (!config) return;`) を pin するため type cast で null を注入する。
-    // state.ts に testability API (resetConfig 等) を追加して cast を解消する追跡 issue: #165
-    setConfig(null as unknown as Config);
+    // 初期状態 (config==null) の早期 return 分岐 (timestamp.ts:9 `if (!config) return;`)
+    // を pin する。`setConfig` は型上 Config 必須なので testability 用 `resetConfig` で戻す。
+    resetConfig();
     expect(() => renderTimestamp()).not.toThrow();
   });
 });
