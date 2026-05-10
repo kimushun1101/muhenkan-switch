@@ -69,9 +69,8 @@ npm run lint          # eslint .
 npm run lint:fix      # eslint . --fix
 npm run format        # prettier --write .
 npm run format:check  # prettier --check .
-npm run test          # vitest run
-npm run test:watch    # vitest (watch mode)
-npm run test:coverage # vitest run --coverage
+npm run test          # vitest run --coverage (per-file 80% 閾値強制)
+npm run test:watch    # vitest (watch mode、coverage なし)
 npm run build         # vite build (mise run build からも呼ばれる)
 ```
 
@@ -219,8 +218,7 @@ cargo test --workspace
 
 ```
 cd muhenkan-switch/frontend
-npm run test            # vitest run
-npm run test:coverage   # vitest run --coverage (coverage/ に出力)
+npm run test            # vitest run --coverage (coverage/ に HTML 出力 + 閾値判定)
 ```
 
 #### テストの場所
@@ -236,6 +234,7 @@ npm run test:coverage   # vitest run --coverage (coverage/ に出力)
 - テスト DOM: happy-dom（`vitest.config.ts` で `environment: 'happy-dom'`）
 - vitest globals は `false`。各テストで `import { describe, expect, it } from 'vitest'` を明示
 - Tauri `invoke` を呼ぶモジュールは `vi.mock('../lib/tauri')` で差し替える
+- coverage 閾値は `vitest.config.ts` の `coverage.include` で whitelist 化したファイルにのみ per-file 80% を強制（lines/functions/branches/statements）。新規テスト追加時は include に対象ファイルを足す
 
 ### 手動テスト（Ubuntu 22.04 X11）
 

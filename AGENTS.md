@@ -32,12 +32,13 @@ cd muhenkan-switch/frontend
 npm run typecheck     # tsc --noEmit
 npm run lint          # eslint .
 npm run format:check  # prettier --check .
-npm run test          # vitest run
+npm run test          # vitest run --coverage (coverage 閾値 per-file 80% を強制)
 npm run build         # vite build (mise run build からも呼ばれる)
 ```
 
 - **テスト配置**: `src/{lib,forms}/__tests__/` 集約 (co-locate しない)
 - **vitest 設定**: `vitest.config.ts` を独立配置 (vite.config.js には統合しない)
+- **coverage 閾値**: `vitest.config.ts` の `coverage.include` を **テスト済ファイルだけ whitelist**、各ファイルに per-file 80% (lines/functions/branches/statements) を強制。新規テスト追加時は include に対象ファイルを足す
 - **DOM env**: happy-dom (jsdom より軽量。足りない API に当たったら jsdom 切替を検討)
 - **vitest globals**: `false`。各テストで `import { describe, expect, it } from 'vitest'` を明示
 - **改行コード**: Prettier `endOfLine: 'lf'` (`.prettierrc.json`) のため `.gitattributes` で対象拡張子を `eol=lf` 指定済 (Windows checkout 時の CRLF で format:check が落ちるのを回避)
