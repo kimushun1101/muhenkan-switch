@@ -81,7 +81,7 @@ mod tests {
     #[test]
     fn run_missing_folder_errors() {
         let config = Config {
-            punctuation_style: "、。".to_string(),
+            punctuation_style: Default::default(),
             search: Default::default(),
             folders: Default::default(),
             apps: Default::default(),
@@ -105,7 +105,7 @@ mod tests {
             },
         );
         let config = Config {
-            punctuation_style: "、。".to_string(),
+            punctuation_style: Default::default(),
             search: Default::default(),
             folders,
             apps: Default::default(),
@@ -129,7 +129,7 @@ mod tests {
             },
         );
         let config = Config {
-            punctuation_style: "、。".to_string(),
+            punctuation_style: Default::default(),
             search: Default::default(),
             folders,
             apps: Default::default(),

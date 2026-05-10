@@ -41,7 +41,7 @@ export interface Config {
   /**
    * 句読点スタイル。kanata の kbd ファイルに反映される。
    */
-  punctuation_style: '、。' | '，．' | '，。' | '、．';
+  punctuation_style: PunctuationStyle;
 }
 
 /**
@@ -57,6 +57,12 @@ export interface FolderEntry {
    */
   path: string;
 }
+
+/**
+ * 句読点スタイル。kanata の kbd ファイルに反映される 4 種類。
+ * TOML / JSON 上は `"、。"` のような文字列リテラルで表現される。
+ */
+export type PunctuationStyle = '、。' | '，．' | '，。' | '、．';
 
 /**
  * 検索エンジンエントリ。割当キーで起動し、URL テンプレートにクエリを差し込んで検索する。

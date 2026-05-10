@@ -1,4 +1,4 @@
-use crate::Config;
+use crate::{Config, PunctuationStyle};
 
 /// キーの物理配置を定義する構造体。
 struct KeyDef {
@@ -28,7 +28,7 @@ enum KeyCategory {
 
 /// 右手キーの固定機能名。
 /// 右手キーの固定機能名（kanata/muhenkan.kbd の mh-layer 定義に準拠）。
-fn text_edit_label(key: &str, punctuation_style: &str) -> &'static str {
+fn text_edit_label(key: &str, punctuation_style: &PunctuationStyle) -> &'static str {
     match key {
         // hjkl: Vim 風カーソル移動
         "H" => "←",
@@ -46,12 +46,12 @@ fn text_edit_label(key: &str, punctuation_style: &str) -> &'static str {
         ";" => "Esc",
         // ,.: 句読点（4パターン対応）
         "," => match punctuation_style {
-            "，．" | "，。" => "全角，",
-            _ => "、",
+            PunctuationStyle::CommaPeriod | PunctuationStyle::CommaMaru => "全角，",
+            PunctuationStyle::TenMaru | PunctuationStyle::TenPeriod => "、",
         },
         "." => match punctuation_style {
-            "，．" | "、．" => "全角．",
-            _ => "。",
+            PunctuationStyle::CommaPeriod | PunctuationStyle::TenPeriod => "全角．",
+            PunctuationStyle::TenMaru | PunctuationStyle::CommaMaru => "。",
         },
         _ => "",
     }
