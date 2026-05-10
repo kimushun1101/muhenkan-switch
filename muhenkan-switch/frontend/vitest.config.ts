@@ -1,4 +1,4 @@
-// Vitest config (Phase 4-C, Issue #158)
+// Vitest config (Phase 4-C, Issue #158 — coverage 閾値追加 Issue #167)
 //
 // vite.config.js が `.js` のままなので test フィールドを混ぜず独立 config にする。
 // vite 5.4 との互換性確保のため vitest 2.x 系を採用。
@@ -15,8 +15,18 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'],
-      include: ['src/**/*.ts'],
+      // include は **テスト済ファイル** だけを whitelist。新しいテストを追加した
+      // 時は対象ファイルをここに足す。未テストファイルを混ぜず、cover 済の品質
+      // 維持を per-file 閾値で強制する設計 (Issue #167)。
+      include: ['src/lib/utils.ts', 'src/lib/dispatch-key.ts', 'src/forms/timestamp.ts'],
       exclude: ['src/**/*.test.ts', 'src/**/__tests__/**'],
+      thresholds: {
+        perFile: true,
+        lines: 80,
+        functions: 80,
+        branches: 80,
+        statements: 80,
+      },
     },
   },
 });
