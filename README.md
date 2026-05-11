@@ -14,6 +14,18 @@
 
 **日本語キーボード（JIS配列）が必須です。** US配列には対応していません。
 
+## デモ
+
+選択したテキストで Web 検索:
+
+![選択文字列を Web 検索](https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-ahk/2e0eca98a1fe0371ba80eb3ef907d579112195f4/img/text2web.gif)
+
+ワンキーで指定アプリを最前面に:
+
+![アプリ切り替え](https://raw.githubusercontent.com/kimushun1101/muhenkan-switch-ahk/2e0eca98a1fe0371ba80eb3ef907d579112195f4/img/activeapp.gif)
+
+> AutoHotkey 版で撮影した動画ですが、機能は同等です。
+
 ## 機能
 
 無変換キーを押しながら他のキーを押すことで、以下の操作ができます。
