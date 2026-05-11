@@ -7,25 +7,6 @@
 | `muhenkan.kbd` | Windows / Linux | 検証済み |
 | `muhenkan-macos.kbd` | macOS | ⚠️ 未検証 |
 
-## kanata のインストール
-
-[kanata リリースページ](https://github.com/jtroo/kanata/releases) から **`kanata_cmd_allowed`** 版をダウンロードしてください。
-
-`cmd` アクション（muhenkan-switch-core バイナリの呼び出し）を使用するため、通常版（`kanata`）ではなく `cmd_allowed` 版が必要です。
-
-## 起動方法
-
-```bash
-# Windows
-kanata_cmd_allowed.exe --cfg muhenkan.kbd
-
-# Linux
-kanata --cfg muhenkan.kbd
-
-# macOS (未検証、sudo 必要)
-sudo kanata --cfg muhenkan-macos.kbd
-```
-
 ## カスタマイズ
 
 ### tap-hold のタイミング調整
