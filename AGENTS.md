@@ -51,6 +51,7 @@ npm run build         # vite build (mise run build からも呼ばれる)
   - `README.md` (機能一覧)
   - `docs/design.md` (設計)
   - `docs/setup.md` (セットアップ)
+  - `docs/customize.md` (カスタマイズ)
   - `config/default-*.toml` (設定コメント)
   - `muhenkan-switch/frontend/help.html` (ヘルプ)
 
