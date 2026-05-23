@@ -65,7 +65,7 @@ depends = ["build", "fetch-kanata"]
 run = "bash scripts/dev/dev.sh"
 
 [tasks.gen-icons]
-description = "Generate app icons from img/icon.svg using @tauri-apps/cli (requires Node.js)"
+description = "Generate app icons from img/icon.svg using @tauri-apps/cli"
 shell = "bash -c"
 run = "cd muhenkan-switch && npx --yes @tauri-apps/cli@2 icon ../img/icon.svg"
 

@@ -68,5 +68,5 @@ mise run test                 # cargo test --workspace
 mise run dev                  # ビルド + kanata 取得 + GUI 起動
 mise run sync-kanata-version  # kanata バージョンを全ファイルに同期
 mise run fetch-kanata         # 開発用 kanata バイナリをダウンロード
-mise run gen-icons            # img/icon.svg からアイコン全サイズ生成 (Node.js 使用)
+mise run gen-icons            # img/icon.svg からアイコン全サイズ生成
 ```
