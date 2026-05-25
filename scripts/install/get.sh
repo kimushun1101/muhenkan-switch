@@ -1,25 +1,13 @@
-#!/usr/bin/env bash
+#!/bin/sh
+set -eu
 
 # muhenkan-switch ワンライナーインストーラー
 #
 # 使い方:
 #   curl -fsSL https://raw.githubusercontent.com/kimushun1101/muhenkan-switch/main/scripts/install/get.sh | sh
 #
-# パイプ実行時は一時ファイルに保存してから bash で実行するため、
-# install スクリプト内の read プロンプトも正常に動作します。
-
-# ── パイプ実行ガード (set より前に置く) ──
-# stdin がパイプの場合、スクリプト全体を一時ファイルに書き出して bash で再実行する。
-# `curl ... | sh` で dash 等の POSIX shell に投入されるケースがあるため、
-# bash 専用の `set -o pipefail` を有効化する前にガードする必要がある。
-if [ ! -t 0 ]; then
-    tmp_script=$(mktemp)
-    cat > "$tmp_script"
-    exec bash "$tmp_script" "$@"
-    # exec で置き換わるため、ここには到達しない
-fi
-
-set -euo pipefail
+# POSIX shell (sh / dash / bash) で動作する。
+# install スクリプト内の read プロンプトは </dev/tty で端末に繋ぎ直す。
 
 # ── 設定 ──
 REPO="kimushun1101/muhenkan-switch"
@@ -62,9 +50,9 @@ esac
 echo ""
 echo "最新バージョンを確認しています..."
 
-if command -v curl &>/dev/null; then
+if command -v curl >/dev/null 2>&1; then
     api_response=$(curl -fsSL "https://api.github.com/repos/$REPO/releases/latest")
-elif command -v wget &>/dev/null; then
+elif command -v wget >/dev/null 2>&1; then
     api_response=$(wget -qO- "https://api.github.com/repos/$REPO/releases/latest")
 else
     echo "[ERROR] curl または wget が必要です"
@@ -72,7 +60,7 @@ else
 fi
 
 # jq なしで tag_name を抽出
-latest_tag=$(echo "$api_response" | grep -o '"tag_name"\s*:\s*"[^"]*"' | sed 's/"tag_name"\s*:\s*"\(.*\)"/\1/')
+latest_tag=$(echo "$api_response" | grep -o '"tag_name"[[:space:]]*:[[:space:]]*"[^"]*"' | sed 's/"tag_name"[[:space:]]*:[[:space:]]*"\(.*\)"/\1/')
 
 if [ -z "$latest_tag" ]; then
     echo "[ERROR] 最新バージョンの取得に失敗しました"
@@ -89,16 +77,18 @@ echo "$latest_tag をダウンロードしています..."
 download_url="https://github.com/$REPO/releases/download/$latest_tag/$ASSET_NAME"
 temp_dir=$(mktemp -d)
 
-if command -v curl &>/dev/null; then
-    downloader="curl -fSL -o"
+if command -v curl >/dev/null 2>&1; then
+    if ! curl -fSL -o "$temp_dir/archive.tar.gz" "$download_url"; then
+        echo "[ERROR] ダウンロードに失敗しました"
+        rm -rf "$temp_dir"
+        exit 1
+    fi
 else
-    downloader="wget -q -O"
-fi
-
-if ! $downloader "$temp_dir/archive.tar.gz" "$download_url"; then
-    echo "[ERROR] ダウンロードに失敗しました"
-    rm -rf "$temp_dir"
-    exit 1
+    if ! wget -q -O "$temp_dir/archive.tar.gz" "$download_url"; then
+        echo "[ERROR] ダウンロードに失敗しました"
+        rm -rf "$temp_dir"
+        exit 1
+    fi
 fi
 echo "[OK] ダウンロード完了"
 
@@ -112,7 +102,13 @@ if [ -n "$install_script" ]; then
     echo ""
     echo "インストールスクリプトを実行しています..."
     chmod +x "$install_script"
-    bash "$install_script"
+    # curl パイプ経由だと stdin が消費済みで read プロンプトが EOF を読んでしまうため、
+    # /dev/tty を実際に open できる場合は端末に繋ぎ直す。headless 環境用に fallback も用意。
+    if (: </dev/tty) 2>/dev/null; then
+        bash "$install_script" </dev/tty
+    else
+        bash "$install_script"
+    fi
 else
     echo "[ERROR] $INSTALL_SCRIPT が見つかりませんでした"
     rm -rf "$temp_dir"
