@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -euo pipefail
 
 # muhenkan-switch ワンライナーインストーラー
 #
@@ -9,14 +8,18 @@ set -euo pipefail
 # パイプ実行時は一時ファイルに保存してから bash で実行するため、
 # install スクリプト内の read プロンプトも正常に動作します。
 
-# ── パイプ実行ガード ──
-# stdin がパイプの場合、スクリプト全体を一時ファイルに書き出して再実行する
+# ── パイプ実行ガード (set より前に置く) ──
+# stdin がパイプの場合、スクリプト全体を一時ファイルに書き出して bash で再実行する。
+# `curl ... | sh` で dash 等の POSIX shell に投入されるケースがあるため、
+# bash 専用の `set -o pipefail` を有効化する前にガードする必要がある。
 if [ ! -t 0 ]; then
     tmp_script=$(mktemp)
     cat > "$tmp_script"
     exec bash "$tmp_script" "$@"
     # exec で置き換わるため、ここには到達しない
 fi
+
+set -euo pipefail
 
 # ── 設定 ──
 REPO="kimushun1101/muhenkan-switch"
