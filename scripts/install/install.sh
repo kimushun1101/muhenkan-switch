@@ -43,11 +43,18 @@ if pgrep -f "$INSTALL_DIR/kanata_cmd_allowed" >/dev/null 2>&1; then
     echo "[OK] kanata を停止しました"
 fi
 
-# ── config.toml のバックアップ ──
+# ── 既存ファイルの保護とバックアップ ──
+# config.toml: ユーザーカスタマイズ保護のため既存があれば保持 (バックアップは保険)
+# muhenkan.kbd: 新版で上書きするが、ユーザー編集を救えるようバックアップを取る
 if [ -f "$INSTALL_DIR/config.toml" ]; then
     backup_name="config.toml.backup.$(date +%Y%m%d%H%M%S)"
     cp "$INSTALL_DIR/config.toml" "$INSTALL_DIR/$backup_name"
-    echo "[OK] 既存の config.toml をバックアップしました: $backup_name"
+    echo "[OK] 既存の config.toml を保持しました (バックアップ: $backup_name)"
+fi
+if [ -f "$INSTALL_DIR/muhenkan.kbd" ]; then
+    backup_name="muhenkan.kbd.backup.$(date +%Y%m%d%H%M%S)"
+    cp "$INSTALL_DIR/muhenkan.kbd" "$INSTALL_DIR/$backup_name"
+    echo "[OK] 既存の muhenkan.kbd をバックアップしました: $backup_name"
 fi
 
 # ── ファイルコピー ──
@@ -65,7 +72,10 @@ copy_file() {
 
 copy_file "muhenkan-switch" "muhenkan-switch"
 copy_file "muhenkan-switch-core" "muhenkan-switch-core"
-copy_file "config.toml" "config.toml"
+# config.toml は既存があれば保持 (バックアップは上記で取得済み)
+if [ ! -f "$INSTALL_DIR/config.toml" ]; then
+    copy_file "config.toml" "config.toml"
+fi
 copy_file "muhenkan.kbd" "muhenkan.kbd"
 copy_file "update.sh" "update.sh"
 copy_file "uninstall.sh" "uninstall.sh"
