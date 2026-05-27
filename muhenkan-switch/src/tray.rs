@@ -21,24 +21,21 @@ fn build_tray(handle: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
             .build(handle)?;
     let open_dir_item = MenuItemBuilder::with_id("open_dir", "インストール先を開く")
         .build(handle)?;
-    let is_installer = crate::commands::is_nsis_install();
-    let check_update_item = if is_installer {
-        Some(MenuItemBuilder::with_id("check_update", "アップデートを確認...").build(handle)?)
-    } else {
-        None
-    };
+    // インストーラー版 / スクリプト版どちらでも表示する。
+    // listener 側 (initUpdater) で install type ごとに振り分け:
+    //   - installer (Windows): tauri-plugin-updater 経由
+    //   - script (Linux/macOS): GitHub API + ターミナル spawn
+    let check_update_item =
+        MenuItemBuilder::with_id("check_update", "アップデートを確認...").build(handle)?;
     let sep3 = PredefinedMenuItem::separator(handle)?;
     let quit_item = MenuItemBuilder::with_id("quit", "終了").build(handle)?;
 
-    let mut menu = MenuBuilder::new(handle)
+    let menu = MenuBuilder::new(handle)
         .item(&settings_item)
         .item(&sep1)
         .item(&autostart_item)
-        .item(&open_dir_item);
-    if let Some(ref item) = check_update_item {
-        menu = menu.item(item);
-    }
-    let menu = menu
+        .item(&open_dir_item)
+        .item(&check_update_item)
         .item(&sep3)
         .item(&quit_item)
         .build()?;

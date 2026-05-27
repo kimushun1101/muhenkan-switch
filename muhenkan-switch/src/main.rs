@@ -64,6 +64,7 @@ fn main() {
             commands::check_update,
             commands::install_update,
             commands::get_install_type,
+            commands::spawn_update_terminal,
         ])
         .setup(|app| {
             // 初回起動時 or 壊れた config.toml の再生成

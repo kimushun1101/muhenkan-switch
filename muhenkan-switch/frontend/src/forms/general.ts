@@ -33,7 +33,7 @@ export async function loadAutostart(): Promise<void> {
   }
 }
 
-// ── Updater ──
+// ── Updater (installer: Windows / tauri-plugin-updater) ──
 async function checkForUpdate(silent = true): Promise<void> {
   try {
     const currentVersion = await invoke<string>('get_app_version');
@@ -49,6 +49,56 @@ async function checkForUpdate(silent = true): Promise<void> {
       }
     } else if (!silent) {
       await message(`v${currentVersion} は最新です。`, { title: 'アップデート' });
+    }
+  } catch (e) {
+    console.error('[updater]', e);
+    if (!silent)
+      await message('アップデート確認に失敗しました:\n' + String(e), {
+        title: 'エラー',
+        kind: 'error',
+      });
+  }
+}
+
+// ── Updater (script: Linux/macOS / GitHub API + terminal spawn) ──
+const GITHUB_LATEST_RELEASE_URL =
+  'https://api.github.com/repos/kimushun1101/muhenkan-switch/releases/latest';
+
+async function checkGithubLatestRelease(silent = true): Promise<void> {
+  try {
+    const currentVersion = await invoke<string>('get_app_version');
+    const res = await fetch(GITHUB_LATEST_RELEASE_URL);
+    if (!res.ok) {
+      throw new Error(`GitHub API エラー: HTTP ${res.status}`);
+    }
+    const release = (await res.json()) as { tag_name?: string };
+    if (!release.tag_name) {
+      throw new Error('tag_name が取得できませんでした');
+    }
+    const latestVersion = release.tag_name.replace(/^v/, '');
+
+    if (latestVersion === currentVersion) {
+      if (!silent) {
+        await message(`v${currentVersion} は最新です。`, { title: 'アップデート' });
+      }
+      return;
+    }
+
+    const proceed = await ask(
+      `現在: v${currentVersion} → 最新: v${latestVersion}\n\n` +
+        `ターミナルでアップデートを実行しますか？`,
+      { title: 'アップデート' },
+    );
+    if (!proceed) return;
+
+    try {
+      await invoke('spawn_update_terminal');
+    } catch (e) {
+      await message(
+        `ターミナルの起動に失敗しました:\n${String(e)}\n\n` +
+          `手動で update.sh / update-macos.sh を実行してください。`,
+        { title: 'エラー', kind: 'error' },
+      );
     }
   } catch (e) {
     console.error('[updater]', e);
@@ -147,13 +197,15 @@ export function initGeneralForm({ renderConfig }: InitGeneralFormOptions): void 
 
 // ── Updater initialization (called from main init after install type check) ──
 export async function initUpdater(): Promise<void> {
-  // インストーラー版のみ自動更新チェック
   const installType = await invoke<string>('get_install_type');
-  if (installType === 'installer') {
-    // 起動 5 秒後にサイレントチェック
-    setTimeout(() => void checkForUpdate(true), 5000);
+  // installer (Windows): tauri-plugin-updater 経由
+  // script (Linux/macOS): GitHub API + ターミナルで update スクリプト spawn
+  const check: (silent?: boolean) => Promise<void> =
+    installType === 'installer' ? checkForUpdate : checkGithubLatestRelease;
 
-    // トレイメニューからの手動チェック (payload なしイベント)
-    void listen('check-update-requested', () => void checkForUpdate(false));
-  }
+  // 起動 5 秒後にサイレントチェック
+  setTimeout(() => void check(true), 5000);
+
+  // トレイメニュー「アップデートを確認...」からの手動チェック
+  void listen('check-update-requested', () => void check(false));
 }

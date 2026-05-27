@@ -387,6 +387,75 @@ pub fn get_install_type() -> String {
     }
 }
 
+/// Linux/macOS でターミナルを開いて update スクリプトを実行する。
+/// Windows では tauri-plugin-updater を使うため、呼ばれることはない想定。
+#[tauri::command]
+pub fn spawn_update_terminal() -> Result<(), String> {
+    use std::process::Command;
+
+    #[cfg(target_os = "linux")]
+    {
+        let home = dirs::home_dir().ok_or_else(|| "ホームディレクトリが見つかりません".to_string())?;
+        let script = home.join(".local/share/muhenkan-switch/update.sh");
+        if !script.exists() {
+            return Err(format!(
+                "update.sh が見つかりません: {}",
+                script.display()
+            ));
+        }
+        let bash_cmd = format!(
+            "{}; echo; echo 'Press Enter to close'; read",
+            script.display()
+        );
+
+        // $TERMINAL → x-terminal-emulator → 主要候補の順に試行
+        let mut candidates: Vec<(String, Vec<&str>)> = Vec::new();
+        if let Ok(term) = std::env::var("TERMINAL") {
+            candidates.push((term, vec!["-e", "bash", "-c"]));
+        }
+        candidates.push(("x-terminal-emulator".to_string(), vec!["-e", "bash", "-c"]));
+        candidates.push(("gnome-terminal".to_string(), vec!["--", "bash", "-c"]));
+        candidates.push(("konsole".to_string(), vec!["-e", "bash", "-c"]));
+        candidates.push(("xterm".to_string(), vec!["-e", "bash", "-c"]));
+
+        for (term, args) in &candidates {
+            let mut cmd = Command::new(term);
+            for a in args {
+                cmd.arg(a);
+            }
+            cmd.arg(&bash_cmd);
+            if cmd.spawn().is_ok() {
+                return Ok(());
+            }
+        }
+        Err("ターミナルエミュレータが見つかりません (TERMINAL/x-terminal-emulator/gnome-terminal/konsole/xterm をインストールしてください)".to_string())
+    }
+
+    #[cfg(target_os = "macos")]
+    {
+        let home = dirs::home_dir().ok_or_else(|| "ホームディレクトリが見つかりません".to_string())?;
+        let script = home.join("Library/Application Support/muhenkan-switch/update-macos.sh");
+        if !script.exists() {
+            return Err(format!(
+                "update-macos.sh が見つかりません: {}",
+                script.display()
+            ));
+        }
+        Command::new("open")
+            .arg("-a")
+            .arg("Terminal.app")
+            .arg(&script)
+            .spawn()
+            .map_err(|e| format!("Terminal.app の起動に失敗しました: {}", e))?;
+        Ok(())
+    }
+
+    #[cfg(not(any(target_os = "linux", target_os = "macos")))]
+    {
+        Err("このプラットフォームではサポートされていません".to_string())
+    }
+}
+
 // ── Utility commands ──
 
 #[tauri::command]
