@@ -36,13 +36,19 @@ if [ "$confirm" != "y" ] && [ "$confirm" != "Y" ]; then
     exit 0
 fi
 
-# ── GUI プロセス停止 ──
+# ── 実行中のプロセスを停止 ──
 if pgrep -x "muhenkan-switch" > /dev/null 2>&1; then
     echo ""
     echo "muhenkan-switch プロセスを停止しています..."
     pkill -x "muhenkan-switch" 2>/dev/null || true
     sleep 1
     echo "[OK] muhenkan-switch プロセスを停止しました"
+fi
+if pgrep -x "kanata_cmd_allowed" > /dev/null 2>&1; then
+    echo "kanata プロセスを停止しています..."
+    pkill -x "kanata_cmd_allowed" 2>/dev/null || true
+    sleep 1
+    echo "[OK] kanata プロセスを停止しました"
 fi
 
 # ── launchd エージェント停止・削除 ──

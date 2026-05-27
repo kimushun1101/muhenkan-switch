@@ -60,6 +60,21 @@ echo ""
 mkdir -p "$INSTALL_DIR"
 mkdir -p "$BIN_DIR"
 
+# ── 実行中のプロセスを停止 ──
+# バイナリ上書き時の競合を防ぐ
+if pgrep -x "muhenkan-switch" >/dev/null 2>&1; then
+    echo "実行中の muhenkan-switch を停止しています..."
+    pkill -x "muhenkan-switch" 2>/dev/null || true
+    sleep 1
+    echo "[OK] muhenkan-switch を停止しました"
+fi
+if pgrep -x "kanata_cmd_allowed" >/dev/null 2>&1; then
+    echo "実行中の kanata を停止しています..."
+    pkill -x "kanata_cmd_allowed" 2>/dev/null || true
+    sleep 1
+    echo "[OK] kanata を停止しました"
+fi
+
 # ── config.toml のバックアップ ──
 if [ -f "$INSTALL_DIR/config.toml" ]; then
     backup_name="config.toml.backup.$(date +%Y%m%d%H%M%S)"

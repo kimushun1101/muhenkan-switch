@@ -43,6 +43,22 @@ if [ "$confirm" != "y" ] && [ "$confirm" != "Y" ]; then
     exit 0
 fi
 
+# ── 実行中のプロセスを停止 ──
+# rm -rf 自体は実行中バイナリでも通るが、kanata が孤児化するのを防ぐ
+if pgrep -f "$INSTALL_DIR/muhenkan-switch$" >/dev/null 2>&1; then
+    echo ""
+    echo "実行中の muhenkan-switch を停止しています..."
+    pkill -f "$INSTALL_DIR/muhenkan-switch$" 2>/dev/null || true
+    sleep 1
+    echo "[OK] muhenkan-switch を停止しました"
+fi
+if pgrep -f "$INSTALL_DIR/kanata_cmd_allowed" >/dev/null 2>&1; then
+    echo "実行中の kanata を停止しています..."
+    pkill -f "$INSTALL_DIR/kanata_cmd_allowed" 2>/dev/null || true
+    sleep 1
+    echo "[OK] kanata を停止しました"
+fi
+
 # ── systemd サービス停止・削除（互換性）──
 if [ -f "$SERVICE_FILE" ]; then
     echo ""
