@@ -240,7 +240,7 @@ echo "     $APP_DESKTOP_FILE"
 
 # ── 外部ツールの確認 ──
 missing_tools=""
-if [ "$XDG_SESSION_TYPE" = "wayland" ] || [ -n "$WAYLAND_DISPLAY" ]; then
+if [ "${XDG_SESSION_TYPE:-}" = "wayland" ] || [ -n "${WAYLAND_DISPLAY:-}" ]; then
     for tool in wl-paste notify-send; do
         if ! command -v "$tool" &>/dev/null; then
             missing_tools="$missing_tools $tool"
