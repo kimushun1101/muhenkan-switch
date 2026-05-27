@@ -250,6 +250,15 @@ echo "  sudo udevadm control --reload-rules && sudo udevadm trigger"
 echo ""
 echo "  ※ 設定後、再ログインが必要です"
 
+# ── 今すぐ起動（オプション）──
+echo ""
+read -rp "muhenkan-switch を今すぐ起動しますか？ (y/N): " start_now
+if [ "$start_now" = "y" ] || [ "$start_now" = "Y" ]; then
+    nohup "$INSTALL_DIR/muhenkan-switch" >/dev/null 2>&1 &
+    disown
+    echo "[OK] muhenkan-switch を起動しました"
+fi
+
 # ── 完了 ──
 echo ""
 echo "=== インストール完了 ==="
