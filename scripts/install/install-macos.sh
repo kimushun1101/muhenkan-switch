@@ -93,10 +93,22 @@ chmod +x "$INSTALL_DIR/muhenkan-switch-core" 2>/dev/null || true
 
 # ── kanata ダウンロード ──
 kanata_dest="$INSTALL_DIR/kanata_cmd_allowed"
+download_kanata=true
+
 if [ -f "$kanata_dest" ]; then
-    echo "[SKIP] kanata_cmd_allowed は既にインストール済みです"
-    echo "       再ダウンロードする場合は削除してから再実行してください"
-else
+    # 出力例: "kanata 1.11.0"
+    current_kanata_version=$("$kanata_dest" --version 2>/dev/null | awk '/^kanata/{print $2; exit}' || true)
+    expected_kanata_version="${KANATA_VERSION#v}"
+    if [ "$current_kanata_version" = "$expected_kanata_version" ]; then
+        echo "[SKIP] kanata $KANATA_VERSION は既にインストール済みです"
+        download_kanata=false
+    else
+        echo "kanata バージョン不一致 (現在: v${current_kanata_version:-不明} → 期待: $KANATA_VERSION)"
+        echo "再ダウンロードします..."
+    fi
+fi
+
+if [ "$download_kanata" = "true" ]; then
     echo ""
     echo "kanata $KANATA_VERSION ($ARCH) をダウンロードしています..."
 
