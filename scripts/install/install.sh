@@ -271,21 +271,38 @@ else
 fi
 
 # ── uinput グループ設定の案内 ──
+# 既に設定済みなら長文ガイドを省略する (update のたびに「再ログイン必要?」と
+# 誤解させないため)。id -nG は再ログイン後の真の membership を返すので、
+# 「グループ追加したが未ログイン」状態も正しく未設定扱いになる。
+uinput_groups_ok=false
+if id -nG "$USER" 2>/dev/null | tr ' ' '\n' | grep -qx uinput \
+    && id -nG "$USER" 2>/dev/null | tr ' ' '\n' | grep -qx input; then
+    uinput_groups_ok=true
+fi
+udev_rule_ok=false
+if [ -f /etc/udev/rules.d/99-uinput.rules ]; then
+    udev_rule_ok=true
+fi
+
 echo ""
-echo "── uinput グループ設定 ──"
-echo ""
-echo "kanata を sudo なしで実行するには、以下のコマンドを実行してください:"
-echo ""
-echo "  sudo groupadd -f uinput"
-echo "  sudo usermod -aG input \$USER"
-echo "  sudo usermod -aG uinput \$USER"
-echo ""
-echo "  echo 'KERNEL==\"uinput\", MODE=\"0660\", GROUP=\"uinput\", OPTIONS+=\"static_node=uinput\"' \\"
-echo "    | sudo tee /etc/udev/rules.d/99-uinput.rules"
-echo ""
-echo "  sudo udevadm control --reload-rules && sudo udevadm trigger"
-echo ""
-echo "  ※ 設定後、再ログインが必要です"
+if [ "$uinput_groups_ok" = "true" ] && [ "$udev_rule_ok" = "true" ]; then
+    echo "[OK] uinput 設定済み (再ログイン不要)"
+else
+    echo "── uinput グループ設定 ──"
+    echo ""
+    echo "kanata を sudo なしで実行するには、以下のコマンドを実行してください:"
+    echo ""
+    echo "  sudo groupadd -f uinput"
+    echo "  sudo usermod -aG input \$USER"
+    echo "  sudo usermod -aG uinput \$USER"
+    echo ""
+    echo "  echo 'KERNEL==\"uinput\", MODE=\"0660\", GROUP=\"uinput\", OPTIONS+=\"static_node=uinput\"' \\"
+    echo "    | sudo tee /etc/udev/rules.d/99-uinput.rules"
+    echo ""
+    echo "  sudo udevadm control --reload-rules && sudo udevadm trigger"
+    echo ""
+    echo "  ※ 設定後、再ログインが必要です"
+fi
 
 # ── 今すぐ起動（オプション）──
 echo ""
