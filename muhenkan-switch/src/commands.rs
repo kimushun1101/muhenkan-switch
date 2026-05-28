@@ -403,8 +403,12 @@ pub fn spawn_update_terminal() -> Result<(), String> {
                 script.display()
             ));
         }
+        // GUI 自身が nohup 等で stdin=/dev/null で起動されていると、spawn された
+        // ターミナル内 bash の stdin も /dev/null を継承し、末尾の `read` が即 EOF
+        // を踏んでターミナルが早期に閉じることがある。`</dev/tty` で controlling
+        // terminal (= ターミナルエミュレータの PTY) から確実に読むようにする。
         let bash_cmd = format!(
-            "{}; echo; echo 'Press Enter to close'; read",
+            "{}; echo; echo 'Press Enter to close...'; read _ </dev/tty || true",
             script.display()
         );
 
