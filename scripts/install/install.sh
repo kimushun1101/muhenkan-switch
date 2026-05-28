@@ -308,8 +308,17 @@ fi
 echo ""
 read -rp "muhenkan-switch を今すぐ起動しますか？ (y/N): " start_now
 if [ "$start_now" = "y" ] || [ "$start_now" = "Y" ]; then
-    nohup "$INSTALL_DIR/muhenkan-switch" >/dev/null 2>&1 &
-    disown
+    # setsid で controlling terminal を持たない新セッションとして起動する。
+    # auto-update 経由 (GUI が spawn したターミナル内) で install.sh が走ると、
+    # ターミナルが早期に閉じて install.sh が orphan 化することがある。nohup &
+    # だけだと瀕死コンテキストを引き継いで WebKitGTK が真っ白になるため、
+    # setsid + stdin /dev/null でセッションを完全に切り離す。
+    if command -v setsid >/dev/null 2>&1; then
+        setsid "$INSTALL_DIR/muhenkan-switch" </dev/null >/dev/null 2>&1 &
+    else
+        nohup "$INSTALL_DIR/muhenkan-switch" </dev/null >/dev/null 2>&1 &
+        disown
+    fi
     echo "[OK] muhenkan-switch を起動しました"
 fi
 
