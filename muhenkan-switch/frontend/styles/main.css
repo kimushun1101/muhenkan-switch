@@ -355,6 +355,23 @@ button:disabled {
   margin-right: 4px;
 }
 
+/* 更新バッジ: バージョン番号の隣に出す控えめなアクセント色ピル
+   (Zed / VS Code のステータスバー風)。global button のサイズを上書きする。 */
+.footer-update {
+  padding: 0 8px;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--accent);
+  font-size: 11px;
+  line-height: 18px;
+}
+
+.footer-update:hover:not(:disabled) {
+  background: var(--accent);
+  color: var(--bg);
+}
+
 .status-right {
   display: flex;
   gap: 6px;

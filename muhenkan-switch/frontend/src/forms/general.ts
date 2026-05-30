@@ -33,22 +33,48 @@ export async function loadAutostart(): Promise<void> {
   }
 }
 
+// ── Footer 更新バッジ (Zed / VS Code のステータスバー風) ──
+// 起動時のサイレントチェックではダイアログを出さず、バージョン番号の隣に
+// 控えめなバッジを出すだけにする。クリック時に実行する更新フローは
+// プラットフォーム依存なので関数として保持しておく。
+let runUpdate: (() => Promise<void>) | null = null;
+
+function showUpdateBadge(version: string, run: () => Promise<void>): void {
+  runUpdate = run;
+  const btn = document.getElementById('footer-update');
+  if (!btn) return;
+  btn.textContent = `↑ v${version}`;
+  btn.title = `新しいバージョン v${version} が利用可能です（クリックで更新）`;
+  btn.classList.remove('hidden');
+}
+
+function hideUpdateBadge(): void {
+  runUpdate = null;
+  document.getElementById('footer-update')?.classList.add('hidden');
+}
+
 // ── Updater (installer: Windows / tauri-plugin-updater) ──
 async function checkForUpdate(silent = true): Promise<void> {
   try {
     const currentVersion = await invoke<string>('get_app_version');
     const update = await invoke<UpdateInfo | null>('check_update');
     if (update) {
-      if (
-        await ask(`現在: v${currentVersion} → 最新: v${update.version}\nアップデートしますか？`, {
-          title: 'アップデート',
-        })
-      ) {
-        await invoke('stop_kanata');
-        await invoke('install_update');
-      }
-    } else if (!silent) {
-      await message(`v${currentVersion} は最新です。`, { title: 'アップデート' });
+      const run = async (): Promise<void> => {
+        if (
+          await ask(`現在: v${currentVersion} → 最新: v${update.version}\nアップデートしますか？`, {
+            title: 'アップデート',
+          })
+        ) {
+          await invoke('stop_kanata');
+          await invoke('install_update');
+        }
+      };
+      showUpdateBadge(update.version, run);
+      // トレイからの手動チェックは即ダイアログ。サイレント時はバッジのみ。
+      if (!silent) await run();
+    } else {
+      hideUpdateBadge();
+      if (!silent) await message(`v${currentVersion} は最新です。`, { title: 'アップデート' });
     }
   } catch (e) {
     console.error('[updater]', e);
@@ -78,28 +104,34 @@ async function checkGithubLatestRelease(silent = true): Promise<void> {
     const latestVersion = release.tag_name.replace(/^v/, '');
 
     if (latestVersion === currentVersion) {
+      hideUpdateBadge();
       if (!silent) {
         await message(`v${currentVersion} は最新です。`, { title: 'アップデート' });
       }
       return;
     }
 
-    const proceed = await ask(
-      `現在: v${currentVersion} → 最新: v${latestVersion}\n\n` +
-        `ターミナルでアップデートを実行しますか？`,
-      { title: 'アップデート' },
-    );
-    if (!proceed) return;
-
-    try {
-      await invoke('spawn_update_terminal');
-    } catch (e) {
-      await message(
-        `ターミナルの起動に失敗しました:\n${String(e)}\n\n` +
-          `手動で update.sh / update-macos.sh を実行してください。`,
-        { title: 'エラー', kind: 'error' },
+    const run = async (): Promise<void> => {
+      const proceed = await ask(
+        `現在: v${currentVersion} → 最新: v${latestVersion}\n\n` +
+          `ターミナルでアップデートを実行しますか？`,
+        { title: 'アップデート' },
       );
-    }
+      if (!proceed) return;
+
+      try {
+        await invoke('spawn_update_terminal');
+      } catch (e) {
+        await message(
+          `ターミナルの起動に失敗しました:\n${String(e)}\n\n` +
+            `手動で update.sh / update-macos.sh を実行してください。`,
+          { title: 'エラー', kind: 'error' },
+        );
+      }
+    };
+    showUpdateBadge(latestVersion, run);
+    // トレイからの手動チェックは即ダイアログ。サイレント時はバッジのみ。
+    if (!silent) await run();
   } catch (e) {
     console.error('[updater]', e);
     if (!silent)
@@ -197,6 +229,11 @@ export function initGeneralForm({ renderConfig }: InitGeneralFormOptions): void 
 
 // ── Updater initialization (called from main init after install type check) ──
 export async function initUpdater(): Promise<void> {
+  // Footer の更新バッジクリックで更新フローを実行
+  document.getElementById('footer-update')?.addEventListener('click', () => {
+    void runUpdate?.();
+  });
+
   const installType = await invoke<string>('get_install_type');
   // installer (Windows): tauri-plugin-updater 経由
   // script (Linux/macOS): GitHub API + ターミナルで update スクリプト spawn
