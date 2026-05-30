@@ -61,14 +61,31 @@ try {
     exit 1
 }
 
-# ── setup.exe を実行 ──
+# ── インストール (サイレント) ──
 Write-Host ""
-Write-Host "インストーラーを起動しています..." -ForegroundColor Cyan
-Start-Process -FilePath $tempExe -Wait
+Write-Host "インストールしています..." -ForegroundColor Cyan
+
+# 起動中のインスタンスがあるとファイル上書きに失敗するため停止（更新時）。
+# Windows では Job Object により kanata も併せて終了する。
+Get-Process muhenkan-switch -ErrorAction SilentlyContinue | ForEach-Object {
+    try { $_.Kill(); [void]$_.WaitForExit(5000) } catch {}
+}
+
+# /S = サイレントインストール。
+# 対話ウィザードのままだと完了ボタン待ちでスクリプトが停止するため、
+# NSIS のサイレントフラグで非対話インストールする。
+$proc = Start-Process -FilePath $tempExe -ArgumentList "/S" -Wait -PassThru
+if ($proc.ExitCode -ne 0) {
+    Write-Host "[ERROR] インストールに失敗しました (終了コード: $($proc.ExitCode))" -ForegroundColor Red
+    if (Test-Path $tempExe) { Remove-Item $tempExe -Force -ErrorAction SilentlyContinue }
+    exit 1
+}
 
 # ── クリーンアップ ──
 if (Test-Path $tempExe) { Remove-Item $tempExe -Force -ErrorAction SilentlyContinue }
 
+Write-Host "[OK] インストール完了" -ForegroundColor Green
 Write-Host ""
-Write-Host "=== インストール完了 ===" -ForegroundColor Green
+Write-Host "=== セットアップ完了 ===" -ForegroundColor Green
+Write-Host "スタートメニューから muhenkan-switch を起動してください。" -ForegroundColor Cyan
 Write-Host ""
