@@ -240,7 +240,7 @@ jobs:
 
             ### Windows インストール（推奨）
 
-            1. 下記から `muhenkan-switch_x64-setup.exe` をダウンロード
+            1. 下記から `muhenkan-switch_<バージョン>_x64-setup.exe` をダウンロード
             2. ダブルクリックしてインストール
             3. スタートメニューから muhenkan-switch を起動
 
@@ -257,7 +257,7 @@ jobs:
             ```
 
             ### ダウンロード
-            - **Windows (x64)**: `muhenkan-switch_x64-setup.exe`
+            - **Windows (x64)**: `muhenkan-switch_<バージョン>_x64-setup.exe`
             - **Linux (x64)**: `muhenkan-switch-linux-x64.tar.gz`
             - **macOS (x64)**: `muhenkan-switch-macos-x64.tar.gz` ⚠️ 未検証
             - **macOS (ARM)**: `muhenkan-switch-macos-arm64.tar.gz` ⚠️ 未検証

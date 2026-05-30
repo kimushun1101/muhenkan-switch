@@ -51,7 +51,7 @@
 ### Windows
 
 [最新リリース](https://github.com/kimushun1101/muhenkan-switch/releases/latest) から
-`muhenkan-switch_x64-setup.exe` をダウンロードしてインストール。
+`muhenkan-switch_<バージョン>_x64-setup.exe` をダウンロードしてインストール。
 スタートメニューから `muhenkan-switch` を起動してください。
 
 > 上記を自動で実施するスクリプトは以下のとおりです。PowerShellにコマンドを入力してください。

@@ -13,7 +13,10 @@ $ErrorActionPreference = "Stop"
 
 # ── 設定 ──
 $REPO = "kimushun1101/muhenkan-switch"
-$ASSET_NAME = "muhenkan-switch_x64-setup.exe"
+# NSIS インストーラーはバージョン番号入りの名前
+# (例: muhenkan-switch_0.11.4_x64-setup.exe) で公開されるため、
+# 固定名で決め打ちせずリリース情報から該当アセットを探す。
+$ASSET_PATTERN = "*_x64-setup.exe"
 
 Write-Host ""
 Write-Host "=== muhenkan-switch インストーラー (Windows) ===" -ForegroundColor Cyan
@@ -35,11 +38,19 @@ try {
 
 Write-Host "最新バージョン: $latestTag"
 
+# ── ダウンロードする setup.exe を特定 ──
+$asset = $releaseInfo.assets | Where-Object { $_.name -like $ASSET_PATTERN } | Select-Object -First 1
+if (-not $asset) {
+    Write-Host "[ERROR] インストーラー ($ASSET_PATTERN) がリリースに見つかりませんでした。" -ForegroundColor Red
+    exit 1
+}
+$ASSET_NAME = $asset.name
+$downloadUrl = $asset.browser_download_url
+
 # ── ダウンロード ──
 Write-Host ""
-Write-Host "$latestTag をダウンロードしています..." -ForegroundColor Cyan
+Write-Host "$ASSET_NAME をダウンロードしています..." -ForegroundColor Cyan
 
-$downloadUrl = "https://github.com/$REPO/releases/download/$latestTag/$ASSET_NAME"
 $tempExe = Join-Path $env:TEMP $ASSET_NAME
 
 try {

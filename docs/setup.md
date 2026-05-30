@@ -5,7 +5,7 @@
 ### Windows
 
 1. [最新リリース](https://github.com/kimushun1101/muhenkan-switch/releases/latest) から
-   `muhenkan-switch_x64-setup.exe` をダウンロード
+   `muhenkan-switch_<バージョン>_x64-setup.exe` をダウンロード
 2. ダブルクリックしてインストール
 3. スタートメニューから `muhenkan-switch` を起動
 
@@ -159,7 +159,7 @@ macOS では [Karabiner-VirtualHIDDevice](https://github.com/pqrs-org/Karabiner-
 ### Windows
 
 [最新リリース](https://github.com/kimushun1101/muhenkan-switch/releases/latest) から
-新しい `muhenkan-switch_x64-setup.exe` をダウンロードしてダブルクリックするだけで上書き更新されます。
+新しい `muhenkan-switch_<バージョン>_x64-setup.exe` をダウンロードしてダブルクリックするだけで上書き更新されます。
 アプリ起動中に自動更新チェックも行われます。
 
 ### Linux / macOS
