@@ -85,7 +85,28 @@ if ($proc.ExitCode -ne 0) {
 if (Test-Path $tempExe) { Remove-Item $tempExe -Force -ErrorAction SilentlyContinue }
 
 Write-Host "[OK] インストール完了" -ForegroundColor Green
+
+# ── 今すぐ起動（オプション）──
+# インストール先 exe を特定（既定は per-user NSIS。念のため per-machine もフォールバック）
+$installedExe = Join-Path $env:LOCALAPPDATA "muhenkan-switch\muhenkan-switch.exe"
+if (-not (Test-Path $installedExe)) {
+    $pfExe = Join-Path $env:ProgramFiles "muhenkan-switch\muhenkan-switch.exe"
+    if (Test-Path $pfExe) { $installedExe = $pfExe }
+}
+
+Write-Host ""
+$startNow = Read-Host "muhenkan-switch を今すぐ起動しますか？ (y/N)"
+if ($startNow -eq "y" -or $startNow -eq "Y") {
+    if (Test-Path $installedExe) {
+        Start-Process -FilePath $installedExe
+        Write-Host "[OK] muhenkan-switch を起動しました" -ForegroundColor Green
+    } else {
+        Write-Host "[WARN] 実行ファイルが見つかりませんでした。スタートメニューから起動してください。" -ForegroundColor Yellow
+    }
+}
+
+# ── 完了 ──
 Write-Host ""
 Write-Host "=== セットアップ完了 ===" -ForegroundColor Green
-Write-Host "スタートメニューから muhenkan-switch を起動してください。" -ForegroundColor Cyan
+Write-Host "スタートメニューから muhenkan-switch を起動できます（システムトレイに常駐します）。" -ForegroundColor Cyan
 Write-Host ""
