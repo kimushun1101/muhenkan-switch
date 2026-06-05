@@ -107,6 +107,8 @@ if ($startNow -eq "y" -or $startNow -eq "Y") {
 
 # ── 完了 ──
 Write-Host ""
-Write-Host "=== セットアップ完了 ===" -ForegroundColor Green
-Write-Host "スタートメニューから muhenkan-switch を起動できます（システムトレイに常駐します）。" -ForegroundColor Cyan
+Write-Host "=== インストール完了 ===" -ForegroundColor Green
+Write-Host ""
+Write-Host "muhenkan-switch はシステムトレイに常駐します（ウィンドウを閉じても終了しません）。" -ForegroundColor Cyan
+Write-Host "スタートメニューから起動できます。" -ForegroundColor Cyan
 Write-Host ""
