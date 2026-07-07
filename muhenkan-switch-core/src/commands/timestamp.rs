@@ -1,9 +1,36 @@
 use anyhow::Result;
-use chrono::Local;
+use chrono::{DateTime, Local};
+use std::fmt::Write as _;
 use std::path::{Path, PathBuf};
 
 use super::toast::Toast;
 use crate::config::Config;
+
+/// フォールバック用の安全なタイムスタンプ書式（`chrono` の全バージョンで有効な指定子のみ）。
+const FALLBACK_TIMESTAMP_FORMAT: &str = "%Y-%m-%d";
+
+/// 日時をフォーマット文字列で文字列化する。
+///
+/// `config.toml` は `validate()` を経由せず手編集される場合があり、不正な指定子
+/// （例: `%Q`）が渡ると `chrono` の `Display` は `Err` を返す。`.to_string()` は
+/// この `Err` で panic するため、必ず `write!` 経由でエラーを捕捉し、失敗時は
+/// 警告を出したうえで安全な既定書式 [`FALLBACK_TIMESTAMP_FORMAT`] にフォールバックする
+/// （AGENTS.md の「外部要因の失敗は警告して続行」の方針に倣う）。
+pub(super) fn format_timestamp(datetime: DateTime<Local>, format: &str) -> String {
+    let mut buf = String::new();
+    if write!(buf, "{}", datetime.format(format)).is_ok() {
+        return buf;
+    }
+    eprintln!(
+        "警告: タイムスタンプのフォーマット文字列 '{}' が不正です。既定の書式 '{}' を使用します",
+        format, FALLBACK_TIMESTAMP_FORMAT
+    );
+    buf.clear();
+    // フォールバック書式は固定の有効な指定子のみで構成されるため通常は失敗しないが、
+    // 万一失敗しても panic せず空文字列を返す。
+    let _ = write!(buf, "{}", datetime.format(FALLBACK_TIMESTAMP_FORMAT));
+    buf
+}
 
 pub fn run(action: &str, config: &Config) -> Result<()> {
     let explorer_hwnd = super::context::get_foreground_explorer_hwnd();
@@ -29,7 +56,7 @@ pub fn run(action: &str, config: &Config) -> Result<()> {
         // ── C: copy ──
         // テキストコンテキスト: 現在日時のタイムスタンプを入力
         ("copy", None) => {
-            let timestamp = Local::now().format(&config.timestamp.format).to_string();
+            let timestamp = format_timestamp(Local::now(), &config.timestamp.format);
             super::keys::simulate_type(&timestamp)
         }
         ("copy", Some(hwnd)) => {
@@ -88,7 +115,7 @@ fn format_toast_result(result: &Result<Vec<PathBuf>>) -> String {
 fn file_modified_timestamp(path: &Path, format: &str) -> Result<String> {
     let modified = path.metadata()?.modified()?;
     let datetime: chrono::DateTime<Local> = modified.into();
-    Ok(datetime.format(format).to_string())
+    Ok(format_timestamp(datetime, format))
 }
 
 /// V: ファイル名にタイムスタンプを付加してリネーム（ファイル更新日時を使用）
@@ -363,7 +390,21 @@ fn file_uri_to_path(uri: &str) -> Option<PathBuf> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use chrono::TimeZone;
     use std::path::Path;
+
+    #[test]
+    fn format_timestamp_valid_format() {
+        let datetime = Local.with_ymd_and_hms(2024, 1, 2, 3, 4, 5).unwrap();
+        assert_eq!(format_timestamp(datetime, "%Y%m%d"), "20240102");
+    }
+
+    #[test]
+    fn format_timestamp_invalid_specifier_falls_back() {
+        // %Q は chrono に存在しない指定子 → panic せず既定書式にフォールバックすること
+        let datetime = Local.with_ymd_and_hms(2024, 1, 2, 3, 4, 5).unwrap();
+        assert_eq!(format_timestamp(datetime, "%Q"), "2024-01-02");
+    }
 
     #[test]
     fn file_uri_to_path_existing_file() {

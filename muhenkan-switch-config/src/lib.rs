@@ -436,6 +436,13 @@ pub fn validate(config: &Config) -> Vec<String> {
     // timestamp format の検証
     if config.timestamp.format.is_empty() {
         errors.push("タイムスタンプのフォーマットを入力してください".to_string());
+    } else if chrono::format::StrftimeItems::new(&config.timestamp.format)
+        .any(|item| item == chrono::format::Item::Error)
+    {
+        errors.push(format!(
+            "タイムスタンプのフォーマットが不正です（不明な指定子が含まれています）: \"{}\"",
+            config.timestamp.format
+        ));
     }
 
     // timestamp delimiter の検証 (空=区切りなし は許可)
@@ -794,6 +801,32 @@ mod tests {
         let errors = validate(&config);
         assert_eq!(errors.len(), 1);
         assert!(errors[0].contains("フォーマット"));
+    }
+
+    #[test]
+    fn test_validate_invalid_format_specifier() {
+        // %Q は chrono に存在しない指定子 → StrftimeItems が Item::Error を返すはず
+        let mut config = default_config();
+        config.timestamp.format = "%Q".to_string();
+        let errors = validate(&config);
+        assert_eq!(errors.len(), 1, "Expected 1 error, got: {:?}", errors);
+        assert!(errors[0].contains("不正"));
+    }
+
+    #[test]
+    fn test_validate_valid_format_specifiers() {
+        // 代表的な有効フォーマットは全て通ること
+        for format in ["%Y-%m-%d", "%Y%m%d", "%Y-%m-%d_%H-%M-%S", "%F", "%c"] {
+            let mut config = default_config();
+            config.timestamp.format = format.to_string();
+            let errors = validate(&config);
+            assert!(
+                errors.is_empty(),
+                "format '{}' should be valid, got errors: {:?}",
+                format,
+                errors
+            );
+        }
     }
 
     #[test]

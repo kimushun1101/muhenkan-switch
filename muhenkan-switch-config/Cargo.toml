@@ -9,6 +9,7 @@ repository.workspace = true
 [dependencies]
 serde.workspace = true
 anyhow.workspace = true
+chrono.workspace = true
 indexmap = { version = "2", features = ["serde"] }
 toml = "0.8"
 toml_edit = "0.22"

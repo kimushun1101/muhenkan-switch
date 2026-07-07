@@ -53,6 +53,7 @@ Document = {key = "d", process = "OneNote",  command = "onenote"}
 [timestamp]
 # chrono のフォーマット文字列
 # %Y=年4桁, %m=月, %d=日, %H=時, %M=分, %S=秒
+# 存在しない指定子（例: %Q）は GUI 設定画面の保存時に検証エラーとなる
 format = "%Y%m%d"
 # "before" = タイムスタンプ_ファイル名, "after" = ファイル名_タイムスタンプ
 position = "before"

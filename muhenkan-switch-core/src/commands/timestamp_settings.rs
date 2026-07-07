@@ -18,9 +18,7 @@ pub fn toggle_position() -> Result<()> {
 
     muhenkan_switch_config::save(&path, &config)?;
 
-    let ts = chrono::Local::now()
-        .format(&config.timestamp.format)
-        .to_string();
+    let ts = super::timestamp::format_timestamp(chrono::Local::now(), &config.timestamp.format);
     let delimiter = &config.timestamp.delimiter;
     let (label, example) = if config.timestamp.position == "after" {
         ("後", format!("FileName{delimiter}{ts}.txt"))
