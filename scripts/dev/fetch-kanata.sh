@@ -50,7 +50,16 @@ mkdir -p "$DLDIR"
 echo "Downloading kanata ${VERSION} (${ASSET})..."
 curl -fsSL "$URL" -o "$DLDIR/kanata.zip"
 
-unzip -o "$DLDIR/kanata.zip" "$BINARY" -d "$DLDIR"
+case "$SYSTEM" in
+  MINGW*|MSYS*|CYGWIN*|Windows_NT)
+    # Git for Windows (MSYS2) does not ship unzip, but its bundled bsdtar
+    # (via `tar`) can extract zip archives, unlike GNU tar on Linux.
+    tar -xf "$DLDIR/kanata.zip" -C "$DLDIR" "$BINARY"
+    ;;
+  *)
+    unzip -o "$DLDIR/kanata.zip" "$BINARY" -d "$DLDIR"
+    ;;
+esac
 
 if [ -f "$DLDIR/$BINARY" ]; then
   cp "$DLDIR/$BINARY" "$DEST"
