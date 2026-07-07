@@ -18,7 +18,9 @@ cp ./bin/muhenkan-switch-core "$STAGING/"
 cp ./bin/muhenkan-switch "$STAGING/" 2>/dev/null || true
 
 # 設定ファイル
-cp config/default.toml "$STAGING/config.toml"
+# config.toml は同梱しない（リリース archive と同じ構成。#220）。
+# install.sh は config.toml 不在時にスキップし、初回起動時に
+# muhenkan-switch が OS 別デフォルトから自動生成する。
 cp kanata/muhenkan.kbd "$STAGING/"
 cp kanata/muhenkan-macos.kbd "$STAGING/" 2>/dev/null || true
 

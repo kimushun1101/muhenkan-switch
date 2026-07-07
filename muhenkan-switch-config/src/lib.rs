@@ -600,6 +600,36 @@ mod tests {
         );
     }
 
+    /// OS 別埋め込みデフォルト設定 (DEFAULT_WINDOWS_CONFIG / DEFAULT_LINUX_CONFIG /
+    /// DEFAULT_MACOS_CONFIG) がホスト OS に関わらず全てパース可能で、
+    /// folders/apps が空でないことを検証する。
+    /// `default_config()` は実行時の `std::env::consts::OS` でしか分岐しないため、
+    /// CI が単一 OS でしか走らない場合、他 OS 用ファイルの破損が見逃されうる (#220)。
+    #[test]
+    fn test_all_os_default_configs_parse_and_non_empty() {
+        let cases: &[(&str, &str)] = &[
+            ("windows", DEFAULT_WINDOWS_CONFIG),
+            ("linux", DEFAULT_LINUX_CONFIG),
+            ("macos", DEFAULT_MACOS_CONFIG),
+        ];
+        for (os, raw) in cases {
+            let config: Config = toml::from_str(raw)
+                .unwrap_or_else(|e| panic!("default-{} config が不正な TOML です: {}", os, e));
+            assert!(
+                !config.folders.is_empty(),
+                "default-{} の folders が空です",
+                os
+            );
+            assert!(!config.apps.is_empty(), "default-{} の apps が空です", os);
+            assert!(
+                config.search.len() >= 5,
+                "default-{} の search エンジン数が想定未満です: {}",
+                os,
+                config.search.len()
+            );
+        }
+    }
+
     #[test]
     fn test_validate_valid_config() {
         let config = default_config();

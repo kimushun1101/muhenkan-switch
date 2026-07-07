@@ -3,8 +3,9 @@ set -euo pipefail
 
 # muhenkan-switch インストールスクリプト (macOS)
 #
-# muhenkan-switch, config.toml, muhenkan-macos.kbd をインストールし、
-# kanata を GitHub からダウンロードします。
+# muhenkan-switch, muhenkan-macos.kbd をインストールし、kanata を GitHub からダウンロードします。
+# config.toml は同梱されないため、初回起動時に muhenkan-switch が
+# OS 別デフォルト設定から自動生成する（既存があれば保持）。
 
 # ── 未検証警告 ──
 echo ""
@@ -104,7 +105,8 @@ copy_file() {
 
 copy_file "muhenkan-switch" "muhenkan-switch"
 copy_file "muhenkan-switch-core" "muhenkan-switch-core"
-# config.toml は既存があれば保持 (バックアップは上記で取得済み)
+# config.toml はリリース archive に同梱されない (初回起動時に自動生成される)。
+# 万一同梱されていた場合も、既存の config.toml があれば保持する (バックアップは上記で取得済み)。
 if [ ! -f "$INSTALL_DIR/config.toml" ]; then
     copy_file "config.toml" "config.toml"
 fi
