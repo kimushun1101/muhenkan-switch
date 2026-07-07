@@ -248,7 +248,7 @@ sudo apt install wmctrl xdotool xdg-utils
 cargo build --workspace
 ```
 
-#### ゴミ箱を開く（キー 5）
+#### ゴミ箱を開く（`--target trash`）
 
 ```bash
 cargo run -p muhenkan-switch-core -- open-folder --target trash
@@ -297,8 +297,8 @@ cargo run -p muhenkan-switch-core -- search --engine google
 
 ```bash
 # テキストエディタにフォーカスした状態で
-cargo run -p muhenkan-switch-core -- timestamp --action paste   # V: タイムスタンプ入力
-cargo run -p muhenkan-switch-core -- timestamp --action copy    # C: プレーンテキストコピー
+cargo run -p muhenkan-switch-core -- timestamp --action paste   # V: プレーンテキスト貼り付け
+cargo run -p muhenkan-switch-core -- timestamp --action copy    # C: タイムスタンプ入力
 cargo run -p muhenkan-switch-core -- timestamp --action cut     # X: テキスト時 no-op
 ```
 
