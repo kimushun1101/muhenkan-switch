@@ -711,4 +711,78 @@ mod tests {
         assert_eq!(escape_for_js_template_literal(input), input);
         assert!(!has_unescaped_terminator_or_expr(input));
     }
+
+    // ── validate_timestamp_format ──
+
+    #[test]
+    fn validate_timestamp_format_rejects_empty_format() {
+        let result =
+            validate_timestamp_format("".to_string(), "_".to_string(), "before".to_string());
+        assert_eq!(result, Err("フォーマットを入力してください".to_string()));
+    }
+
+    #[test]
+    fn validate_timestamp_format_places_timestamp_before_the_stem_with_delimiter() {
+        // "LITERAL" は chrono の strftime 指定子を含まないため、そのままリテラル
+        // 出力されることを利用して、現在時刻に依存しない決定的なテストにする。
+        let result =
+            validate_timestamp_format("LITERAL".to_string(), "-".to_string(), "before".to_string());
+        assert_eq!(result, Ok("LITERAL-FileName.txt".to_string()));
+    }
+
+    #[test]
+    fn validate_timestamp_format_places_timestamp_after_the_stem_with_delimiter() {
+        let result =
+            validate_timestamp_format("LITERAL".to_string(), "_".to_string(), "after".to_string());
+        assert_eq!(result, Ok("FileName_LITERAL.txt".to_string()));
+    }
+
+    #[test]
+    fn validate_timestamp_format_supports_an_empty_delimiter() {
+        let result =
+            validate_timestamp_format("LITERAL".to_string(), "".to_string(), "before".to_string());
+        assert_eq!(result, Ok("LITERALFileName.txt".to_string()));
+    }
+
+    #[test]
+    fn validate_timestamp_format_treats_any_non_after_position_as_before() {
+        // position は "before" | "after" の 2値だが、実装は "after" 以外を
+        // 全て before 扱いにするフォールバックになっている。その挙動を pin する。
+        let result = validate_timestamp_format(
+            "LITERAL".to_string(),
+            "_".to_string(),
+            "unexpected".to_string(),
+        );
+        assert_eq!(result, Ok("LITERAL_FileName.txt".to_string()));
+    }
+
+    // ── resolve_config_path ──
+
+    #[test]
+    fn resolve_config_path_always_targets_a_config_toml_file() {
+        // config::config_path() が Some/None どちらであっても、最終的なパスは
+        // 常に "config.toml" を指す（フォールバック時も同じファイル名になる）。
+        let path = resolve_config_path();
+        assert_eq!(
+            path.file_name().and_then(|n| n.to_str()),
+            Some("config.toml")
+        );
+    }
+
+    // ── get_install_type / is_nsis_install ──
+
+    #[test]
+    fn is_nsis_install_matches_windows_target_only() {
+        assert_eq!(is_nsis_install(), cfg!(target_os = "windows"));
+    }
+
+    #[test]
+    fn get_install_type_reports_installer_on_windows_and_script_otherwise() {
+        let expected = if cfg!(target_os = "windows") {
+            "installer"
+        } else {
+            "script"
+        };
+        assert_eq!(get_install_type(), expected);
+    }
 }

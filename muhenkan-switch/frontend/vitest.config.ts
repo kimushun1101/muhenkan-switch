@@ -21,7 +21,16 @@ export default defineConfig({
       // include は **テスト済ファイル** だけを whitelist。新しいテストを追加した
       // 時は対象ファイルをここに足す。未テストファイルを混ぜず、cover 済の品質
       // 維持を per-file 閾値で強制する設計 (Issue #167)。
-      include: ['src/lib/utils.ts', 'src/lib/dispatch-key.ts', 'src/forms/timestamp.ts'],
+      include: [
+        'src/lib/utils.ts',
+        'src/lib/dispatch-key.ts',
+        'src/lib/dom-utils.ts',
+        'src/lib/state.ts',
+        'src/forms/timestamp.ts',
+        'src/forms/search.ts',
+        'src/forms/folders.ts',
+        'src/forms/apps.ts',
+      ],
       exclude: ['src/**/*.test.ts', 'src/**/__tests__/**'],
       thresholds: {
         perFile: true,

@@ -282,13 +282,23 @@ impl KanataManager {
             job.assign(pid);
         }
 
-        // 起動成功。以前の stop() による意図的停止フラグをクリアし、
-        // 監視スレッドが次回のクラッシュを通知できるようにする。
-        self.intentional_stop.store(false, Ordering::SeqCst);
-
-        *guard = Some(Arc::new(child));
+        // 起動成功時の状態更新（intentional_stop リセット + child 保持）。
+        // 実プロセス起動を伴わずに単体テストできるよう別関数へ抽出している (Issue #230)。
+        Self::on_started(&self.intentional_stop, &mut guard, child);
 
         Ok(())
+    }
+
+    /// 起動成功後の状態更新: 以前の `stop()` による意図的停止フラグをクリアし、
+    /// 起動した子プロセスを保持する。監視スレッドが次回のクラッシュを通知できる
+    /// ようにするための処理を `start()` から抽出したもの（挙動は変更していない）。
+    fn on_started(
+        intentional_stop: &AtomicBool,
+        guard: &mut Option<Arc<SharedChild>>,
+        child: SharedChild,
+    ) {
+        intentional_stop.store(false, Ordering::SeqCst);
+        *guard = Some(Arc::new(child));
     }
 
     pub fn stop(&self) -> Result<()> {
@@ -472,13 +482,12 @@ pub fn setup(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
 
 // ── Tests ──
 //
-// start() は実際の kanata バイナリ（bin/kanata_cmd_allowed）が無いと
-// 起動に失敗するため、ここでは start() を伴わずに検証できる
-// intentional_stop フラグの初期値・stop() による更新のみをテストする。
-// start() 成功時のフラグリセット（本 Issue の修正本体）を含む
-// stop → start の完全な状態遷移テストは、実バイナリの用意または
-// プロセス起動を差し替える依存性注入が必要になり invasive なため見送る
-// （テスト整備は Issue #230 で扱う）。
+// start() 全体は実際の kanata バイナリ（bin/kanata_cmd_allowed）が無いと
+// 起動に失敗するため、それ自体は呼ばずに intentional_stop フラグの初期値・
+// stop() による更新をテストする。
+// start() 成功時のフラグリセット（intentional_stop リセット漏れバグの回帰防止）は、
+// その後処理を `on_started()` として抽出したことで、実 kanata バイナリなしに
+// テストできる（本物の子プロセスとして OS 標準のごく短命なコマンドを spawn する）。
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -505,5 +514,55 @@ mod tests {
     fn status_with_no_child_returns_not_running() {
         let manager = KanataManager::new();
         assert_eq!(manager.status(), (false, None));
+    }
+
+    /// kanata バイナリを必要とせず、OS 標準のごく短命なプロセスを spawn して
+    /// SharedChild を用意する（on_started() のテスト専用ヘルパー）。
+    fn spawn_noop_child() -> SharedChild {
+        let mut cmd = if cfg!(windows) {
+            let mut c = std::process::Command::new("cmd");
+            c.args(["/C", "exit 0"]);
+            c
+        } else {
+            std::process::Command::new("true")
+        };
+        SharedChild::spawn(&mut cmd).expect("failed to spawn no-op child process for test")
+    }
+
+    #[test]
+    fn on_started_clears_intentional_stop_flag_previously_set_by_stop() {
+        // 回帰対象のバグ: stop() → start() のとき、start() 成功後も
+        // intentional_stop フラグが true のままだと、監視スレッドが次のクラッシュ
+        // 通知を出せなくなる。on_started() がこれをクリアすることを pin する。
+        let intentional_stop = AtomicBool::new(true); // stop() 済みを模した初期状態
+        let mut guard: Option<Arc<SharedChild>> = None;
+
+        KanataManager::on_started(&intentional_stop, &mut guard, spawn_noop_child());
+
+        assert!(!intentional_stop.load(Ordering::SeqCst));
+    }
+
+    #[test]
+    fn on_started_stores_the_spawned_child_in_the_guard() {
+        let intentional_stop = AtomicBool::new(false);
+        let mut guard: Option<Arc<SharedChild>> = None;
+
+        KanataManager::on_started(&intentional_stop, &mut guard, spawn_noop_child());
+
+        assert!(guard.is_some());
+    }
+
+    #[test]
+    fn on_started_overwrites_a_previously_stored_child() {
+        let intentional_stop = AtomicBool::new(false);
+        let mut guard: Option<Arc<SharedChild>> = Some(Arc::new(spawn_noop_child()));
+        let new_pid = {
+            let child = spawn_noop_child();
+            let pid = child.id();
+            KanataManager::on_started(&intentional_stop, &mut guard, child);
+            pid
+        };
+
+        assert_eq!(guard.as_ref().map(|c| c.id()), Some(new_pid));
     }
 }
