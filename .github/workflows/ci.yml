@@ -48,16 +48,53 @@ jobs:
       - name: Build frontend (Vite)
         run: npm --prefix muhenkan-switch/frontend run build
 
+  shellcheck:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Run ShellCheck
+        uses: ludeeus/action-shellcheck@2.0.0
+        with:
+          scandir: './scripts'
+
+  psscriptanalyzer:
+    # PSScriptAnalyzer は pwsh があれば OS を問わず動くため、
+    # 追加セットアップ不要な ubuntu-latest (pwsh プリインストール済み) で実行する
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Run PSScriptAnalyzer on get.ps1
+        shell: pwsh
+        run: |
+          Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser -Repository PSGallery
+          $results = Invoke-ScriptAnalyzer -Path scripts/install/get.ps1 -Severity Warning, Error
+          $results | Format-Table -AutoSize
+          if ($results.Count -gt 0) {
+            Write-Error "PSScriptAnalyzer found $($results.Count) issue(s) in get.ps1."
+            exit 1
+          }
+
   rust-check:
-    # Tauri GUI のクロス OS ビルドは重いので release.yml に委ね、CI では Linux のみ
+    # Tauri GUI のクロス OS ビルドは重いので release.yml に委ね、CI (Linux) では
+    # fmt/clippy/test を含むフルチェックを行う。Windows/macOS 向けの軽量
+    # cargo check は rust-check-cross-os で別途行う。
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v6
 
       - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
 
       - uses: Swatinem/rust-cache@v2
+
+      - name: cargo fmt --check
+        run: cargo fmt --all --check
 
       - uses: actions/setup-node@v6
         with:
@@ -101,8 +138,60 @@ jobs:
           touch muhenkan-switch/binaries/muhenkan-switch-core-x86_64-unknown-linux-gnu
           touch muhenkan-switch/binaries/kanata_cmd_allowed-x86_64-unknown-linux-gnu
 
+      - name: cargo clippy
+        run: cargo clippy --workspace --all-targets -- -D warnings
+
       - name: cargo check
         run: cargo check --workspace
 
       - name: cargo test
         run: cargo test --workspace
+
+  rust-check-cross-os:
+    # target_os cfg 分岐 (Windows 18 箇所 / macOS 9 箇所) がタグ push (release.yml)
+    # までコンパイルされない問題への対応。fmt/clippy/test は rust-check (Linux)
+    # に委ね、ここでは各 OS 上での軽量な cargo check のみを行う。
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+          cache: 'npm'
+          cache-dependency-path: muhenkan-switch/frontend/package-lock.json
+
+      # tauri::generate_context! が frontendDist (./frontend/dist) の実在を要求するため、
+      # cargo check 前に frontend を build しておく
+      - name: Install frontend dependencies
+        run: npm --prefix muhenkan-switch/frontend ci
+
+      - name: Build frontend (Vite)
+        run: npm --prefix muhenkan-switch/frontend run build
+
+      # tauri-build がビルド時に externalBin の実在を確認するため、
+      # ホストのターゲットトリプルに合わせたダミー sidecar ファイルを用意する
+      # (CI では実バイナリ不要、空ファイルで十分)
+      - name: Prepare sidecar placeholders
+        shell: bash
+        run: |
+          target="$(rustc -vV | sed -n 's/^host: //p')"
+          ext=""
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            ext=".exe"
+          fi
+          mkdir -p muhenkan-switch/binaries
+          touch "muhenkan-switch/binaries/muhenkan-switch-core-${target}${ext}"
+          touch "muhenkan-switch/binaries/kanata_cmd_allowed-${target}${ext}"
+
+      - name: cargo check
+        run: cargo check --workspace
