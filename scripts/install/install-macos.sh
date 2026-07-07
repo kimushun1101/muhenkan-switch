@@ -23,7 +23,7 @@ if [ "$proceed" != "y" ] && [ "$proceed" != "Y" ]; then
 fi
 
 # ── 設定 ──
-KANATA_VERSION="v1.11.0"
+KANATA_VERSION="v1.12.0"
 INSTALL_DIR="$HOME/Library/Application Support/muhenkan-switch"
 BIN_DIR="$HOME/.local/bin"
 PLIST_DIR="$HOME/Library/LaunchAgents"

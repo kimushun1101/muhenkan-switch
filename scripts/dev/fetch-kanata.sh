@@ -2,7 +2,7 @@
 # 開発用 kanata バイナリをダウンロード
 set -euo pipefail
 
-VERSION="v1.11.0"
+VERSION="v1.12.0"
 EXT=""; [ "${OS:-}" = "Windows_NT" ] && EXT=".exe"
 mkdir -p ./bin
 DEST="./bin/kanata_cmd_allowed${EXT}"
