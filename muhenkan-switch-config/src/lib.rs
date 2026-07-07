@@ -218,6 +218,43 @@ fn default_delimiter() -> String {
     "_".to_string()
 }
 
+// ── Shared alongside-exe path resolution ──
+
+/// 実行ファイルと同じディレクトリ、次に `manifest_dir/../bin/` の順で
+/// `name` という名前のファイルを探索し、見つかった完全パスを返す。
+///
+/// muhenkan-switch (kanata バイナリ / kbd ファイル / muhenkan-switch-core バイナリ) と
+/// muhenkan-switch-config (config.toml) に共通する「exe と同じディレクトリ →
+/// ワークスペースルートの bin/」という 2 段探索を集約したヘルパー。
+/// `manifest_dir` は呼び出し側クレートの `env!("CARGO_MANIFEST_DIR")` を渡す
+/// (`env!` はマクロ展開されるクレート側のパスになるため、呼び出し元でしか取得できない)。
+///
+/// 探索順序:
+/// 1. 実行ファイルと同じディレクトリ（インストール環境 / dev: ./bin/ 実行時）
+/// 2. `manifest_dir`/../bin/（開発環境: cargo run 互換）
+pub fn resolve_alongside_exe(name: &str, manifest_dir: &str) -> Option<PathBuf> {
+    // 1. 実行ファイルと同じディレクトリ
+    if let Ok(exe_path) = std::env::current_exe() {
+        if let Some(dir) = exe_path.parent() {
+            let path = dir.join(name);
+            if path.exists() {
+                return Some(path);
+            }
+        }
+    }
+
+    // 2. ワークスペースルートの bin/（開発環境）
+    let bin_dir = PathBuf::from(manifest_dir).parent().map(|p| p.join("bin"));
+    if let Some(dir) = bin_dir {
+        let path = dir.join(name);
+        if path.exists() {
+            return Some(path);
+        }
+    }
+
+    None
+}
+
 // ── Config path resolution ──
 
 /// config.toml のパスを決定する。
@@ -226,28 +263,7 @@ fn default_delimiter() -> String {
 /// 2. CARGO_MANIFEST_DIR/../bin/config.toml（開発環境: cargo run 互換）
 /// 3. 見つからなければ None（default_config() の embedded config で補完）
 pub fn config_path() -> Option<PathBuf> {
-    // 1. 実行ファイルと同じディレクトリ
-    if let Ok(exe_path) = std::env::current_exe() {
-        if let Some(dir) = exe_path.parent() {
-            let path = dir.join("config.toml");
-            if path.exists() {
-                return Some(path);
-            }
-        }
-    }
-
-    // 2. ワークスペースルートの bin/（開発環境）
-    let bin_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .parent()
-        .map(|p| p.join("bin"));
-    if let Some(ref dir) = bin_dir {
-        let path = dir.join("config.toml");
-        if path.exists() {
-            return Some(path);
-        }
-    }
-
-    None
+    resolve_alongside_exe("config.toml", env!("CARGO_MANIFEST_DIR"))
 }
 
 /// 指定パスから config.toml を読み込む。
@@ -1114,5 +1130,50 @@ mod tests {
             command: Some("code".to_string()),
         };
         assert_eq!(entry2.command(), Some("code"));
+    }
+
+    /// `resolve_alongside_exe` がワークスペースルート `bin/` 配下のファイルを
+    /// 見つけられることを検証する（`manifest_dir/../bin/<name>` の探索順序）。
+    #[test]
+    fn test_resolve_alongside_exe_finds_file_in_manifest_bin_dir() {
+        let workspace_root = unique_temp_dir("found");
+        let bin_dir = workspace_root.join("bin");
+        std::fs::create_dir_all(&bin_dir).unwrap();
+        let file_name = "resolve-test-target.txt";
+        let target = bin_dir.join(file_name);
+        std::fs::write(&target, b"test").unwrap();
+
+        // manifest_dir はワークスペースルート直下の架空クレートディレクトリを模す
+        let manifest_dir = workspace_root.join("some-crate");
+        let resolved = resolve_alongside_exe(file_name, manifest_dir.to_str().unwrap());
+        assert_eq!(resolved, Some(target));
+
+        let _ = std::fs::remove_dir_all(&workspace_root);
+    }
+
+    /// exe と同じディレクトリにも `manifest_dir/../bin/` にも見つからない場合は
+    /// `None` を返すことを検証する。
+    #[test]
+    fn test_resolve_alongside_exe_returns_none_when_not_found() {
+        let workspace_root = unique_temp_dir("missing");
+        // bin/ ディレクトリ自体を作らない = 見つからないケース
+        let manifest_dir = workspace_root.join("some-crate");
+
+        let resolved = resolve_alongside_exe("does-not-exist.bin", manifest_dir.to_str().unwrap());
+        assert_eq!(resolved, None);
+    }
+
+    /// テスト間で衝突しない一時ディレクトリパスを生成する（未作成。呼び出し側で mkdir する）。
+    fn unique_temp_dir(label: &str) -> PathBuf {
+        let nanos = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        std::env::temp_dir().join(format!(
+            "muhenkan-switch-config-test-{}-{}-{}",
+            label,
+            std::process::id(),
+            nanos
+        ))
     }
 }

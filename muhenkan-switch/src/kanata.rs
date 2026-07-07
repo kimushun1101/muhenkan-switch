@@ -172,94 +172,49 @@ impl KanataManager {
 
     /// kanata バイナリのパスを取得
     ///
-    /// 探索順序:
+    /// 探索順序 (共通ヘルパー `muhenkan_switch_config::resolve_alongside_exe` に集約):
     /// 1. exe と同じディレクトリ（インストール環境 / dev: ./bin/ 実行時）
     /// 2. CARGO_MANIFEST_DIR/../bin/（開発環境: cargo run 互換）
     fn kanata_path() -> Result<PathBuf> {
-        let name = kanata_binary_name();
-
-        // 1. exe と同じディレクトリ
-        if let Ok(exe_dir) = std::env::current_exe().map(|p| p.parent().unwrap().to_path_buf()) {
-            let path = exe_dir.join(name);
-            if path.exists() {
-                return Ok(path);
-            }
-        }
-
-        // 2. ワークスペースルートの bin/（開発環境）
-        let bin_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-            .parent()
-            .map(|p| p.join("bin"));
-        if let Some(ref dir) = bin_dir {
-            let path = dir.join(name);
-            if path.exists() {
-                return Ok(path);
-            }
-        }
-
-        anyhow::bail!(
-            "キー割当の起動に必要なファイルが見つかりません。\n\
-             再インストールしてください。"
-        );
+        use muhenkan_switch_config::resolve_alongside_exe as resolve;
+        resolve(kanata_binary_name(), env!("CARGO_MANIFEST_DIR")).ok_or_else(|| {
+            anyhow::anyhow!(
+                "キー割当の起動に必要なファイルが見つかりません。\n\
+                 再インストールしてください。"
+            )
+        })
     }
 
     /// kanata 設定ファイルのパスを取得
     ///
-    /// 探索順序:
+    /// 探索順序 (共通ヘルパー `muhenkan_switch_config::resolve_alongside_exe` に集約):
     /// 1. exe と同じディレクトリの muhenkan.kbd（インストール環境 / dev: ./bin/ 実行時）
     /// 2. CARGO_MANIFEST_DIR/../bin/muhenkan.kbd（開発環境: cargo run 互換）
     fn kbd_path() -> Result<PathBuf> {
-        // 1. exe と同じディレクトリ
-        if let Ok(exe_dir) = std::env::current_exe().map(|p| p.parent().unwrap().to_path_buf()) {
-            let path = exe_dir.join("muhenkan.kbd");
-            if path.exists() {
-                return Ok(path);
-            }
-        }
-
-        // 2. ワークスペースルートの bin/（開発環境）
-        let bin_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-            .parent()
-            .map(|p| p.join("bin"));
-        if let Some(ref dir) = bin_dir {
-            let path = dir.join("muhenkan.kbd");
-            if path.exists() {
-                return Ok(path);
-            }
-        }
-
-        anyhow::bail!(
-            "キー割当の設定ファイルが見つかりません。\n\
-             再インストールしてください。"
-        );
+        use muhenkan_switch_config::resolve_alongside_exe as resolve;
+        resolve("muhenkan.kbd", env!("CARGO_MANIFEST_DIR")).ok_or_else(|| {
+            anyhow::anyhow!(
+                "キー割当の設定ファイルが見つかりません。\n\
+                 再インストールしてください。"
+            )
+        })
     }
 
     /// muhenkan-switch-core バイナリが存在するディレクトリを取得
     ///
-    /// 探索順序:
+    /// 探索順序 (共通ヘルパー `muhenkan_switch_config::resolve_alongside_exe` に集約。
+    /// バイナリ自体のフルパスから親ディレクトリを取り出す):
     /// 1. exe と同じディレクトリ（インストール環境 / dev: ./bin/ 実行時）
     /// 2. CARGO_MANIFEST_DIR/../bin/（開発環境: cargo run 互換）
     fn core_binary_dir() -> Result<PathBuf> {
-        let name = core_binary_name();
-
-        // 1. exe と同じディレクトリ
-        if let Ok(exe_dir) = std::env::current_exe().map(|p| p.parent().unwrap().to_path_buf()) {
-            if exe_dir.join(name).exists() {
-                return Ok(exe_dir);
-            }
-        }
-
-        // 2. ワークスペースルートの bin/（開発環境）
-        let bin_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-            .parent()
-            .map(|p| p.join("bin"));
-        if let Some(ref dir) = bin_dir {
-            if dir.join(name).exists() {
-                return Ok(dir.clone());
-            }
-        }
-
-        anyhow::bail!("キー割当の補助プログラムが見つかりません。\n再インストールしてください。");
+        use muhenkan_switch_config::resolve_alongside_exe as resolve;
+        resolve(core_binary_name(), env!("CARGO_MANIFEST_DIR"))
+            .and_then(|p| p.parent().map(|d| d.to_path_buf()))
+            .ok_or_else(|| {
+                anyhow::anyhow!(
+                    "キー割当の補助プログラムが見つかりません。\n再インストールしてください。"
+                )
+            })
     }
 
     /// kbd ファイルのパスを外部に公開する（句読点書き換え用）

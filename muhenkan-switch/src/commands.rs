@@ -251,44 +251,12 @@ mod imp {
     }
 }
 
-// ── Platform: Linux ──
+// ── Platform: Linux / macOS ──
+//
+// 両 OS とも `ps -eo pid,comm` の出力をパースするだけで、実装が完全に同一なため
+// 単一の `imp` モジュールに統合している (#228)。
 
-#[cfg(target_os = "linux")]
-mod imp {
-    use super::ProcessInfo;
-
-    pub(super) fn get_processes_impl() -> anyhow::Result<Vec<ProcessInfo>> {
-        ps_processes()
-    }
-
-    fn ps_processes() -> anyhow::Result<Vec<ProcessInfo>> {
-        let output = std::process::Command::new("ps")
-            .args(["-eo", "pid,comm"])
-            .output()?;
-        let stdout = String::from_utf8_lossy(&output.stdout);
-        let mut processes = Vec::new();
-        let mut seen = std::collections::HashSet::new();
-
-        for line in stdout.lines().skip(1) {
-            let parts: Vec<&str> = line.trim().splitn(2, char::is_whitespace).collect();
-            if parts.len() == 2 {
-                let pid: u32 = parts[0].trim().parse().unwrap_or(0);
-                let name = parts[1].trim().to_string();
-                if !seen.contains(&name) {
-                    seen.insert(name.clone());
-                    processes.push(ProcessInfo { name, pid });
-                }
-            }
-        }
-
-        processes.sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
-        Ok(processes)
-    }
-}
-
-// ── Platform: macOS ──
-
-#[cfg(target_os = "macos")]
+#[cfg(any(target_os = "linux", target_os = "macos"))]
 mod imp {
     use super::ProcessInfo;
 
