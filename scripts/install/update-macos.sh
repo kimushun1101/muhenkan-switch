@@ -35,7 +35,7 @@ echo "最新バージョンを確認しています..."
 api_response=$(curl -fsSL "https://api.github.com/repos/$REPO/releases/latest")
 
 # jq なしで tag_name を抽出
-latest_tag=$(echo "$api_response" | grep -o '"tag_name"\s*:\s*"[^"]*"' | sed 's/"tag_name"\s*:\s*"\(.*\)"/\1/')
+latest_tag=$(echo "$api_response" | grep -o '"tag_name"[[:space:]]*:[[:space:]]*"[^"]*"' | sed 's/"tag_name"[[:space:]]*:[[:space:]]*"\(.*\)"/\1/')
 
 if [ -z "$latest_tag" ]; then
     echo "[ERROR] 最新バージョンの取得に失敗しました"
