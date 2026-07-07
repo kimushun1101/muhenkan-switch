@@ -27,7 +27,10 @@ fn gui_binary_path() -> Option<PathBuf> {
     let name = gui_binary_name();
 
     // 1. exe と同じディレクトリ
-    if let Ok(exe_dir) = std::env::current_exe().map(|p| p.parent().unwrap().to_path_buf()) {
+    if let Some(exe_dir) = std::env::current_exe()
+        .ok()
+        .and_then(|p| p.parent().map(|d| d.to_path_buf()))
+    {
         let path = exe_dir.join(name);
         if path.exists() {
             return Some(path);
