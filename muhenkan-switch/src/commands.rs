@@ -28,6 +28,25 @@ pub fn generate_keyboard_svg() -> Result<String, String> {
     Ok(config::svg::generate(&cfg))
 }
 
+/// kbd ファイルの句読点を config に合わせて書き換え、kanata を再起動する。
+///
+/// `save_config` と `import_config` の両方で「config 保存後」に必要となる後処理であり、
+/// ここに集約する。kbd 書き換えと kanata の停止 (stop) の失敗は、外部ツール呼び出し失敗
+/// に対する既存の温度感 (警告して続行) に合わせて無視するが、kanata の起動 (start) の
+/// 失敗はキー割当が止まったままユーザーに伝わらなくなるため、握り潰さず呼び出し元に
+/// エラーとして伝搬する。
+fn rewrite_punctuation_and_restart_kanata(config: &Config, manager: &KanataManager) -> Result<(), String> {
+    if let Ok(kbd_path) = KanataManager::resolve_kbd_path() {
+        if let Err(e) = config::rewrite_kbd_punctuation(&kbd_path, &config.punctuation_style) {
+            eprintln!("[config] kbd ファイルの句読点書き換えに失敗しました: {e:#}");
+        }
+    }
+    if let Err(e) = manager.stop() {
+        eprintln!("[kanata] 再起動前の停止に失敗しました: {e:#}");
+    }
+    manager.start().map_err(|e| format!("{e:#}"))
+}
+
 #[tauri::command]
 pub fn save_config(app: tauri::AppHandle, config: Config, manager: State<KanataManager>) -> Result<(), String> {
     use tauri::Emitter;
@@ -38,15 +57,14 @@ pub fn save_config(app: tauri::AppHandle, config: Config, manager: State<KanataM
     let path = resolve_config_path();
     config::save(&path, &config).map_err(|e| e.to_string())?;
 
-    // kbd ファイルの句読点を書き換え → kanata 再起動
-    if let Ok(kbd_path) = KanataManager::resolve_kbd_path() {
-        let _ = config::rewrite_kbd_punctuation(&kbd_path, &config.punctuation_style);
-    }
-    let _ = manager.stop();
-    let _ = manager.start();
+    // kbd ファイルの句読点を書き換え → kanata 再起動。
+    // config-saved イベントは config の保存自体が成功していれば (kanata 再起動の
+    // 成否に関わらず) 従来どおり emit する (ヘルプウィンドウの SVG プレビュー自動更新用)。
+    let restart_result = rewrite_punctuation_and_restart_kanata(&config, &manager);
 
     let _ = app.emit("config-saved", ());
-    Ok(())
+
+    restart_result
 }
 
 #[tauri::command]
@@ -85,7 +103,7 @@ pub async fn export_config(app: tauri::AppHandle) -> Result<bool, String> {
 }
 
 #[tauri::command]
-pub async fn import_config(app: tauri::AppHandle) -> Result<Option<Config>, String> {
+pub async fn import_config(app: tauri::AppHandle, manager: State<'_, KanataManager>) -> Result<Option<Config>, String> {
     use tauri_plugin_dialog::DialogExt;
     let (tx, rx) = std::sync::mpsc::channel();
     app.dialog()
@@ -104,6 +122,10 @@ pub async fn import_config(app: tauri::AppHandle) -> Result<Option<Config>, Stri
             }
             let dest = resolve_config_path();
             config::save(&dest, &imported).map_err(|e| e.to_string())?;
+
+            // save_config と同様に kbd の句読点を反映して kanata を再起動する。
+            rewrite_punctuation_and_restart_kanata(&imported, &manager)?;
+
             Ok(Some(imported))
         }
         None => Ok(None),
