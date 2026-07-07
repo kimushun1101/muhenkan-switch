@@ -25,27 +25,72 @@ Write-Host ""
 # ── TLS 1.2 を有効化 ──
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
+# ── GitHub API フォールバック用ヘルパー ──
+# 未認証の GitHub API は 60 req/時/IP のレート制限があるため、通常はリダイレクト
+# 経由 (下記) でタグを取得する。API はリダイレクト経路が失敗した場合のみ使う。
+function Get-MuhenkanReleaseInfo {
+    param([string]$Repo)
+    try {
+        return Invoke-RestMethod -Uri "https://api.github.com/repos/$Repo/releases/latest" -UseBasicParsing
+    } catch {
+        Write-Host "[ERROR] 最新バージョンの取得に失敗しました: $_" -ForegroundColor Red
+        Write-Host "        ネットワーク接続を確認してください。" -ForegroundColor Red
+        exit 1
+    }
+}
+
+function Resolve-MuhenkanAsset {
+    param($ReleaseInfo, [string]$Pattern)
+    $found = $ReleaseInfo.assets | Where-Object { $_.name -like $Pattern } | Select-Object -First 1
+    if (-not $found) {
+        Write-Host "[ERROR] インストーラー ($Pattern) がリリースに見つかりませんでした。" -ForegroundColor Red
+        exit 1
+    }
+    return $found
+}
+
 # ── 最新バージョンを取得 ──
+# 1. releases/latest への HTTP リダイレクト先 (Location ヘッダ) からタグ名を取得する。
+#    API 不要・レート制限なしの経路。AllowAutoRedirect を無効にすると、
+#    HttpWebRequest はリダイレクト応答をそのまま返す (3xx は例外にならない)。
 Write-Host "最新バージョンを確認しています..."
+
+$latestTag = $null
 try {
-    $releaseInfo = Invoke-RestMethod -Uri "https://api.github.com/repos/$REPO/releases/latest" -UseBasicParsing
-    $latestTag = $releaseInfo.tag_name
+    $request = [System.Net.WebRequest]::Create("https://github.com/$REPO/releases/latest")
+    $request.Method = "HEAD"
+    $request.AllowAutoRedirect = $false
+    $request.Timeout = 10000
+    $response = $request.GetResponse()
+    $location = $response.Headers["Location"]
+    $response.Close()
 } catch {
-    Write-Host "[ERROR] 最新バージョンの取得に失敗しました: $_" -ForegroundColor Red
-    Write-Host "        ネットワーク接続を確認してください。" -ForegroundColor Red
-    exit 1
+    $location = $null
 }
 
-Write-Host "最新バージョン: $latestTag"
-
-# ── ダウンロードする setup.exe を特定 ──
-$asset = $releaseInfo.assets | Where-Object { $_.name -like $ASSET_PATTERN } | Select-Object -First 1
-if (-not $asset) {
-    Write-Host "[ERROR] インストーラー ($ASSET_PATTERN) がリリースに見つかりませんでした。" -ForegroundColor Red
-    exit 1
+if ($location -and ($location -match '/releases/tag/(v[0-9][^/]+)$')) {
+    $latestTag = $Matches[1]
 }
-$ASSET_NAME = $asset.name
-$downloadUrl = $asset.browser_download_url
+
+$releaseInfo = $null
+
+if ($latestTag) {
+    Write-Host "最新バージョン: $latestTag"
+    # NSIS 既定の命名規則 (<productName>_<version>_x64-setup.exe) からアセット名を予測する。
+    $versionNumber = $latestTag -replace '^v', ''
+    $ASSET_NAME = "muhenkan-switch_${versionNumber}_x64-setup.exe"
+    $downloadUrl = "https://github.com/$REPO/releases/latest/download/$ASSET_NAME"
+} else {
+    # 2. フォールバック: GitHub API (未認証 60 req/時/IP のレート制限あり)
+    Write-Host "[WARN] リダイレクトでのバージョン取得に失敗したため GitHub API を使用します。" -ForegroundColor Yellow
+    $releaseInfo = Get-MuhenkanReleaseInfo -Repo $REPO
+    $latestTag = $releaseInfo.tag_name
+    Write-Host "最新バージョン: $latestTag"
+
+    $asset = Resolve-MuhenkanAsset -ReleaseInfo $releaseInfo -Pattern $ASSET_PATTERN
+    $ASSET_NAME = $asset.name
+    $downloadUrl = $asset.browser_download_url
+}
 
 # ── ダウンロード ──
 Write-Host ""
@@ -57,8 +102,27 @@ try {
     Invoke-WebRequest -Uri $downloadUrl -OutFile $tempExe -UseBasicParsing
     Write-Host "[OK] ダウンロード完了" -ForegroundColor Green
 } catch {
-    Write-Host "[ERROR] ダウンロードに失敗しました: $_" -ForegroundColor Red
-    exit 1
+    if (-not $releaseInfo) {
+        # 予測したアセット名が実際には存在しなかった可能性があるため、
+        # GitHub API で正確なアセット情報を取得して 1 度だけ再試行する。
+        Write-Host "[WARN] 想定アセットのダウンロードに失敗したため GitHub API で確認します..." -ForegroundColor Yellow
+        $releaseInfo = Get-MuhenkanReleaseInfo -Repo $REPO
+        $asset = Resolve-MuhenkanAsset -ReleaseInfo $releaseInfo -Pattern $ASSET_PATTERN
+        $ASSET_NAME = $asset.name
+        $downloadUrl = $asset.browser_download_url
+        $tempExe = Join-Path $env:TEMP $ASSET_NAME
+
+        try {
+            Invoke-WebRequest -Uri $downloadUrl -OutFile $tempExe -UseBasicParsing
+            Write-Host "[OK] ダウンロード完了" -ForegroundColor Green
+        } catch {
+            Write-Host "[ERROR] ダウンロードに失敗しました: $_" -ForegroundColor Red
+            exit 1
+        }
+    } else {
+        Write-Host "[ERROR] ダウンロードに失敗しました: $_" -ForegroundColor Red
+        exit 1
+    }
 }
 
 # ── インストール (サイレント) ──

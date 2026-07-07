@@ -47,20 +47,39 @@ case "$OS" in
 esac
 
 # ── 最新バージョンを取得 ──
+# GitHub API (未認証 60 req/時/IP) はレート制限に当たりやすいため、
+# まず releases/latest への HTTP リダイレクト先 (Location ヘッダ) からタグを
+# 取得する経路を優先する (API 不要・レート制限なし)。失敗した場合のみ API に
+# フォールバックする。
 echo ""
 echo "最新バージョンを確認しています..."
 
+latest_tag=""
+
 if command -v curl >/dev/null 2>&1; then
-    api_response=$(curl -fsSL "https://api.github.com/repos/$REPO/releases/latest")
+    redirect_url=$(curl -fsSLI -o /dev/null -w '%{url_effective}' "https://github.com/$REPO/releases/latest" 2>/dev/null) || redirect_url=""
 elif command -v wget >/dev/null 2>&1; then
-    api_response=$(wget -qO- "https://api.github.com/repos/$REPO/releases/latest")
+    redirect_url=$(wget --max-redirect=20 --server-response --spider -q -O /dev/null "https://github.com/$REPO/releases/latest" 2>&1 \
+        | grep -i 'Location:' | tail -1 | tr -d '[:space:]') || redirect_url=""
 else
     echo "[ERROR] curl または wget が必要です"
     exit 1
 fi
 
-# jq なしで tag_name を抽出
-latest_tag=$(echo "$api_response" | grep -o '"tag_name"[[:space:]]*:[[:space:]]*"[^"]*"' | sed 's/"tag_name"[[:space:]]*:[[:space:]]*"\(.*\)"/\1/')
+case "$redirect_url" in
+    */releases/tag/v[0-9]*) latest_tag=$(echo "$redirect_url" | sed 's#.*/releases/tag/##') ;;
+esac
+
+# フォールバック: GitHub API (未認証 60 req/時/IP のレート制限あり)
+if [ -z "$latest_tag" ]; then
+    if command -v curl >/dev/null 2>&1; then
+        api_response=$(curl -fsSL "https://api.github.com/repos/$REPO/releases/latest")
+    else
+        api_response=$(wget -qO- "https://api.github.com/repos/$REPO/releases/latest")
+    fi
+    # jq なしで tag_name を抽出
+    latest_tag=$(echo "$api_response" | grep -o '"tag_name"[[:space:]]*:[[:space:]]*"[^"]*"' | sed 's/"tag_name"[[:space:]]*:[[:space:]]*"\(.*\)"/\1/')
+fi
 
 if [ -z "$latest_tag" ]; then
     echo "[ERROR] 最新バージョンの取得に失敗しました"
