@@ -1,7 +1,10 @@
 // Vitest config (Phase 4-C, Issue #158 — coverage 閾値追加 Issue #167)
 //
 // vite.config.js が `.js` のままなので test フィールドを混ぜず独立 config にする。
-// vite 5.4 との互換性確保のため vitest 2.x 系を採用。
+// vite 7.x + vitest 4.x を採用 (Issue #232 — vite 5.4 / vitest 2.x からの追随)。
+// vite 8 系は既定バンドラが Rolldown に切り替わり esbuild が任意 peer 化される
+// 破壊的変更 (build.minify: 'esbuild' が動作しない) があるため見送り、
+// Rollup + esbuild を維持する 7 系を採用。
 //
 // 環境: happy-dom (jsdom より軽量・高速。escapeHtml のような純粋関数も含めて
 //   全テストを 1 環境で揃え、forms/lib の薄い DOM 操作も賄えるため)。
