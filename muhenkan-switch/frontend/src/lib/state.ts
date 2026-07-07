@@ -73,6 +73,5 @@ export const DISPATCH_KEYS: readonly string[] = [
   'd',
   'f',
   'g',
-  'z',
   'b',
 ];
