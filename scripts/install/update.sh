@@ -27,7 +27,7 @@ else
 fi
 
 # jq なしで tag_name を抽出
-latest_tag=$(echo "$api_response" | grep -o '"tag_name"\s*:\s*"[^"]*"' | sed 's/"tag_name"\s*:\s*"\(.*\)"/\1/')
+latest_tag=$(echo "$api_response" | grep -o '"tag_name"[[:space:]]*:[[:space:]]*"[^"]*"' | sed 's/"tag_name"[[:space:]]*:[[:space:]]*"\(.*\)"/\1/')
 
 if [ -z "$latest_tag" ]; then
     echo "[ERROR] 最新バージョンの取得に失敗しました"
@@ -41,7 +41,7 @@ if command -v muhenkan-switch-core &>/dev/null; then
     version_output=$(muhenkan-switch-core --version 2>/dev/null || true)
     if [ -n "$version_output" ]; then
         # "muhenkan-switch-core x.y.z" → "vx.y.z"
-        version_string=$(echo "$version_output" | sed 's/^muhenkan-switch-core\s*//')
+        version_string=$(echo "$version_output" | sed 's/^muhenkan-switch-core[[:space:]]*//')
         current_version="v$version_string"
     fi
 fi
