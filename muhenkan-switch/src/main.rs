@@ -4,6 +4,8 @@ mod commands;
 mod kanata;
 mod tray;
 
+use tauri::Manager;
+
 fn main() {
     // windows_subsystem = "windows" では stderr が見えないため、パニック時にファイルへ記録
     let default_hook = std::panic::take_hook();
@@ -30,7 +32,7 @@ fn main() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_autostart::init(
             tauri_plugin_autostart::MacosLauncher::LaunchAgent,
-            Some(vec![]),
+            Some(vec!["--hidden".into()]),
         ))
         .plugin(tauri_plugin_store::Builder::default().build())
         .plugin(tauri_plugin_updater::Builder::new().build())
@@ -67,6 +69,36 @@ fn main() {
             commands::spawn_update_terminal,
         ])
         .setup(|app| {
+            // 自動起動 (--hidden 付き) 以外は起動時にメインウィンドウを表示する。
+            // tauri.conf.json 側で visible: false にしているため、ここで明示的に show() しないと
+            // 手動起動時にもウィンドウが表示されない。
+            let hidden = std::env::args().any(|a| a == "--hidden");
+            if !hidden {
+                if let Some(window) = app.get_webview_window("main") {
+                    let _ = window.show();
+                    let _ = window.set_focus();
+                }
+            }
+
+            // 移行: 既存ユーザーの自動起動登録には --hidden が付いていないため、
+            // 有効なら一度 disable → enable して登録引数を更新する。
+            // 毎起動で走るが冪等かつ軽量。失敗しても起動は継続する。
+            {
+                use tauri_plugin_autostart::ManagerExt;
+                let autolaunch = app.autolaunch();
+                match autolaunch.is_enabled() {
+                    Ok(true) => {
+                        if let Err(e) = autolaunch.disable() {
+                            eprintln!("[setup] 自動起動の再登録 (disable) に失敗: {:#}", e);
+                        } else if let Err(e) = autolaunch.enable() {
+                            eprintln!("[setup] 自動起動の再登録 (enable) に失敗: {:#}", e);
+                        }
+                    }
+                    Ok(false) => {}
+                    Err(e) => eprintln!("[setup] 自動起動状態の取得に失敗: {:#}", e),
+                }
+            }
+
             // 初回起動時 or 壊れた config.toml の再生成
             if let Ok(exe_path) = std::env::current_exe() {
                 if let Some(exe_dir) = exe_path.parent() {
