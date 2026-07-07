@@ -71,7 +71,13 @@ jobs:
         shell: pwsh
         run: |
           Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser -Repository PSGallery
-          $results = Invoke-ScriptAnalyzer -Path scripts/install/get.ps1 -Severity Warning, Error
+          # PSAvoidUsingWriteHost: get.ps1 は対話的インストーラーであり、
+          #   色付きコンソール出力 (-ForegroundColor) が本来の目的のため除外。
+          # PSUseBOMForUnicodeEncodedFile: get.ps1 は `irm <url> | iex` で生コンテンツを
+          #   評価する配布形態が前提 (ファイル先頭コメント参照)。BOM を付与すると
+          #   デコード後の文字列先頭に U+FEFF が残り iex がパースに失敗する恐れがあるため除外。
+          $results = Invoke-ScriptAnalyzer -Path scripts/install/get.ps1 -Severity Warning, Error `
+            -ExcludeRule PSAvoidUsingWriteHost, PSUseBOMForUnicodeEncodedFile
           $results | Format-Table -AutoSize
           if ($results.Count -gt 0) {
             Write-Error "PSScriptAnalyzer found $($results.Count) issue(s) in get.ps1."
