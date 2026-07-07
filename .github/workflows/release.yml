@@ -88,8 +88,10 @@ jobs:
             cp "target/${{ matrix.target }}/release/${{ matrix.gui_artifact }}" "$RELEASE_DIR/"
           fi
 
-          # 設定ファイル
-          cp config/default.toml "$RELEASE_DIR/config.toml"
+          # 設定ファイル (config.toml) は同梱しない。
+          # Windows (NSIS) と同様、初回起動時に muhenkan-switch が
+          # OS 別の埋め込みデフォルト設定 (default-linux.toml 等) から自動生成する
+          # (#220: 汎用 default.toml が同梱され OS 別デフォルトが使われない問題への対応)。
 
           # kanata 設定ファイル
           cp kanata/muhenkan.kbd "$RELEASE_DIR/"

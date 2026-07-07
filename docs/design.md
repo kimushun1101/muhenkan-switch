@@ -181,7 +181,10 @@ GUI (Tauri) から kanata プロセスの開始・停止・再起動を行う。
 
 - GitHub Actions で Windows (x64) / Linux (x64) / macOS (x64, aarch64) のバイナリを自動ビルド
 - タグ push (`v*`) でリリース作成
-- リリース zip には muhenkan-switch バイナリ + .kbd + config.toml を同梱
+- リリース zip には muhenkan-switch バイナリ + .kbd を同梱（config.toml は同梱しない）
+- config.toml は Windows/Linux/macOS 共通で、初回起動時に muhenkan-switch が
+  OS 別の埋め込みデフォルト設定（`default-windows.toml` / `default-linux.toml` /
+  `default-macos.toml`）から自動生成する
 - kanata 本体は同梱またはダウンロードリンクを案内
 
 ---
