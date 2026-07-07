@@ -368,7 +368,13 @@ mod imp {
         // launch が設定されていればそちらを優先
         let target = launch.unwrap_or(app);
         Command::new("osascript")
-            .args(["-e", &format!(r#"tell application "{}" to activate"#, target)])
+            .args([
+                "-e",
+                &format!(
+                    r#"tell application "{}" to activate"#,
+                    crate::commands::escape_applescript_string(target)
+                ),
+            ])
             .output()?;
         Ok(())
     }

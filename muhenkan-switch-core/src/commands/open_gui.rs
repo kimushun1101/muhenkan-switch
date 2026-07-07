@@ -186,7 +186,13 @@ mod imp {
         // macOS は Tauri の WebviewWindow が osascript で正しく制御できるため
         // シグナルファイル方式は不要。
         let ok = Command::new("osascript")
-            .args(["-e", r#"tell application "muhenkan-switch" to activate"#])
+            .args([
+                "-e",
+                &format!(
+                    r#"tell application "{}" to activate"#,
+                    crate::commands::escape_applescript_string("muhenkan-switch")
+                ),
+            ])
             .output()
             .map(|o| o.status.success())
             .unwrap_or(false);

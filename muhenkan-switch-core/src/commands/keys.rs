@@ -263,7 +263,7 @@ mod imp {
                 "-e",
                 &format!(
                     r#"tell application "System Events" to keystroke "{}""#,
-                    text
+                    crate::commands::escape_applescript_string(text)
                 ),
             ])
             .output()?;
