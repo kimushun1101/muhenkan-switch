@@ -23,11 +23,16 @@ function updateKanataUI(running: boolean): void {
 }
 
 // ── Autostart checkbox ──
-export async function loadAutostart(): Promise<void> {
+// トレイの CheckMenuItem と GUI チェックボックスは同じ自動起動状態を指すため、
+// どちらから変更しても 'autostart-changed' イベント (実状態) でもう一方に反映する。
+function setAutostartCheckbox(enabled: boolean): void {
   const autostartCheckbox = document.getElementById('opt-autostart') as HTMLInputElement | null;
-  if (!autostartCheckbox) return;
+  if (autostartCheckbox) autostartCheckbox.checked = enabled;
+}
+
+export async function loadAutostart(): Promise<void> {
   try {
-    autostartCheckbox.checked = await invoke<boolean>('get_autostart_enabled');
+    setAutostartCheckbox(await invoke<boolean>('get_autostart_enabled'));
   } catch (e) {
     console.error('自動起動状態の取得に失敗:', e);
   }
@@ -209,6 +214,8 @@ export function initGeneralForm({ renderConfig }: InitGeneralFormOptions): void 
   });
 
   // ── Autostart checkbox listener ──
+  // 実際の反映は 'autostart-changed' イベント経由 (バックエンドが実状態を読み直して
+  // emit する) で行うため、ここでは呼び出しの成否をログするだけでよい。
   const autostartCheckbox = document.getElementById('opt-autostart') as HTMLInputElement | null;
   if (autostartCheckbox) {
     autostartCheckbox.addEventListener('change', async () => {
@@ -216,10 +223,14 @@ export function initGeneralForm({ renderConfig }: InitGeneralFormOptions): void 
         await invoke('set_autostart_enabled', { enabled: autostartCheckbox.checked });
       } catch (e) {
         console.error('自動起動の切り替えに失敗:', e);
-        autostartCheckbox.checked = !autostartCheckbox.checked;
       }
     });
   }
+
+  // ── Autostart 状態同期イベント (トレイ⇔GUI 双方向) ──
+  void listen<boolean>('autostart-changed', (event) => {
+    setAutostartCheckbox(event.payload);
+  });
 
   // ── Kanata status event ──
   void listen<boolean>('kanata-status-changed', (event) => {

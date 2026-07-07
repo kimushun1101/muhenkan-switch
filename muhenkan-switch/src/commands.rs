@@ -386,11 +386,15 @@ pub fn get_autostart_enabled(app: tauri::AppHandle) -> Result<bool, String> {
 pub fn set_autostart_enabled(app: tauri::AppHandle, enabled: bool) -> Result<(), String> {
     use tauri_plugin_autostart::ManagerExt;
     let autostart = app.autolaunch();
-    if enabled {
+    let result = if enabled {
         autostart.enable().map_err(|e| e.to_string())
     } else {
         autostart.disable().map_err(|e| e.to_string())
-    }
+    };
+    // enable/disable の成否に関わらず実状態を読み直し、トレイ CheckMenuItem と
+    // GUI チェックボックスの両方を同期させる (autostart-changed イベント emit)。
+    crate::tray::sync_autostart_state(&app);
+    result
 }
 
 // ── Install type detection ──
