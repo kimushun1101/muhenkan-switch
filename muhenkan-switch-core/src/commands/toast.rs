@@ -257,7 +257,7 @@ mod imp {
                     "-e",
                     &format!(
                         r#"display notification "{}" with title "muhenkan-switch""#,
-                        initial_message.replace('"', r#"\""#)
+                        crate::commands::escape_applescript_string(initial_message)
                     ),
                 ])
                 .spawn();
@@ -270,7 +270,7 @@ mod imp {
                     "-e",
                     &format!(
                         r#"display notification "{}" with title "muhenkan-switch""#,
-                        message.replace('"', r#"\""#)
+                        crate::commands::escape_applescript_string(message)
                     ),
                 ])
                 .spawn();
@@ -283,7 +283,7 @@ mod imp {
                     "-e",
                     &format!(
                         r#"display notification "{}" with title "muhenkan-switch""#,
-                        message.replace('"', r#"\""#)
+                        crate::commands::escape_applescript_string(message)
                     ),
                 ])
                 .spawn();
