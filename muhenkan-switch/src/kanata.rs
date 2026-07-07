@@ -331,6 +331,10 @@ impl KanataManager {
             job.assign(pid);
         }
 
+        // 起動成功。以前の stop() による意図的停止フラグをクリアし、
+        // 監視スレッドが次回のクラッシュを通知できるようにする。
+        self.intentional_stop.store(false, Ordering::SeqCst);
+
         *guard = Some(Arc::new(child));
 
         Ok(())
@@ -357,6 +361,44 @@ impl KanataManager {
             }
             None => (false, None),
         }
+    }
+}
+
+// ── Tests ──
+//
+// start() は実際の kanata バイナリ（bin/kanata_cmd_allowed）が無いと
+// 起動に失敗するため、ここでは start() を伴わずに検証できる
+// intentional_stop フラグの初期値・stop() による更新のみをテストする。
+// start() 成功時のフラグリセット（本 Issue の修正本体）を含む
+// stop → start の完全な状態遷移テストは、実バイナリの用意または
+// プロセス起動を差し替える依存性注入が必要になり invasive なため見送る
+// （テスト整備は Issue #230 で扱う）。
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn new_intentional_stop_flag_initial_false() {
+        let manager = KanataManager::new();
+        assert!(!manager.intentional_stop_flag().load(Ordering::SeqCst));
+    }
+
+    #[test]
+    fn stop_without_running_child_sets_intentional_stop_flag() {
+        let manager = KanataManager::new();
+        let flag = manager.intentional_stop_flag();
+        assert!(!flag.load(Ordering::SeqCst));
+
+        let result = manager.stop();
+
+        assert!(result.is_ok());
+        assert!(flag.load(Ordering::SeqCst));
+    }
+
+    #[test]
+    fn status_with_no_child_returns_not_running() {
+        let manager = KanataManager::new();
+        assert_eq!(manager.status(), (false, None));
     }
 }
 
