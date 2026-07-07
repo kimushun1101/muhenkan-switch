@@ -6,10 +6,9 @@ use super::toast::Toast;
 use crate::config::Config;
 
 pub fn run(target: &str, config: &Config) -> Result<()> {
-    let entry = config
-        .apps
-        .get(target)
-        .ok_or_else(|| anyhow::anyhow!("アプリ '{}' が config.toml に定義されていません", target))?;
+    let entry = config.apps.get(target).ok_or_else(|| {
+        anyhow::anyhow!("アプリ '{}' が config.toml に定義されていません", target)
+    })?;
 
     let process_name = entry.process();
     let command = entry.command();
@@ -19,7 +18,10 @@ pub fn run(target: &str, config: &Config) -> Result<()> {
 
 /// プロセスが見つからず launch コマンドも未設定の場合に Toast で通知する。
 fn notify_process_not_found(app: &str) {
-    let msg = format!("'{}' が見つかりません — config.toml の command を設定してください", app);
+    let msg = format!(
+        "'{}' が見つかりません — config.toml の command を設定してください",
+        app
+    );
     Toast::notify(&msg);
 }
 
@@ -40,21 +42,20 @@ mod imp {
     use super::*;
     use std::ffi::OsString;
     use std::os::windows::ffi::OsStringExt;
+    use windows::core::BOOL;
+    use windows::Win32::Foundation::{HWND, LPARAM};
     use windows::Win32::System::Diagnostics::ToolHelp::{
         CreateToolhelp32Snapshot, Process32FirstW, Process32NextW, PROCESSENTRY32W,
         TH32CS_SNAPPROCESS,
     };
     use windows::Win32::System::Threading::{AttachThreadInput, GetCurrentThreadId};
     use windows::Win32::UI::Input::KeyboardAndMouse::{
-        SendInput, INPUT, INPUT_0, INPUT_KEYBOARD, KEYBDINPUT, KEYEVENTF_KEYUP,
-        VK_MENU,
+        SendInput, INPUT, INPUT_0, INPUT_KEYBOARD, KEYBDINPUT, KEYEVENTF_KEYUP, VK_MENU,
     };
     use windows::Win32::UI::WindowsAndMessaging::{
         EnumWindows, GetForegroundWindow, GetWindowThreadProcessId, IsIconic, IsWindowVisible,
         SetForegroundWindow, ShowWindow, SW_RESTORE,
     };
-    use windows::core::BOOL;
-    use windows::Win32::Foundation::{HWND, LPARAM};
 
     pub(super) fn activate_window(app: &str, launch: Option<&str>) -> Result<()> {
         // --- Step 1: Find PIDs matching the process name ---
@@ -117,10 +118,7 @@ mod imp {
             BOOL(1) // continue
         }
 
-        let mut data = CallbackData {
-            pids,
-            hwnd: None,
-        };
+        let mut data = CallbackData { pids, hwnd: None };
 
         unsafe {
             let _ = EnumWindows(
@@ -256,6 +254,7 @@ mod imp {
     /// 2. xdotool search --class (WM_CLASS でマッチ)
     /// 3. xdotool search --name (ウィンドウタイトルでマッチ)
     /// 4. pgrep + xdotool search --pid (バイナリ名から PID 経由でマッチ)
+    ///
     /// NOTE: Wayland でのアプリ切り替えは標準 API が未整備のため非対応 (#105)
     pub(super) fn activate_window(app: &str, launch: Option<&str>) -> Result<()> {
         let activated = try_wmctrl(app)
@@ -300,16 +299,12 @@ mod imp {
     /// pgrep でバイナリ名から PID を取得し、xdotool search --pid でウィンドウを前面化する。
     /// WM_CLASS がバイナリ名と異なるアプリ（例: zed-editor → dev.zed.Zed）に有効。
     pub(super) fn try_activate_by_pid(app: &str) -> bool {
-        let pgrep_output = Command::new("pgrep")
-            .args(["-x", app])
-            .output();
+        let pgrep_output = Command::new("pgrep").args(["-x", app]).output();
         let pids = match pgrep_output {
-            Ok(output) if output.status.success() => {
-                String::from_utf8_lossy(&output.stdout)
-                    .lines()
-                    .map(|s| s.to_string())
-                    .collect::<Vec<_>>()
-            }
+            Ok(output) if output.status.success() => String::from_utf8_lossy(&output.stdout)
+                .lines()
+                .map(|s| s.to_string())
+                .collect::<Vec<_>>(),
             _ => return false,
         };
 
@@ -449,6 +444,9 @@ mod tests {
         };
         let result = run("nonexistent", &config);
         assert!(result.is_err());
-        assert!(result.unwrap_err().to_string().contains("定義されていません"));
+        assert!(result
+            .unwrap_err()
+            .to_string()
+            .contains("定義されていません"));
     }
 }

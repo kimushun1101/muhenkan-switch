@@ -48,8 +48,8 @@ fn build_tray(handle: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
         .checked(autostart_enabled)
         .build(handle)?;
     handle.manage(AutostartMenuHandle(autostart_item.clone()));
-    let open_dir_item = MenuItemBuilder::with_id("open_dir", "インストール先を開く")
-        .build(handle)?;
+    let open_dir_item =
+        MenuItemBuilder::with_id("open_dir", "インストール先を開く").build(handle)?;
     // インストーラー版 / スクリプト版どちらでも表示する。
     // listener 側 (initUpdater) で install type ごとに振り分け:
     //   - installer (Windows): tauri-plugin-updater 経由

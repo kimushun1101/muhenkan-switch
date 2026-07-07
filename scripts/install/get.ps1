@@ -132,7 +132,13 @@ Write-Host "インストールしています..." -ForegroundColor Cyan
 # 起動中のインスタンスがあるとファイル上書きに失敗するため停止（更新時）。
 # Windows では Job Object により kanata も併せて終了する。
 Get-Process muhenkan-switch -ErrorAction SilentlyContinue | ForEach-Object {
-    try { $_.Kill(); [void]$_.WaitForExit(5000) } catch {}
+    try {
+        $_.Kill()
+        [void]$_.WaitForExit(5000)
+    } catch {
+        # 既に終了している等で Kill が失敗しても、以降のインストール処理は続行する
+        Write-Verbose "既存プロセスの終了に失敗しました: $_"
+    }
 }
 
 # /S = サイレントインストール。

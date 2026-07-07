@@ -13,9 +13,9 @@ mod imp {
     use windows::core::{w, PCWSTR};
     use windows::Win32::Foundation::{HWND, LPARAM, LRESULT, RECT, WPARAM};
     use windows::Win32::Graphics::Gdi::{
-        BeginPaint, CreateSolidBrush, DeleteObject, DrawTextW, EndPaint, FillRect,
-        GetStockObject, InvalidateRect, SelectObject, SetBkMode, SetTextColor, DEFAULT_GUI_FONT,
-        DT_CENTER, DT_SINGLELINE, DT_VCENTER, PAINTSTRUCT, TRANSPARENT,
+        BeginPaint, CreateSolidBrush, DeleteObject, DrawTextW, EndPaint, FillRect, GetStockObject,
+        InvalidateRect, SelectObject, SetBkMode, SetTextColor, DEFAULT_GUI_FONT, DT_CENTER,
+        DT_SINGLELINE, DT_VCENTER, PAINTSTRUCT, TRANSPARENT,
     };
     use windows::Win32::System::LibraryLoader::GetModuleHandleW;
     use windows::Win32::UI::WindowsAndMessaging::*;
@@ -39,7 +39,10 @@ mod imp {
         /// Show the toast window immediately with an initial message.
         pub fn show(initial_message: &str) -> Self {
             let (tx, rx) = mpsc::channel::<String>();
-            let init_msg: Vec<u16> = initial_message.encode_utf16().chain(std::iter::once(0)).collect();
+            let init_msg: Vec<u16> = initial_message
+                .encode_utf16()
+                .chain(std::iter::once(0))
+                .collect();
 
             let handle = thread::spawn(move || {
                 run_toast_ui(rx, init_msg);
@@ -142,10 +145,8 @@ mod imp {
                     let ptr = GetWindowLongPtrW(hwnd, GWLP_USERDATA) as *mut ToastData;
                     if !ptr.is_null() {
                         if let Ok(new_msg) = (*ptr).rx.try_recv() {
-                            (*ptr).message = new_msg
-                                .encode_utf16()
-                                .chain(std::iter::once(0))
-                                .collect();
+                            (*ptr).message =
+                                new_msg.encode_utf16().chain(std::iter::once(0)).collect();
                             let _ = InvalidateRect(Some(hwnd), None, true);
                             let _ = KillTimer(Some(hwnd), POLL_TIMER_ID);
                             let _ = SetTimer(Some(hwnd), DISMISS_TIMER_ID, 1500, None);
@@ -179,7 +180,10 @@ mod imp {
                 if !ptr.is_null() {
                     let msg_slice = &(*ptr).message;
                     // Find null terminator for text length
-                    let text_len = msg_slice.iter().position(|&c| c == 0).unwrap_or(msg_slice.len());
+                    let text_len = msg_slice
+                        .iter()
+                        .position(|&c| c == 0)
+                        .unwrap_or(msg_slice.len());
                     let text = PCWSTR::from_raw(msg_slice.as_ptr());
                     let _ = DrawTextW(
                         hdc,

@@ -7,7 +7,10 @@ pub fn run(target: &str, config: &Config) -> Result<()> {
     let path_str = config::get_folder_path(&config.folders, target)?;
 
     if path_str.is_empty() {
-        anyhow::bail!("フォルダ '{}' のパスが config.toml に設定されていません", target);
+        anyhow::bail!(
+            "フォルダ '{}' のパスが config.toml に設定されていません",
+            target
+        );
     }
 
     // ~ をホームディレクトリに展開
@@ -89,13 +92,16 @@ mod tests {
         };
         let result = run("nonexistent", &config);
         assert!(result.is_err());
-        assert!(result.unwrap_err().to_string().contains("定義されていません"));
+        assert!(result
+            .unwrap_err()
+            .to_string()
+            .contains("定義されていません"));
     }
 
     #[test]
     fn run_nonexistent_path_errors() {
-        use indexmap::IndexMap;
         use crate::config::FolderEntry;
+        use indexmap::IndexMap;
         let mut folders = IndexMap::new();
         folders.insert(
             "test".to_string(),
@@ -118,8 +124,8 @@ mod tests {
 
     #[test]
     fn run_empty_path_unknown_target_errors() {
-        use indexmap::IndexMap;
         use crate::config::FolderEntry;
+        use indexmap::IndexMap;
         let mut folders = IndexMap::new();
         folders.insert(
             "unknown".to_string(),
@@ -137,6 +143,9 @@ mod tests {
         };
         let result = run("unknown", &config);
         assert!(result.is_err());
-        assert!(result.unwrap_err().to_string().contains("設定されていません"));
+        assert!(result
+            .unwrap_err()
+            .to_string()
+            .contains("設定されていません"));
     }
 }
