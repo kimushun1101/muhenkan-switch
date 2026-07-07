@@ -6,8 +6,7 @@ use super::toast::Toast;
 /// Toast には現在の設定でファイル名がどう変化するかの例を表示する
 /// （GUI 設定画面のプレビューと同様の形式）。
 pub fn toggle_position() -> Result<()> {
-    let path = muhenkan_switch_config::config_path()
-        .context("config.toml が見つかりません")?;
+    let path = muhenkan_switch_config::config_path().context("config.toml が見つかりません")?;
 
     let mut config = muhenkan_switch_config::load_from(&path)?;
 

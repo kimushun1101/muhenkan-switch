@@ -34,7 +34,7 @@ else
 fi
 
 case "$redirect_url" in
-    */releases/tag/v[0-9]*) latest_tag=$(echo "$redirect_url" | sed 's#.*/releases/tag/##') ;;
+    */releases/tag/v[0-9]*) latest_tag="${redirect_url##*/releases/tag/}" ;;
 esac
 
 # フォールバック: GitHub API (未認証 60 req/時/IP のレート制限あり)
@@ -60,7 +60,7 @@ if command -v muhenkan-switch-core &>/dev/null; then
     version_output=$(muhenkan-switch-core --version 2>/dev/null || true)
     if [ -n "$version_output" ]; then
         # "muhenkan-switch-core x.y.z" → "vx.y.z"
-        version_string=$(echo "$version_output" | sed 's/^muhenkan-switch-core[[:space:]]*//')
+        read -r _ version_string <<< "$version_output"
         current_version="v$version_string"
     fi
 fi

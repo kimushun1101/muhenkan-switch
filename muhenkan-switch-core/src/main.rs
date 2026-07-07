@@ -108,8 +108,8 @@ fn run() -> Result<()> {
         Commands::OpenFolder { target } => commands::open_folder::run(&target, &config),
         Commands::Timestamp { action } => commands::timestamp::run(&action, &config),
         Commands::Dispatch { key } => commands::dispatch::run(&key, &config),
-        Commands::OpenGui
-        | Commands::GenerateSvg { .. }
-        | Commands::ToggleTimestampPosition => unreachable!(),
+        Commands::OpenGui | Commands::GenerateSvg { .. } | Commands::ToggleTimestampPosition => {
+            unreachable!()
+        }
     }
 }

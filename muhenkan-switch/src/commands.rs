@@ -35,7 +35,10 @@ pub fn generate_keyboard_svg() -> Result<String, String> {
 /// に対する既存の温度感 (警告して続行) に合わせて無視するが、kanata の起動 (start) の
 /// 失敗はキー割当が止まったままユーザーに伝わらなくなるため、握り潰さず呼び出し元に
 /// エラーとして伝搬する。
-fn rewrite_punctuation_and_restart_kanata(config: &Config, manager: &KanataManager) -> Result<(), String> {
+fn rewrite_punctuation_and_restart_kanata(
+    config: &Config,
+    manager: &KanataManager,
+) -> Result<(), String> {
     if let Ok(kbd_path) = KanataManager::resolve_kbd_path() {
         if let Err(e) = config::rewrite_kbd_punctuation(&kbd_path, &config.punctuation_style) {
             eprintln!("[config] kbd ファイルの句読点書き換えに失敗しました: {e:#}");
@@ -48,7 +51,11 @@ fn rewrite_punctuation_and_restart_kanata(config: &Config, manager: &KanataManag
 }
 
 #[tauri::command]
-pub fn save_config(app: tauri::AppHandle, config: Config, manager: State<KanataManager>) -> Result<(), String> {
+pub fn save_config(
+    app: tauri::AppHandle,
+    config: Config,
+    manager: State<KanataManager>,
+) -> Result<(), String> {
     use tauri::Emitter;
     let errors = config::validate(&config);
     if !errors.is_empty() {
@@ -85,13 +92,17 @@ pub async fn export_config(app: tauri::AppHandle) -> Result<bool, String> {
     let default_dir = dirs::desktop_dir()
         .or_else(dirs::download_dir)
         .or_else(dirs::home_dir);
-    let mut builder = app.dialog().file().add_filter("TOML", &["toml"]).set_file_name("muhenkan-switch-config.toml");
+    let mut builder = app
+        .dialog()
+        .file()
+        .add_filter("TOML", &["toml"])
+        .set_file_name("muhenkan-switch-config.toml");
     if let Some(dir) = default_dir {
         builder = builder.set_directory(dir);
     }
     builder.save_file(move |path| {
-            let _ = tx.send(path.map(|p| p.as_path().unwrap().to_path_buf()));
-        });
+        let _ = tx.send(path.map(|p| p.as_path().unwrap().to_path_buf()));
+    });
     let dest = rx.recv().map_err(|e| e.to_string())?;
     match dest {
         Some(dest) => {
@@ -103,7 +114,10 @@ pub async fn export_config(app: tauri::AppHandle) -> Result<bool, String> {
 }
 
 #[tauri::command]
-pub async fn import_config(app: tauri::AppHandle, manager: State<'_, KanataManager>) -> Result<Option<Config>, String> {
+pub async fn import_config(
+    app: tauri::AppHandle,
+    manager: State<'_, KanataManager>,
+) -> Result<Option<Config>, String> {
     use tauri_plugin_dialog::DialogExt;
     let (tx, rx) = std::sync::mpsc::channel();
     app.dialog()
@@ -138,14 +152,16 @@ pub async fn import_config(app: tauri::AppHandle, manager: State<'_, KanataManag
 #[tauri::command]
 pub fn get_app_presets() -> Result<serde_json::Value, String> {
     const PRESETS_JSON: &str = include_str!("../../config/app-presets.json");
-    let all: serde_json::Value =
-        serde_json::from_str(PRESETS_JSON).map_err(|e| e.to_string())?;
+    let all: serde_json::Value = serde_json::from_str(PRESETS_JSON).map_err(|e| e.to_string())?;
     let os_key = match std::env::consts::OS {
         "windows" => "windows",
         "macos" => "macos",
         _ => "linux",
     };
-    Ok(all.get(os_key).cloned().unwrap_or(serde_json::Value::Object(Default::default())))
+    Ok(all
+        .get(os_key)
+        .cloned()
+        .unwrap_or(serde_json::Value::Object(Default::default())))
 }
 
 // ── Search presets ──
@@ -212,8 +228,9 @@ mod imp {
         let mut seen = HashSet::new();
 
         unsafe {
-            let snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0)
-                .map_err(|e| anyhow::anyhow!("プロセス一覧のスナップショット取得に失敗しました: {}", e))?;
+            let snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0).map_err(|e| {
+                anyhow::anyhow!("プロセス一覧のスナップショット取得に失敗しました: {}", e)
+            })?;
             let mut entry = PROCESSENTRY32W {
                 dwSize: std::mem::size_of::<PROCESSENTRY32W>() as u32,
                 ..Default::default()
@@ -246,7 +263,7 @@ mod imp {
             let _ = windows::Win32::Foundation::CloseHandle(snapshot);
         }
 
-        processes.sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
+        processes.sort_by_key(|a| a.name.to_lowercase());
         Ok(processes)
     }
 }
@@ -284,7 +301,7 @@ mod imp {
             }
         }
 
-        processes.sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
+        processes.sort_by_key(|a| a.name.to_lowercase());
         Ok(processes)
     }
 }
@@ -337,7 +354,12 @@ pub async fn install_update(app: tauri::AppHandle) -> Result<(), String> {
             .map_err(|e| format!("{:#}", e))
     })
     .await
-    .unwrap_or_else(|e| Err(format!("アップデートインストール中にエラーが発生しました: {}", e)))
+    .unwrap_or_else(|e| {
+        Err(format!(
+            "アップデートインストール中にエラーが発生しました: {}",
+            e
+        ))
+    })
 }
 
 // ── Autostart ──
@@ -345,9 +367,7 @@ pub async fn install_update(app: tauri::AppHandle) -> Result<(), String> {
 #[tauri::command]
 pub fn get_autostart_enabled(app: tauri::AppHandle) -> Result<bool, String> {
     use tauri_plugin_autostart::ManagerExt;
-    app.autolaunch()
-        .is_enabled()
-        .map_err(|e| e.to_string())
+    app.autolaunch().is_enabled().map_err(|e| e.to_string())
 }
 
 #[tauri::command]
@@ -389,13 +409,11 @@ pub fn spawn_update_terminal() -> Result<(), String> {
 
     #[cfg(target_os = "linux")]
     {
-        let home = dirs::home_dir().ok_or_else(|| "ホームディレクトリが見つかりません".to_string())?;
+        let home =
+            dirs::home_dir().ok_or_else(|| "ホームディレクトリが見つかりません".to_string())?;
         let script = home.join(".local/share/muhenkan-switch/update.sh");
         if !script.exists() {
-            return Err(format!(
-                "update.sh が見つかりません: {}",
-                script.display()
-            ));
+            return Err(format!("update.sh が見つかりません: {}", script.display()));
         }
         // GUI 自身が nohup 等で stdin=/dev/null で起動されていると、spawn された
         // ターミナル内 bash の stdin も /dev/null を継承し、末尾の `read` が即 EOF
@@ -431,7 +449,8 @@ pub fn spawn_update_terminal() -> Result<(), String> {
 
     #[cfg(target_os = "macos")]
     {
-        let home = dirs::home_dir().ok_or_else(|| "ホームディレクトリが見つかりません".to_string())?;
+        let home =
+            dirs::home_dir().ok_or_else(|| "ホームディレクトリが見つかりません".to_string())?;
         let script = home.join("Library/Application Support/muhenkan-switch/update-macos.sh");
         if !script.exists() {
             return Err(format!(
@@ -463,8 +482,7 @@ pub async fn browse_folder(app: tauri::AppHandle) -> Result<Option<String>, Stri
     app.dialog().file().pick_folder(move |path| {
         let _ = tx.send(path.map(|p| p.to_string()));
     });
-    rx.recv()
-        .map_err(|e| e.to_string())
+    rx.recv().map_err(|e| e.to_string())
 }
 
 #[tauri::command]
@@ -598,7 +616,9 @@ document.addEventListener("keydown", e => {{
         {
             // HTML を直接評価して表示
             let escaped = escape_for_js_template_literal(&html);
-            let _ = win.eval(&format!("document.open();document.write(`{escaped}`);document.close();"));
+            let _ = win.eval(format!(
+                "document.open();document.write(`{escaped}`);document.close();"
+            ));
         }
     });
     Ok(())
