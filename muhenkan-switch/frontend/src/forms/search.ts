@@ -3,6 +3,7 @@ import { getConfig, getSearchPresets } from '../lib/state';
 import type { SearchPreset } from '../lib/state';
 import { createDispatchKeySelect } from '../lib/dispatch-key';
 import { escapeHtml } from '../lib/utils';
+import { createPickerModal } from '../lib/picker-modal';
 import type { SearchEntry } from '../lib/config';
 import type { CollectedConfig } from '../lib/config-io';
 
@@ -66,32 +67,10 @@ export function addSearchRow(container: HTMLElement, name = '', url = '', dispat
 
 // ── Search preset picker modal ──
 export function showSearchPicker(): Promise<SearchPreset | null> {
-  return new Promise<SearchPreset | null>((resolve) => {
-    const SEARCH_PRESETS = getSearchPresets();
-    const overlay = document.createElement('div');
-    overlay.className = 'modal-overlay';
-    overlay.innerHTML = `
-      <div class="modal">
-        <div class="modal-header">検索サービスを選択</div>
-        <div class="modal-body">
-          <input type="text" class="modal-search" placeholder="フィルター...">
-          <ul class="modal-list"></ul>
-        </div>
-        <div class="modal-footer">
-          <button class="btn-cancel">キャンセル</button>
-        </div>
-      </div>
-    `;
-
-    const list = overlay.querySelector<HTMLUListElement>('.modal-list');
-    const filterInput = overlay.querySelector<HTMLInputElement>('.modal-search');
-    if (!list || !filterInput) {
-      resolve(null);
-      return;
-    }
-
-    function renderList(filter = ''): void {
-      if (!list) return;
+  const SEARCH_PRESETS = getSearchPresets();
+  return createPickerModal<SearchPreset>({
+    title: '検索サービスを選択',
+    renderList: (list, filter, select) => {
       list.innerHTML = '';
       const lf = filter.toLowerCase();
       for (const [category, services] of Object.entries(SEARCH_PRESETS)) {
@@ -106,38 +85,11 @@ export function showSearchPicker(): Promise<SearchPreset | null> {
         for (const svc of filtered) {
           const li = document.createElement('li');
           li.textContent = svc.label;
-          li.addEventListener('click', () => close(svc));
+          li.addEventListener('click', () => select(svc));
           list.appendChild(li);
         }
       }
-    }
-
-    filterInput.addEventListener('input', (e) => {
-      const target = e.target as HTMLInputElement;
-      renderList(target.value);
-    });
-
-    function close(result: SearchPreset | null): void {
-      overlay.remove();
-      document.removeEventListener('keydown', onKeydown);
-      resolve(result);
-    }
-
-    overlay
-      .querySelector<HTMLButtonElement>('.btn-cancel')
-      ?.addEventListener('click', () => close(null));
-    overlay.addEventListener('click', (e) => {
-      if (e.target === overlay) close(null);
-    });
-
-    function onKeydown(e: KeyboardEvent): void {
-      if (e.key === 'Escape') close(null);
-    }
-    document.addEventListener('keydown', onKeydown);
-
-    renderList();
-    document.body.appendChild(overlay);
-    filterInput.focus();
+    },
   });
 }
 
