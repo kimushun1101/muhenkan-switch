@@ -9,7 +9,7 @@ set -euo pipefail
 # root 権限は不要です。
 
 # ── 設定 ──
-KANATA_VERSION="v1.11.0"
+KANATA_VERSION="v1.12.0"
 KANATA_ASSET="linux-binaries-x64.zip"
 KANATA_BINARY="kanata_linux_cmd_allowed_x64"
 INSTALL_DIR="$HOME/.local/share/muhenkan-switch"
