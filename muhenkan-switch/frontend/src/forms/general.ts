@@ -53,25 +53,28 @@ function hideUpdateBadge(): void {
   document.getElementById('footer-update')?.classList.add('hidden');
 }
 
-// ── Updater (installer: Windows / tauri-plugin-updater) ──
-async function checkForUpdate(silent = true): Promise<void> {
+// ── Updater 共通スケルトン ──
+// 「バージョン取得 → 見つかればバッジ提示 (+ 非 silent 時は run 実行) → 見つからなければ
+// バッジ非表示 (+ 非 silent 時は最新メッセージ)」の分岐は installer / script 共通。
+// 取得元 (fetchUpdate) と実際の更新処理 (run) だけが実装ごとに異なるため引数化する。
+interface UpdateFound {
+  /** バッジ・ダイアログに表示するバージョン文字列 */
+  version: string;
+  /** 実際の更新処理 (バッジクリック or 非 silent 時の即時実行の両方から呼ばれる) */
+  run: () => Promise<void>;
+}
+
+async function runUpdateCheck(
+  silent: boolean,
+  fetchUpdate: (currentVersion: string) => Promise<UpdateFound | null>,
+): Promise<void> {
   try {
     const currentVersion = await invoke<string>('get_app_version');
-    const update = await invoke<UpdateInfo | null>('check_update');
-    if (update) {
-      const run = async (): Promise<void> => {
-        if (
-          await ask(`現在: v${currentVersion} → 最新: v${update.version}\nアップデートしますか？`, {
-            title: 'アップデート',
-          })
-        ) {
-          await invoke('stop_kanata');
-          await invoke('install_update');
-        }
-      };
-      showUpdateBadge(update.version, run);
+    const found = await fetchUpdate(currentVersion);
+    if (found) {
+      showUpdateBadge(found.version, found.run);
       // トレイからの手動チェックは即ダイアログ。サイレント時はバッジのみ。
-      if (!silent) await run();
+      if (!silent) await found.run();
     } else {
       hideUpdateBadge();
       if (!silent) await message(`v${currentVersion} は最新です。`, { title: 'アップデート' });
@@ -86,13 +89,33 @@ async function checkForUpdate(silent = true): Promise<void> {
   }
 }
 
+// ── Updater (installer: Windows / tauri-plugin-updater) ──
+async function checkForUpdate(silent = true): Promise<void> {
+  await runUpdateCheck(silent, async (currentVersion) => {
+    const update = await invoke<UpdateInfo | null>('check_update');
+    if (!update) return null;
+    return {
+      version: update.version,
+      run: async () => {
+        if (
+          await ask(`現在: v${currentVersion} → 最新: v${update.version}\nアップデートしますか？`, {
+            title: 'アップデート',
+          })
+        ) {
+          await invoke('stop_kanata');
+          await invoke('install_update');
+        }
+      },
+    };
+  });
+}
+
 // ── Updater (script: Linux/macOS / GitHub API + terminal spawn) ──
 const GITHUB_LATEST_RELEASE_URL =
   'https://api.github.com/repos/kimushun1101/muhenkan-switch/releases/latest';
 
 async function checkGithubLatestRelease(silent = true): Promise<void> {
-  try {
-    const currentVersion = await invoke<string>('get_app_version');
+  await runUpdateCheck(silent, async (currentVersion) => {
     const res = await fetch(GITHUB_LATEST_RELEASE_URL);
     if (!res.ok) {
       throw new Error(`GitHub API エラー: HTTP ${res.status}`);
@@ -103,43 +126,30 @@ async function checkGithubLatestRelease(silent = true): Promise<void> {
     }
     const latestVersion = release.tag_name.replace(/^v/, '');
 
-    if (latestVersion === currentVersion) {
-      hideUpdateBadge();
-      if (!silent) {
-        await message(`v${currentVersion} は最新です。`, { title: 'アップデート' });
-      }
-      return;
-    }
+    if (latestVersion === currentVersion) return null;
 
-    const run = async (): Promise<void> => {
-      const proceed = await ask(
-        `現在: v${currentVersion} → 最新: v${latestVersion}\n\n` +
-          `ターミナルでアップデートを実行しますか？`,
-        { title: 'アップデート' },
-      );
-      if (!proceed) return;
-
-      try {
-        await invoke('spawn_update_terminal');
-      } catch (e) {
-        await message(
-          `ターミナルの起動に失敗しました:\n${String(e)}\n\n` +
-            `手動で update.sh / update-macos.sh を実行してください。`,
-          { title: 'エラー', kind: 'error' },
+    return {
+      version: latestVersion,
+      run: async () => {
+        const proceed = await ask(
+          `現在: v${currentVersion} → 最新: v${latestVersion}\n\n` +
+            `ターミナルでアップデートを実行しますか？`,
+          { title: 'アップデート' },
         );
-      }
+        if (!proceed) return;
+
+        try {
+          await invoke('spawn_update_terminal');
+        } catch (e) {
+          await message(
+            `ターミナルの起動に失敗しました:\n${String(e)}\n\n` +
+              `手動で update.sh / update-macos.sh を実行してください。`,
+            { title: 'エラー', kind: 'error' },
+          );
+        }
+      },
     };
-    showUpdateBadge(latestVersion, run);
-    // トレイからの手動チェックは即ダイアログ。サイレント時はバッジのみ。
-    if (!silent) await run();
-  } catch (e) {
-    console.error('[updater]', e);
-    if (!silent)
-      await message('アップデート確認に失敗しました:\n' + String(e), {
-        title: 'エラー',
-        kind: 'error',
-      });
-  }
+  });
 }
 
 export interface InitGeneralFormOptions {

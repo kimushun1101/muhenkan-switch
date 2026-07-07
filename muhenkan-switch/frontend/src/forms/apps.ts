@@ -3,6 +3,7 @@ import { invoke } from '../lib/tauri';
 import { getConfig, getAppPresets } from '../lib/state';
 import { createDispatchKeySelect } from '../lib/dispatch-key';
 import { escapeHtml } from '../lib/utils';
+import { createPickerModal } from '../lib/picker-modal';
 import type { AppEntry } from '../lib/config';
 import type { CollectedConfig } from '../lib/config-io';
 import type { ProcessInfo } from '../lib/ipc-types';
@@ -151,31 +152,9 @@ export async function showProcessPicker(): Promise<string | null> {
     return null;
   }
 
-  return new Promise<string | null>((resolve) => {
-    const overlay = document.createElement('div');
-    overlay.className = 'modal-overlay';
-    overlay.innerHTML = `
-      <div class="modal">
-        <div class="modal-header">プロセスを選択</div>
-        <div class="modal-body">
-          <input type="text" class="modal-search" placeholder="フィルター...">
-          <ul class="modal-list"></ul>
-        </div>
-        <div class="modal-footer">
-          <button class="btn-cancel">キャンセル</button>
-        </div>
-      </div>
-    `;
-
-    const list = overlay.querySelector<HTMLUListElement>('.modal-list');
-    const searchInput = overlay.querySelector<HTMLInputElement>('.modal-search');
-    if (!list || !searchInput) {
-      resolve(null);
-      return;
-    }
-
-    function renderProcessList(filter = ''): void {
-      if (!list) return;
+  return createPickerModal<string>({
+    title: 'プロセスを選択',
+    renderList: (list, filter, select) => {
       list.innerHTML = '';
       const filtered = processes.filter((p) => p.name.toLowerCase().includes(filter.toLowerCase()));
       for (const p of filtered) {
@@ -187,39 +166,11 @@ export async function showProcessPicker(): Promise<string | null> {
           if (name.toLowerCase().endsWith('.exe')) {
             name = name.slice(0, -4);
           }
-          close(name);
+          select(name);
         });
         list.appendChild(li);
       }
-    }
-
-    searchInput.addEventListener('input', (e) => {
-      const target = e.target as HTMLInputElement;
-      renderProcessList(target.value);
-    });
-
-    function close(result: string | null): void {
-      overlay.remove();
-      document.removeEventListener('keydown', onKeydown);
-      resolve(result);
-    }
-
-    overlay
-      .querySelector<HTMLButtonElement>('.btn-cancel')
-      ?.addEventListener('click', () => close(null));
-
-    overlay.addEventListener('click', (e) => {
-      if (e.target === overlay) close(null);
-    });
-
-    function onKeydown(e: KeyboardEvent): void {
-      if (e.key === 'Escape') close(null);
-    }
-    document.addEventListener('keydown', onKeydown);
-
-    renderProcessList();
-    document.body.appendChild(overlay);
-    searchInput.focus();
+    },
   });
 }
 

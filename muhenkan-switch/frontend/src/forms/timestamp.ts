@@ -4,39 +4,33 @@ import { getConfig } from '../lib/state';
 import type { CollectedConfig } from '../lib/config-io';
 import { requireEl } from '../lib/dom-utils';
 
+// 設定値がプリセット一覧の値と一致すればそのプリセットを選択し custom 入力を隠す。
+// 一致しなければ 'custom' を選択して custom 入力にその値を反映して表示する
+// (renderTimestamp の format / delimiter 初期化で使う same-shape 処理を集約)。
+function applyPresetOrCustom(presetId: string, customId: string, value: string): void {
+  const presetEl = requireEl<HTMLSelectElement>(presetId);
+  const customEl = requireEl<HTMLInputElement>(customId);
+  const matched = Array.from(presetEl.options).find((o) => o.value === value);
+  if (matched) {
+    presetEl.value = value;
+    customEl.classList.add('hidden');
+  } else {
+    presetEl.value = 'custom';
+    customEl.value = value;
+    customEl.classList.remove('hidden');
+  }
+}
+
 export function renderTimestamp(): void {
   const config = getConfig();
   if (!config) return;
 
-  // Format
-  const formatPreset = requireEl<HTMLSelectElement>('ts-format-preset');
-  const formatCustom = requireEl<HTMLInputElement>('ts-format-custom');
-  const format = config.timestamp.format;
-
-  const formatOption = Array.from(formatPreset.options).find((o) => o.value === format);
-  if (formatOption) {
-    formatPreset.value = format;
-    formatCustom.classList.add('hidden');
-  } else {
-    formatPreset.value = 'custom';
-    formatCustom.value = format;
-    formatCustom.classList.remove('hidden');
-  }
-
-  // Delimiter
-  const delimPreset = requireEl<HTMLSelectElement>('ts-delimiter-preset');
-  const delimCustom = requireEl<HTMLInputElement>('ts-delimiter-custom');
-  const delimiter = config.timestamp.delimiter ?? '_';
-
-  const delimOption = Array.from(delimPreset.options).find((o) => o.value === delimiter);
-  if (delimOption) {
-    delimPreset.value = delimiter;
-    delimCustom.classList.add('hidden');
-  } else {
-    delimPreset.value = 'custom';
-    delimCustom.value = delimiter;
-    delimCustom.classList.remove('hidden');
-  }
+  applyPresetOrCustom('ts-format-preset', 'ts-format-custom', config.timestamp.format);
+  applyPresetOrCustom(
+    'ts-delimiter-preset',
+    'ts-delimiter-custom',
+    config.timestamp.delimiter ?? '_',
+  );
 
   // Position
   const posRadio = document.querySelector<HTMLInputElement>(
@@ -94,38 +88,30 @@ export async function updateTimestampPreview(): Promise<void> {
   }
 }
 
+// preset select の change で custom 入力欄の表示/非表示 (+ フォーカス) を切り替え、
+// custom 入力の input でプレビュー更新をトリガーする配線
+// (initTimestampForm の format / delimiter 初期化で使う same-shape 処理を集約)。
+function initPresetCustomToggle(presetId: string, customId: string): void {
+  requireEl<HTMLSelectElement>(presetId).addEventListener('change', (e) => {
+    const target = e.target as HTMLSelectElement;
+    const customInput = requireEl<HTMLInputElement>(customId);
+    if (target.value === 'custom') {
+      customInput.classList.remove('hidden');
+      customInput.focus();
+    } else {
+      customInput.classList.add('hidden');
+    }
+    void updateTimestampPreview();
+  });
+
+  requireEl<HTMLInputElement>(customId).addEventListener('input', () => {
+    void updateTimestampPreview();
+  });
+}
+
 export function initTimestampForm(): void {
-  requireEl<HTMLSelectElement>('ts-format-preset').addEventListener('change', (e) => {
-    const target = e.target as HTMLSelectElement;
-    const customInput = requireEl<HTMLInputElement>('ts-format-custom');
-    if (target.value === 'custom') {
-      customInput.classList.remove('hidden');
-      customInput.focus();
-    } else {
-      customInput.classList.add('hidden');
-    }
-    void updateTimestampPreview();
-  });
-
-  requireEl<HTMLInputElement>('ts-format-custom').addEventListener('input', () => {
-    void updateTimestampPreview();
-  });
-
-  requireEl<HTMLSelectElement>('ts-delimiter-preset').addEventListener('change', (e) => {
-    const target = e.target as HTMLSelectElement;
-    const customInput = requireEl<HTMLInputElement>('ts-delimiter-custom');
-    if (target.value === 'custom') {
-      customInput.classList.remove('hidden');
-      customInput.focus();
-    } else {
-      customInput.classList.add('hidden');
-    }
-    void updateTimestampPreview();
-  });
-
-  requireEl<HTMLInputElement>('ts-delimiter-custom').addEventListener('input', () => {
-    void updateTimestampPreview();
-  });
+  initPresetCustomToggle('ts-format-preset', 'ts-format-custom');
+  initPresetCustomToggle('ts-delimiter-preset', 'ts-delimiter-custom');
 
   document.querySelectorAll<HTMLInputElement>('input[name="ts-position"]').forEach((radio) => {
     radio.addEventListener('change', () => void updateTimestampPreview());
