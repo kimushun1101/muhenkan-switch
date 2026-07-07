@@ -84,10 +84,10 @@ fn qwerty_pos(row: usize, col: usize, hand_gap: f64) -> (f64, f64) {
     let pad = 20.0;
     // QWERTY 行スタガー（左端キーからの X オフセット）
     let row_offset = match row {
-        0 => 0.0,                // 数字行
-        1 => KEY_PITCH * 0.5,   // Q行（Tab 幅分）
-        2 => KEY_PITCH * 0.75,  // A行（CapsLock 幅分）
-        _ => KEY_PITCH * 1.25,  // Z行（Shift 幅分）
+        0 => 0.0,              // 数字行
+        1 => KEY_PITCH * 0.5,  // Q行（Tab 幅分）
+        2 => KEY_PITCH * 0.75, // A行（CapsLock 幅分）
+        _ => KEY_PITCH * 1.25, // Z行（Shift 幅分）
     };
     let x = pad + row_offset + col as f64 * KEY_PITCH + hand_gap;
     let y = pad + row as f64 * KEY_PITCH;
@@ -107,52 +107,292 @@ fn key_definitions() -> Vec<KeyDef> {
     vec![
         // ── 数字行 (row 0) ──
         //   1(c0) 2(c1) 3(c2) 4(c3) 5(c4)  6(c5) 7(c6) 8(c7) 9(c8) 0(c9)
-        KeyDef { label: "1", dispatch_key: Some("1"), x: l(0,0).0, y: l(0,0).1, category: KeyCategory::Dispatch },
-        KeyDef { label: "2", dispatch_key: Some("2"), x: l(0,1).0, y: l(0,1).1, category: KeyCategory::Dispatch },
-        KeyDef { label: "3", dispatch_key: Some("3"), x: l(0,2).0, y: l(0,2).1, category: KeyCategory::Dispatch },
-        KeyDef { label: "4", dispatch_key: Some("4"), x: l(0,3).0, y: l(0,3).1, category: KeyCategory::Dispatch },
-        KeyDef { label: "5", dispatch_key: Some("5"), x: l(0,4).0, y: l(0,4).1, category: KeyCategory::Dispatch },
-        KeyDef { label: "6", dispatch_key: None, x: r(0,5).0, y: r(0,5).1, category: KeyCategory::Unused },
-        KeyDef { label: "7", dispatch_key: None, x: r(0,6).0, y: r(0,6).1, category: KeyCategory::Unused },
-        KeyDef { label: "8", dispatch_key: None, x: r(0,7).0, y: r(0,7).1, category: KeyCategory::Unused },
-        KeyDef { label: "9", dispatch_key: None, x: r(0,8).0, y: r(0,8).1, category: KeyCategory::Unused },
-        KeyDef { label: "0", dispatch_key: None, x: r(0,9).0, y: r(0,9).1, category: KeyCategory::Unused },
+        KeyDef {
+            label: "1",
+            dispatch_key: Some("1"),
+            x: l(0, 0).0,
+            y: l(0, 0).1,
+            category: KeyCategory::Dispatch,
+        },
+        KeyDef {
+            label: "2",
+            dispatch_key: Some("2"),
+            x: l(0, 1).0,
+            y: l(0, 1).1,
+            category: KeyCategory::Dispatch,
+        },
+        KeyDef {
+            label: "3",
+            dispatch_key: Some("3"),
+            x: l(0, 2).0,
+            y: l(0, 2).1,
+            category: KeyCategory::Dispatch,
+        },
+        KeyDef {
+            label: "4",
+            dispatch_key: Some("4"),
+            x: l(0, 3).0,
+            y: l(0, 3).1,
+            category: KeyCategory::Dispatch,
+        },
+        KeyDef {
+            label: "5",
+            dispatch_key: Some("5"),
+            x: l(0, 4).0,
+            y: l(0, 4).1,
+            category: KeyCategory::Dispatch,
+        },
+        KeyDef {
+            label: "6",
+            dispatch_key: None,
+            x: r(0, 5).0,
+            y: r(0, 5).1,
+            category: KeyCategory::Unused,
+        },
+        KeyDef {
+            label: "7",
+            dispatch_key: None,
+            x: r(0, 6).0,
+            y: r(0, 6).1,
+            category: KeyCategory::Unused,
+        },
+        KeyDef {
+            label: "8",
+            dispatch_key: None,
+            x: r(0, 7).0,
+            y: r(0, 7).1,
+            category: KeyCategory::Unused,
+        },
+        KeyDef {
+            label: "9",
+            dispatch_key: None,
+            x: r(0, 8).0,
+            y: r(0, 8).1,
+            category: KeyCategory::Unused,
+        },
+        KeyDef {
+            label: "0",
+            dispatch_key: None,
+            x: r(0, 9).0,
+            y: r(0, 9).1,
+            category: KeyCategory::Unused,
+        },
         // ── Q行 (row 1) ──
         //   Q(c0) W(c1) E(c2) R(c3) T(c4)  |  Y(c5) U(c6) I(c7) O(c8) P(c9)
-        KeyDef { label: "Q", dispatch_key: Some("q"), x: l(1,0).0, y: l(1,0).1, category: KeyCategory::Dispatch },
-        KeyDef { label: "W", dispatch_key: Some("w"), x: l(1,1).0, y: l(1,1).1, category: KeyCategory::Dispatch },
-        KeyDef { label: "E", dispatch_key: Some("e"), x: l(1,2).0, y: l(1,2).1, category: KeyCategory::Dispatch },
-        KeyDef { label: "R", dispatch_key: Some("r"), x: l(1,3).0, y: l(1,3).1, category: KeyCategory::Dispatch },
-        KeyDef { label: "T", dispatch_key: Some("t"), x: l(1,4).0, y: l(1,4).1, category: KeyCategory::Dispatch },
-        KeyDef { label: "Y", dispatch_key: None, x: r(1,5).0, y: r(1,5).1, category: KeyCategory::TextEdit },
-        KeyDef { label: "U", dispatch_key: None, x: r(1,6).0, y: r(1,6).1, category: KeyCategory::TextEdit },
-        KeyDef { label: "I", dispatch_key: None, x: r(1,7).0, y: r(1,7).1, category: KeyCategory::TextEdit },
-        KeyDef { label: "O", dispatch_key: None, x: r(1,8).0, y: r(1,8).1, category: KeyCategory::TextEdit },
-        KeyDef { label: "P", dispatch_key: None, x: r(1,9).0, y: r(1,9).1, category: KeyCategory::Unused },
+        KeyDef {
+            label: "Q",
+            dispatch_key: Some("q"),
+            x: l(1, 0).0,
+            y: l(1, 0).1,
+            category: KeyCategory::Dispatch,
+        },
+        KeyDef {
+            label: "W",
+            dispatch_key: Some("w"),
+            x: l(1, 1).0,
+            y: l(1, 1).1,
+            category: KeyCategory::Dispatch,
+        },
+        KeyDef {
+            label: "E",
+            dispatch_key: Some("e"),
+            x: l(1, 2).0,
+            y: l(1, 2).1,
+            category: KeyCategory::Dispatch,
+        },
+        KeyDef {
+            label: "R",
+            dispatch_key: Some("r"),
+            x: l(1, 3).0,
+            y: l(1, 3).1,
+            category: KeyCategory::Dispatch,
+        },
+        KeyDef {
+            label: "T",
+            dispatch_key: Some("t"),
+            x: l(1, 4).0,
+            y: l(1, 4).1,
+            category: KeyCategory::Dispatch,
+        },
+        KeyDef {
+            label: "Y",
+            dispatch_key: None,
+            x: r(1, 5).0,
+            y: r(1, 5).1,
+            category: KeyCategory::TextEdit,
+        },
+        KeyDef {
+            label: "U",
+            dispatch_key: None,
+            x: r(1, 6).0,
+            y: r(1, 6).1,
+            category: KeyCategory::TextEdit,
+        },
+        KeyDef {
+            label: "I",
+            dispatch_key: None,
+            x: r(1, 7).0,
+            y: r(1, 7).1,
+            category: KeyCategory::TextEdit,
+        },
+        KeyDef {
+            label: "O",
+            dispatch_key: None,
+            x: r(1, 8).0,
+            y: r(1, 8).1,
+            category: KeyCategory::TextEdit,
+        },
+        KeyDef {
+            label: "P",
+            dispatch_key: None,
+            x: r(1, 9).0,
+            y: r(1, 9).1,
+            category: KeyCategory::Unused,
+        },
         // ── A行 / ホーム行 (row 2) ──
         //   A(c0) S(c1) D(c2) F(c3) G(c4)  |  H(c5) J(c6) K(c7) L(c8) ;(c9)
-        KeyDef { label: "A", dispatch_key: Some("a"), x: l(2,0).0, y: l(2,0).1, category: KeyCategory::Dispatch },
-        KeyDef { label: "S", dispatch_key: Some("s"), x: l(2,1).0, y: l(2,1).1, category: KeyCategory::Dispatch },
-        KeyDef { label: "D", dispatch_key: Some("d"), x: l(2,2).0, y: l(2,2).1, category: KeyCategory::Dispatch },
-        KeyDef { label: "F", dispatch_key: Some("f"), x: l(2,3).0, y: l(2,3).1, category: KeyCategory::Dispatch },
-        KeyDef { label: "G", dispatch_key: Some("g"), x: l(2,4).0, y: l(2,4).1, category: KeyCategory::Dispatch },
-        KeyDef { label: "H", dispatch_key: None, x: r(2,5).0, y: r(2,5).1, category: KeyCategory::TextEdit },
-        KeyDef { label: "J", dispatch_key: None, x: r(2,6).0, y: r(2,6).1, category: KeyCategory::TextEdit },
-        KeyDef { label: "K", dispatch_key: None, x: r(2,7).0, y: r(2,7).1, category: KeyCategory::TextEdit },
-        KeyDef { label: "L", dispatch_key: None, x: r(2,8).0, y: r(2,8).1, category: KeyCategory::TextEdit },
-        KeyDef { label: ";", dispatch_key: None, x: r(2,9).0, y: r(2,9).1, category: KeyCategory::TextEdit },
+        KeyDef {
+            label: "A",
+            dispatch_key: Some("a"),
+            x: l(2, 0).0,
+            y: l(2, 0).1,
+            category: KeyCategory::Dispatch,
+        },
+        KeyDef {
+            label: "S",
+            dispatch_key: Some("s"),
+            x: l(2, 1).0,
+            y: l(2, 1).1,
+            category: KeyCategory::Dispatch,
+        },
+        KeyDef {
+            label: "D",
+            dispatch_key: Some("d"),
+            x: l(2, 2).0,
+            y: l(2, 2).1,
+            category: KeyCategory::Dispatch,
+        },
+        KeyDef {
+            label: "F",
+            dispatch_key: Some("f"),
+            x: l(2, 3).0,
+            y: l(2, 3).1,
+            category: KeyCategory::Dispatch,
+        },
+        KeyDef {
+            label: "G",
+            dispatch_key: Some("g"),
+            x: l(2, 4).0,
+            y: l(2, 4).1,
+            category: KeyCategory::Dispatch,
+        },
+        KeyDef {
+            label: "H",
+            dispatch_key: None,
+            x: r(2, 5).0,
+            y: r(2, 5).1,
+            category: KeyCategory::TextEdit,
+        },
+        KeyDef {
+            label: "J",
+            dispatch_key: None,
+            x: r(2, 6).0,
+            y: r(2, 6).1,
+            category: KeyCategory::TextEdit,
+        },
+        KeyDef {
+            label: "K",
+            dispatch_key: None,
+            x: r(2, 7).0,
+            y: r(2, 7).1,
+            category: KeyCategory::TextEdit,
+        },
+        KeyDef {
+            label: "L",
+            dispatch_key: None,
+            x: r(2, 8).0,
+            y: r(2, 8).1,
+            category: KeyCategory::TextEdit,
+        },
+        KeyDef {
+            label: ";",
+            dispatch_key: None,
+            x: r(2, 9).0,
+            y: r(2, 9).1,
+            category: KeyCategory::TextEdit,
+        },
         // ── Z行 / 下行 (row 3) ──
         //   Z(c0) X(c1) C(c2) V(c3) B(c4)  |  N(c5) M(c6) ,(c7) .(c8) /(c9)
-        KeyDef { label: "Z", dispatch_key: None, x: l(3,0).0, y: l(3,0).1, category: KeyCategory::Timestamp },
-        KeyDef { label: "X", dispatch_key: None, x: l(3,1).0, y: l(3,1).1, category: KeyCategory::Timestamp },
-        KeyDef { label: "C", dispatch_key: None, x: l(3,2).0, y: l(3,2).1, category: KeyCategory::Timestamp },
-        KeyDef { label: "V", dispatch_key: None, x: l(3,3).0, y: l(3,3).1, category: KeyCategory::Timestamp },
-        KeyDef { label: "B", dispatch_key: Some("b"), x: l(3,4).0, y: l(3,4).1, category: KeyCategory::Dispatch },
-        KeyDef { label: "N", dispatch_key: None, x: r(3,5).0, y: r(3,5).1, category: KeyCategory::TextEdit },
-        KeyDef { label: "M", dispatch_key: None, x: r(3,6).0, y: r(3,6).1, category: KeyCategory::TextEdit },
-        KeyDef { label: ",", dispatch_key: None, x: r(3,7).0, y: r(3,7).1, category: KeyCategory::TextEdit },
-        KeyDef { label: ".", dispatch_key: None, x: r(3,8).0, y: r(3,8).1, category: KeyCategory::TextEdit },
-        KeyDef { label: "/", dispatch_key: None, x: r(3,9).0, y: r(3,9).1, category: KeyCategory::Unused },
+        KeyDef {
+            label: "Z",
+            dispatch_key: None,
+            x: l(3, 0).0,
+            y: l(3, 0).1,
+            category: KeyCategory::Timestamp,
+        },
+        KeyDef {
+            label: "X",
+            dispatch_key: None,
+            x: l(3, 1).0,
+            y: l(3, 1).1,
+            category: KeyCategory::Timestamp,
+        },
+        KeyDef {
+            label: "C",
+            dispatch_key: None,
+            x: l(3, 2).0,
+            y: l(3, 2).1,
+            category: KeyCategory::Timestamp,
+        },
+        KeyDef {
+            label: "V",
+            dispatch_key: None,
+            x: l(3, 3).0,
+            y: l(3, 3).1,
+            category: KeyCategory::Timestamp,
+        },
+        KeyDef {
+            label: "B",
+            dispatch_key: Some("b"),
+            x: l(3, 4).0,
+            y: l(3, 4).1,
+            category: KeyCategory::Dispatch,
+        },
+        KeyDef {
+            label: "N",
+            dispatch_key: None,
+            x: r(3, 5).0,
+            y: r(3, 5).1,
+            category: KeyCategory::TextEdit,
+        },
+        KeyDef {
+            label: "M",
+            dispatch_key: None,
+            x: r(3, 6).0,
+            y: r(3, 6).1,
+            category: KeyCategory::TextEdit,
+        },
+        KeyDef {
+            label: ",",
+            dispatch_key: None,
+            x: r(3, 7).0,
+            y: r(3, 7).1,
+            category: KeyCategory::TextEdit,
+        },
+        KeyDef {
+            label: ".",
+            dispatch_key: None,
+            x: r(3, 8).0,
+            y: r(3, 8).1,
+            category: KeyCategory::TextEdit,
+        },
+        KeyDef {
+            label: "/",
+            dispatch_key: None,
+            x: r(3, 9).0,
+            y: r(3, 9).1,
+            category: KeyCategory::Unused,
+        },
     ]
 }
 
@@ -218,15 +458,15 @@ pub fn generate(config: &Config) -> String {
 
     for key in &keys {
         let (fill, bottom_label) = match key.category {
-            KeyCategory::TextEdit => {
-                (fill_color("textedit"), text_edit_label(key.label, &config.punctuation_style).to_string())
-            }
-            KeyCategory::Timestamp => {
-                (fill_color("timestamp"), timestamp_label(key.label).to_string())
-            }
-            KeyCategory::Unused => {
-                (fill_color("unused"), String::new())
-            }
+            KeyCategory::TextEdit => (
+                fill_color("textedit"),
+                text_edit_label(key.label, &config.punctuation_style).to_string(),
+            ),
+            KeyCategory::Timestamp => (
+                fill_color("timestamp"),
+                timestamp_label(key.label).to_string(),
+            ),
+            KeyCategory::Unused => (fill_color("unused"), String::new()),
             KeyCategory::Dispatch => {
                 if let Some(dk) = key.dispatch_key {
                     if let Some((cat, name)) = lookup_dispatch(config, dk) {

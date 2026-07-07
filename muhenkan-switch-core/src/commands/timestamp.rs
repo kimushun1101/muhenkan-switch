@@ -174,12 +174,7 @@ fn explorer_rename_remove(
 }
 
 /// タイムスタンプを付加したファイルパスを構築
-fn build_timestamped_path(
-    src: &Path,
-    timestamp: &str,
-    position: &str,
-    delimiter: &str,
-) -> PathBuf {
+fn build_timestamped_path(src: &Path, timestamp: &str, position: &str, delimiter: &str) -> PathBuf {
     let stem = src.file_stem().unwrap_or_default().to_string_lossy();
     let ext = src
         .extension()
@@ -236,8 +231,8 @@ mod imp {
         };
         use windows::Win32::System::Variant::VARIANT;
         use windows::Win32::UI::Shell::{
-            IFolderView2, IShellItem, IShellItemArray, IShellWindows, ShellWindows,
-            SID_STopLevelBrowser, SIGDN_FILESYSPATH,
+            IFolderView2, IShellItem, IShellItemArray, IShellWindows, SID_STopLevelBrowser,
+            ShellWindows, SIGDN_FILESYSPATH,
         };
         use windows::Win32::UI::WindowsAndMessaging::{GetAncestor, GA_ROOT};
 

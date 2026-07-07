@@ -91,7 +91,12 @@ mod imp {
     /// Send Ctrl+<key> via Win32 SendInput.
     fn send_ctrl_key(vk: VIRTUAL_KEY) -> Result<()> {
         unsafe {
-            let mut inputs = [INPUT::default(), INPUT::default(), INPUT::default(), INPUT::default()];
+            let mut inputs = [
+                INPUT::default(),
+                INPUT::default(),
+                INPUT::default(),
+                INPUT::default(),
+            ];
 
             // Ctrl down
             inputs[0].r#type = INPUT_KEYBOARD;
@@ -125,7 +130,10 @@ mod imp {
 
             let sent = SendInput(&inputs, mem::size_of::<INPUT>() as i32);
             if sent != 4 {
-                anyhow::bail!("SendInput に失敗しました: 4 件中 {} 件のみ送信されました", sent);
+                anyhow::bail!(
+                    "SendInput に失敗しました: 4 件中 {} 件のみ送信されました",
+                    sent
+                );
             }
         }
         Ok(())

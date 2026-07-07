@@ -49,8 +49,7 @@ mod job_object {
 
         pub fn assign(&self, pid: u32) {
             unsafe {
-                if let Ok(process) =
-                    OpenProcess(PROCESS_SET_QUOTA | PROCESS_TERMINATE, false, pid)
+                if let Ok(process) = OpenProcess(PROCESS_SET_QUOTA | PROCESS_TERMINATE, false, pid)
                 {
                     let _ = AssignProcessToJobObject(self.0, process);
                     let _ = CloseHandle(process);
@@ -113,11 +112,7 @@ udevadm control --reload-rules && udevadm trigger
     /// uinput パーミッション未設定の案内を stderr に表示
     pub fn print_uinput_guide() {
         use std::fs::OpenOptions;
-        if OpenOptions::new()
-            .write(true)
-            .open("/dev/uinput")
-            .is_ok()
-        {
+        if OpenOptions::new().write(true).open("/dev/uinput").is_ok() {
             return;
         }
         eprintln!();
@@ -266,8 +261,9 @@ impl KanataManager {
             }
         }
 
-        let child = SharedChild::spawn(&mut cmd)
-            .with_context(|| "キー割当の起動に失敗しました。\n再インストールしてください。".to_string())?;
+        let child = SharedChild::spawn(&mut cmd).with_context(|| {
+            "キー割当の起動に失敗しました。\n再インストールしてください。".to_string()
+        })?;
 
         let pid = child.id();
         eprintln!("[kanata] started (pid: {})", pid);
@@ -316,44 +312,6 @@ impl KanataManager {
             }
             None => (false, None),
         }
-    }
-}
-
-// ── Tests ──
-//
-// start() は実際の kanata バイナリ（bin/kanata_cmd_allowed）が無いと
-// 起動に失敗するため、ここでは start() を伴わずに検証できる
-// intentional_stop フラグの初期値・stop() による更新のみをテストする。
-// start() 成功時のフラグリセット（本 Issue の修正本体）を含む
-// stop → start の完全な状態遷移テストは、実バイナリの用意または
-// プロセス起動を差し替える依存性注入が必要になり invasive なため見送る
-// （テスト整備は Issue #230 で扱う）。
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn new_intentional_stop_flag_initial_false() {
-        let manager = KanataManager::new();
-        assert!(!manager.intentional_stop_flag().load(Ordering::SeqCst));
-    }
-
-    #[test]
-    fn stop_without_running_child_sets_intentional_stop_flag() {
-        let manager = KanataManager::new();
-        let flag = manager.intentional_stop_flag();
-        assert!(!flag.load(Ordering::SeqCst));
-
-        let result = manager.stop();
-
-        assert!(result.is_ok());
-        assert!(flag.load(Ordering::SeqCst));
-    }
-
-    #[test]
-    fn status_with_no_child_returns_not_running() {
-        let manager = KanataManager::new();
-        assert_eq!(manager.status(), (false, None));
     }
 }
 
@@ -510,4 +468,42 @@ pub fn setup(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     });
 
     Ok(())
+}
+
+// ── Tests ──
+//
+// start() は実際の kanata バイナリ（bin/kanata_cmd_allowed）が無いと
+// 起動に失敗するため、ここでは start() を伴わずに検証できる
+// intentional_stop フラグの初期値・stop() による更新のみをテストする。
+// start() 成功時のフラグリセット（本 Issue の修正本体）を含む
+// stop → start の完全な状態遷移テストは、実バイナリの用意または
+// プロセス起動を差し替える依存性注入が必要になり invasive なため見送る
+// （テスト整備は Issue #230 で扱う）。
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn new_intentional_stop_flag_initial_false() {
+        let manager = KanataManager::new();
+        assert!(!manager.intentional_stop_flag().load(Ordering::SeqCst));
+    }
+
+    #[test]
+    fn stop_without_running_child_sets_intentional_stop_flag() {
+        let manager = KanataManager::new();
+        let flag = manager.intentional_stop_flag();
+        assert!(!flag.load(Ordering::SeqCst));
+
+        let result = manager.stop();
+
+        assert!(result.is_ok());
+        assert!(flag.load(Ordering::SeqCst));
+    }
+
+    #[test]
+    fn status_with_no_child_returns_not_running() {
+        let manager = KanataManager::new();
+        assert_eq!(manager.status(), (false, None));
+    }
 }

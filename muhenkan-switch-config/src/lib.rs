@@ -10,10 +10,7 @@ pub mod svg;
 
 /// kbd ファイルでディスパッチに割り当てられている物理キーの一覧。
 pub const DISPATCH_KEYS: &[&str] = &[
-    "1", "2", "3", "4", "5",
-    "q", "w", "e", "r", "t",
-    "a", "s", "d", "f", "g",
-    "b",
+    "1", "2", "3", "4", "5", "q", "w", "e", "r", "t", "a", "s", "d", "f", "g", "b",
 ];
 
 // ── Types ──
@@ -542,12 +539,13 @@ pub fn validate(config: &Config) -> Vec<String> {
 // ── kbd punctuation rewrite ──
 
 /// kbd ファイル内の句読点行を指定スタイルに書き換える。
-pub fn rewrite_kbd_punctuation(
-    kbd_path: &std::path::Path,
-    style: &PunctuationStyle,
-) -> Result<()> {
-    let content = std::fs::read_to_string(kbd_path)
-        .with_context(|| format!("kbd ファイルの読み込みに失敗しました: {}", kbd_path.display()))?;
+pub fn rewrite_kbd_punctuation(kbd_path: &std::path::Path, style: &PunctuationStyle) -> Result<()> {
+    let content = std::fs::read_to_string(kbd_path).with_context(|| {
+        format!(
+            "kbd ファイルの読み込みに失敗しました: {}",
+            kbd_path.display()
+        )
+    })?;
 
     let patterns = [
         "(unicode 、)  (unicode 。)",
@@ -567,8 +565,12 @@ pub fn rewrite_kbd_punctuation(
         new_content = new_content.replace(pat, new_fragment);
     }
 
-    std::fs::write(kbd_path, new_content)
-        .with_context(|| format!("kbd ファイルの書き込みに失敗しました: {}", kbd_path.display()))?;
+    std::fs::write(kbd_path, new_content).with_context(|| {
+        format!(
+            "kbd ファイルの書き込みに失敗しました: {}",
+            kbd_path.display()
+        )
+    })?;
 
     Ok(())
 }
@@ -580,10 +582,12 @@ pub fn get_search_url<'a>(
     search: &'a IndexMap<String, SearchEntry>,
     engine: &str,
 ) -> Result<&'a str> {
-    search
-        .get(engine)
-        .map(|e| e.url())
-        .ok_or_else(|| anyhow::anyhow!("検索エンジン '{}' が config.toml に定義されていません", engine))
+    search.get(engine).map(|e| e.url()).ok_or_else(|| {
+        anyhow::anyhow!(
+            "検索エンジン '{}' が config.toml に定義されていません",
+            engine
+        )
+    })
 }
 
 /// フォルダのパスを取得する。
@@ -690,7 +694,10 @@ mod tests {
             editor = {key = "a", process = "Code", command = "code"}
         "#;
         let config: Config = toml::from_str(toml_str).unwrap();
-        assert_eq!(config.search["google"].url(), "https://www.google.com/search?q={query}");
+        assert_eq!(
+            config.search["google"].url(),
+            "https://www.google.com/search?q={query}"
+        );
         assert_eq!(config.search["google"].dispatch_key(), Some("g"));
         assert_eq!(config.folders["documents"].path(), "~/Documents");
         assert_eq!(config.folders["documents"].dispatch_key(), Some("1"));
@@ -758,7 +765,10 @@ mod tests {
         "#;
         let config: Config = toml::from_str(toml_str).unwrap();
         assert!(config.search["google"].dispatch_key().is_none());
-        assert_eq!(config.search["google"].url(), "https://www.google.com/search?q={query}");
+        assert_eq!(
+            config.search["google"].url(),
+            "https://www.google.com/search?q={query}"
+        );
         assert!(config.folders["documents"].dispatch_key().is_none());
         assert!(config.apps["editor"].dispatch_key().is_none());
     }
@@ -885,7 +895,11 @@ mod tests {
             },
         );
         let errors = validate(&config);
-        assert!(errors.len() >= 3, "Expected at least 3 errors, got: {:?}", errors);
+        assert!(
+            errors.len() >= 3,
+            "Expected at least 3 errors, got: {:?}",
+            errors
+        );
     }
 
     #[test]
@@ -960,7 +974,10 @@ mod tests {
         let loaded = load_from(&path).unwrap();
 
         // Verify search
-        assert_eq!(loaded.search["google"].url(), "https://www.google.com/search?q={query}");
+        assert_eq!(
+            loaded.search["google"].url(),
+            "https://www.google.com/search?q={query}"
+        );
         assert_eq!(loaded.search["google"].dispatch_key(), Some("g"));
 
         // Verify folders
@@ -1086,7 +1103,11 @@ mod tests {
         for (literal, expected) in cases {
             let toml_str = format!("punctuation_style = \"{}\"\n", literal);
             let config: Config = toml::from_str(&toml_str).unwrap();
-            assert_eq!(config.punctuation_style, expected, "deserialize: {}", literal);
+            assert_eq!(
+                config.punctuation_style, expected,
+                "deserialize: {}",
+                literal
+            );
             let dumped = toml::to_string(&config).unwrap();
             assert!(
                 dumped.contains(&format!("punctuation_style = \"{}\"", literal)),
@@ -1109,7 +1130,10 @@ mod tests {
         // 4 variant 以外の文字列は deserialize 時点で reject される（型ガード）
         let toml_str = "punctuation_style = \"invalid\"\n";
         let result: Result<Config, _> = toml::from_str(toml_str);
-        assert!(result.is_err(), "invalid punctuation_style should fail to parse");
+        assert!(
+            result.is_err(),
+            "invalid punctuation_style should fail to parse"
+        );
     }
 
     #[test]
